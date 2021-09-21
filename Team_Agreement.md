@@ -2,17 +2,18 @@
 
 ## Team menbers
 
-Yuchen Yang
-Yilin Guo
-Yuxin Ji
+1. Yuchen Yang
+2. Yilin Guo
+3. Yuxin Ji
 
 ## Responsbilities
 
 We notice that this is a huge project involving design, frontend, backend and deploy, so each of us will participate each other's work. Here is how we split our work.
 We will design the app interface together.
-Yuchen will be mainly responsible for database schema design, interaction between frontend and backend.
-Yilin will be mainly responsible for using React to create Frontend.
-Yuxin will be responsible for creating HTTP requests and responses and using css to polish the app.
+
+1. Yuchen will be mainly responsible for database schema design, interaction between frontend and backend.
+2. Yilin will be mainly responsible for using React to create Frontend.
+3. Yuxin will be responsible for creating HTTP requests and responses and using css to polish the app.
 
 This is the brief division of the work.
 
