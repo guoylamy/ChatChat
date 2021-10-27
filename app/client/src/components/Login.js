@@ -45,7 +45,9 @@ function Login() {
           href={
             window.location.protocol + "//" + window.location.host + "/register"
           }
-        ></a>
+        >
+          Sign in
+        </a>
       </div>
     </div>
   );
