@@ -10,7 +10,7 @@ function Routers() {
           <Route exact path="/" render={() => <Login />} />
           <Route exact path="/login" render={() => <Login />} />
           <Route exact path="/register" render={() => <Register />} />
-          <Route exact path="/profile" render={() => <Profile />} />
+          <Route exact path="/profile/:userId" render={userId => <Profile {...userId}/>} />
         </Switch>
       </Router>
     </div>
