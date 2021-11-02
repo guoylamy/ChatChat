@@ -1,52 +1,64 @@
 import React, { useState } from "react";
+import GroupsPage from './GroupsPage';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+
 function Login() {
-  const [allValues, setAllValues] = useState({
-    username: "",
-    password: "",
-  });
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
   function checkIfAcountExists() {
-    // check the backend
-    if (true) {
+    //should use username and password to get record
+    if (username.username === '123') {
       window.location.href =
-        window.location.protocol + "//" + window.location.host + "/profile";
+        window.location.protocol + "//" + window.location.host + "/groupsPage/" + username.username;
+      
     }
+    else {
+      // if the username doesn't exist or password is right, should prompt warning
+      alert("User name doesn't exist or password is not right");
+    }
+    
   }
   function handleUsername(event) {
-    setAllValues({
+    setUsername({
       username: event.target.value,
-    });
+    }); 
   }
+
   function handlePassword(event) {
-    setAllValues({
+    setPassword({
       password: event.target.value,
     });
   }
+
   return (
     <div>
-      <h1>login</h1>
+      <h1 className="chatchat-h1">chatchat!</h1>
+      <h2 className="login-h2">Login</h2>
+      <div className="login-div">
       <div>
-        username{" "}
+        Username{" "}
         <input type="text" name="username" onChange={handleUsername}></input>
       </div>
       <div>
-        password{" "}
+        Password{" "}
         <input type="text" name="password" onChange={handlePassword}></input>
       </div>
       <div>
         <input
           type="button"
-          value="submit"
+          value="Sign in"
           onClick={checkIfAcountExists}
         ></input>
       </div>
-      <div>
-        If you don't a account, please register here :{" "}
+      </div>
+      <div className="login-redirect">
+        Not a member? {" "}
         <a
           href={
             window.location.protocol + "//" + window.location.host + "/register"
           }
         >
-          Sign in
+          Register here
         </a>
       </div>
     </div>
