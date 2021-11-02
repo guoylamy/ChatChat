@@ -62,9 +62,10 @@ function Profile() {
   
   return (
     <div>
-      <h1 className="page-title">
-        Profile
-      </h1>
+      <h1 className="chatchat-h1">chatchat</h1>
+      <h2 className="page-title">
+        My Profile
+      </h2>
       <div className="page-content">
         <div id="profile-group">
           <h2 className="component-title">
@@ -84,7 +85,7 @@ function Profile() {
           <h2 className="component-title">
             About Me
           </h2>
-          <UserInfoBox />
+          <div className="UserinfoBox"><UserInfoBox /></div>
         </div>
       </div>
     </div>

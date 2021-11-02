@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./Login";
 import Profile from "./Profile";
 import Register from "./Register";
+import "../App.css";
+
 function Routers() {
   return (
     <div>
