@@ -32,30 +32,33 @@ function Login() {
 
   return (
     <div>
-      <h1>login</h1>
+      <h1 className="chatchat-h1">chatchat!</h1>
+      <h2 className="login-h2">Login</h2>
+      <div className="login-div">
       <div>
-        username{" "}
+        Username{" "}
         <input type="text" name="username" onChange={handleUsername}></input>
       </div>
       <div>
-        password{" "}
+        Password{" "}
         <input type="text" name="password" onChange={handlePassword}></input>
       </div>
       <div>
         <input
           type="button"
-          value="submit"
+          value="Sign in"
           onClick={checkIfAcountExists}
         ></input>
       </div>
-      <div>
-        If you don't a account, please register here :{" "}
+      </div>
+      <div className="login-redirect">
+        Not a member? {" "}
         <a
           href={
             window.location.protocol + "//" + window.location.host + "/register"
           }
         >
-          Sign in
+          Register here
         </a>
       </div>
     </div>

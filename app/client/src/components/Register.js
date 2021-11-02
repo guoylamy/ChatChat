@@ -31,10 +31,11 @@ function Register() {
   }
   return (
     <div>
-      <h1>register</h1>
-      <div>
+      <h1 className="chatchat-h1">chatchat!</h1>
+      <h2 className="login-h2">Register</h2>
+      <div className="login-div">
         <div>
-          username{" "}
+          Username{" "}
           <input
             type="text"
             name="username"
@@ -43,10 +44,10 @@ function Register() {
           ></input>
         </div>
         <div>
-          password{" "}
+          Password{" "}
           <input type="text" name="password" onChange={handlePassword}></input>
         </div>
-        <input type="button" onClick={handleSubmit} value="submit"></input>
+        <input type="button" onClick={handleSubmit} value="Create Account"></input>
       </div>
     </div>
   );
