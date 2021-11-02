@@ -1,26 +1,35 @@
 import React, { useState } from "react";
+import GroupsPage from './GroupsPage';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+
 function Login() {
-  const [allValues, setAllValues] = useState({
-    username: "",
-    password: "",
-  });
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
   function checkIfAcountExists() {
-    // check the backend
-    if (true) {
+    //should use username and password to get record
+    if (username.username === '123') {
       window.location.href =
-        window.location.protocol + "//" + window.location.host + "/profile";
+        window.location.protocol + "//" + window.location.host + "/groupsPage/" + username.username;
+      
     }
+    else {
+      // if the username doesn't exist or password is right, should prompt warning
+      alert("User name doesn't exist or password is not right");
+    }
+    
   }
   function handleUsername(event) {
-    setAllValues({
+    setUsername({
       username: event.target.value,
-    });
+    }); 
   }
+
   function handlePassword(event) {
-    setAllValues({
+    setPassword({
       password: event.target.value,
     });
   }
+
   return (
     <div>
       <h1>login</h1>
