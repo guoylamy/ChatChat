@@ -47,6 +47,7 @@ function Login() {
         <input
           type="button"
           value="Sign in"
+          id="sign"
           onClick={checkIfAcountExists}
         ></input>
       </div>

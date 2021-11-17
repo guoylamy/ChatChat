@@ -14,7 +14,7 @@ function Routers() {
           <Route exact path="/register" render={() => <Register />} />
           <Route exact path="/profile" render={() => <Profile />} />
           <Route exact path="/groupsPage/:username" render={() => <GroupsPage />} />
-          <Route exact path="/profile/:userId" render={userId => <Profile {...userId}/>} />
+          <Route exact path="/profile/:userName" render={userName => <Profile {...userName}/>} />
         </Switch>
       </Router>
     </div>
