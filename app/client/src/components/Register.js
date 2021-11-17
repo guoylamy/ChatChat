@@ -1,33 +1,38 @@
+import axios from "axios";
 import React, { useState } from "react";
 function Register() {
-  const [allValues, setAllValues] = useState({
-    username: "",
-    password: "",
-  });
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const baseUrl = 'http://localhost:8081/register/'
   function handleSubmit() {
     // detect if username is valid
-    if (/^[a-zA-Z0-9]+$/.test(allValues.username) === false) {
+    if (/^[a-zA-Z0-9]+$/.test(username) === false) {
       alert("User name is not alphanumeric");
     }
     // detect if password is valid
-    else if (/^[a-zA-Z0-9]+$/.test(allValues.password) === false) {
+    else if (/^[a-zA-Z0-9]+$/.test(password) === false) {
       alert("Password is not alphanumeric");
     }
     // pass it to the backend
     else {
-      window.location.href =
+      axios.get(baseUrl + username + '/' + password).then(res => {
+        console.log(res.data)
+        if (res.data.length === 1) {
+          alert("Username already exists!");
+        }
+        else {
+          window.location.href =
         window.location.protocol + "//" + window.location.host + "/profile";
+        }
+      })
+      
     }
   }
   function handleUsername(event) {
-    setAllValues({
-      username: event.target.value,
-    });
+    setUsername(event.target.value)
   }
   function handlePassword(event) {
-    setAllValues({
-      password: event.target.value,
-    });
+    setPassword(event.target.value)
   }
   return (
     <div>
@@ -39,7 +44,7 @@ function Register() {
           <input
             type="text"
             name="username"
-            placeholder="Please enter a valid username"
+            placeholder="Please enter a valid username"å
             onChange={handleUsername}
           ></input>
         </div>
