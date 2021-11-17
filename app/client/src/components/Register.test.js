@@ -11,10 +11,23 @@ test('renders title content', () => {
   expect(titleElement).toBeInTheDocument();
 });
 
-test('renders login redirect', () => {
-  render(<Register />);
-  const buttonElement = screen.getByRole('button');
-  expect(buttonElement).toBeInTheDocument();
+test('can input username', () => {
+  const result = render(<Register />);
+  const userNameInputElement = result.container.querySelector('input[name="username"]');
+  expect(userNameInputElement).toBeInTheDocument();
+});
+
+test('can input password', () => {
+  const result = render(<Register />);
+  const pswdInputElement = result.container.querySelector('input[name="password"]');
+  expect(pswdInputElement).toBeInTheDocument();
+});
+
+test('has create account button', () => {
+  const result = render(<Register />);
+  const signInButton = result.container.querySelector('input[type="button"]');
+  expect(signInButton).toBeInTheDocument();
+  expect(signInButton.value).toBe("Create Account");
 });
 
 test('renders login div', () => {
