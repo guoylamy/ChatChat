@@ -1,10 +1,11 @@
 import React, {useState} from "react"
-import {useParams} from "react-router-dom"
+import NavBar from './NavBar'
+import { useParams } from "react-router-dom";
 function GroupsPage() {
-    const {username} = useParams()
-    const [topic, setTopic] = useState()
-    const [groupNameToBeCreated, setGroupNameToBeCreated] = useState()
-    const [groupTypeToBeCreated, setGroupTypeToBeCreated] = useState()
+    const {useName} = useParams()
+    const [topic, setTopic] = useState('')
+    const [groupNameToBeCreated, setGroupNameToBeCreated] = useState('')
+    const [groupTypeToBeCreated, setGroupTypeToBeCreated] = useState('')
     let group_data = {"public_group" : ["Dua Lipa fans group", "Ed sheeran fans group"], "private_group" : ["cis557 project team", "cis521 team"],}
     let topic_data = {"Dua Lipa fans group" : ['pop'], "Ed sheeran fans group" : ["beautiful people"], 
                        "cis557 project team" : ['api'], "cis521 team":['robot']}
@@ -18,8 +19,17 @@ function GroupsPage() {
                 </h1>
                 {public_group.map((group_name) => (
                     <div>
+                        <div
+                            style = {{
+                                background: 'yellow',
+                                width: 100,
+                                height: 100,
+                            }}
+                            onClick = {jumpToGroupDetailsPage}
+                        >
                         <div>{group_name}</div>
                         <div>topics : {topic_data[group_name]}</div>
+                        </div>
                         <button onClick={deletePublicGroups(group_name)}>Delete</button>
                     </div>
                     
@@ -37,6 +47,11 @@ function GroupsPage() {
         // need to connect database to delete group with group_name
     }
 
+    function jumpToGroupDetailsPage(group_name) {
+        window.location.href =
+        window.location.protocol + "//" + window.location.host + "/groupDetails/" + group_name;
+    }
+
     function getPrivateGroups() {
         let private_group = group_data.private_group
         return (
@@ -46,8 +61,17 @@ function GroupsPage() {
                 </h1>
                 {private_group.map((group_name) => (
                     <div>
-                        <div>{group_name}</div>
-                        <div>topics: {topic_data[group_name]}</div>
+                        <div
+                            style = {{
+                                background: 'yellow',
+                                width: 100,
+                                height: 100
+                            }}
+                            onClick = {jumpToGroupDetailsPage}
+                        >
+                            <div>{group_name}</div>
+                            <div>topics: {topic_data[group_name]}</div>
+                        </div>
                         <button onClick={deletePrivateGroups(group_name)}>Delete</button>
                     </div>
                 ))}
@@ -98,9 +122,8 @@ function GroupsPage() {
         )
     }
     return (
-
         <div>
-            <div>nav bar</div>
+            <NavBar />
             {getPublicGroups()}
             {getPrivateGroups()}
             {createGroup()}
