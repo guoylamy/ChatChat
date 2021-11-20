@@ -10,35 +10,6 @@ app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const connect = async () => {
-  try {
-    const connection = await mysql.createConnection({
-      host: "database-557project.cxzfj2bee5gh.us-east-2.rds.amazonaws.com",
-      port: "3306",
-      user : "admin",
-      password: "cis557team12",
-      database: "database-557project"
-    });
-      // Connected to db
-    console.log(`Connected to database: ${connection.connection.config.database}`);
-    return connection;
-  } catch (err) {
-    console.error(err.message);
-    throw err;
-  }
-};
-
-// const getChatID = async (db, userName, friendName) => {
-//   const query = 'SELECT id from game_test.players (player , points) VALUES(?, ?)';
-//   const params = [newPlayer.player, newPlayer.points];
-//   try {
-//     const [row] = await db.execute(query, params);
-//     console.log(`Created player with id: ${row.insertId}`);
-//   } catch (err) {
-//     console.log(`error: ${err.message}`);
-//   }
-// };
-
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -64,12 +35,16 @@ io.on("connection", (socket) => {
   })
 })
 
+// /usr/local/mysql/bin/mysql -u admin -pcis557team12 -h database-557project.cxzfj2bee5gh.us-east-2.rds.amazonaws.com database-557project
 /* ---------------------------------------------------------------- */
 /* ------------------- Route handler registration ----------------- */
 /* ---------------------------------------------------------------- */
 
-// app.get("/user", routes.user);
-
+app.get("/register/:username/:password", routes.register)
+app.get("/login/:username/:password", routes.verifyLogin);
+app.get("/profile/getmygroups/:username", routes.getMyGroups);
+app.get("/grouppage/:username", routes.getPublicGroups)
+app.post("/grouppage/:groupname/:grouptype/:username", routes.createGroup)
 server.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
 });
