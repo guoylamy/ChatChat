@@ -13,7 +13,7 @@ function Login() {
       console.log(res)
       if (res.data.length === 1) {
         window.location.href =
-        window.location.protocol + "//" + window.location.host + "/groupsPage/" + username.username;
+        window.location.protocol + "//" + window.location.host + "/groupsPage/" + username;
       }
       else {
         alert("user doesn't exist or password is not right!")
@@ -31,6 +31,7 @@ function Login() {
     
   }
   function handleUsername(event) {
+    console.log(username)
     setUsername(event.target.value); 
   }
 
@@ -41,24 +42,34 @@ function Login() {
   return (
     <div>
       <h1 className="chatchat-h1">chatchat!</h1>
-      <h2 className="login-h2">Login</h2>
-      <div className="login-div">
-      <div>
-        Username{" "}
-        <input type="text" name="username" onChange={handleUsername} value={username}></input>
-      </div>
-      <div>
-        Password{" "}
-        <input type="text" name="password" onChange={handlePassword} value={password}></input>
-      </div>
-      <div>
-        <input
-          type="button"
-          value="Sign in"
-          id="sign"
-          onClick={checkIfAcountExists}
-        ></input>
-      </div>
+      <br></br>
+      <h2 className="title is-3">Login</h2>
+      <div className="columns is-centered">
+        <div class="column is-one-quarter">
+          <div className="box">
+            <div class="field">
+              <label class="label">Username</label>
+              <div class="control">
+                <input type="text" name="username" placeholder="e.g. user123" onChange={handleUsername} value={username}></input>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Password</label>
+              <div class="control">
+                <input type="text" name="password" placeholder="********" onChange={handlePassword} value={password}></input>
+              </div>
+            </div>
+            <div>
+              <input
+                class="button is-primary"
+                type="button"
+                value="Sign in"
+                id="sign"
+                onClick={checkIfAcountExists}
+              ></input>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="login-redirect">
         Not a member? {" "}

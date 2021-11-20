@@ -37,22 +37,31 @@ function Register() {
   return (
     <div>
       <h1 className="chatchat-h1">chatchat!</h1>
-      <h2 className="login-h2">Register</h2>
-      <div className="login-div">
-        <div>
-          Username{" "}
-          <input
-            type="text"
-            name="username"
-            placeholder="Please enter a valid username"å
-            onChange={handleUsername}
-          ></input>
+      <br></br>
+      <h2 className="title is-3">Register</h2>
+      <div className="columns is-centered">
+        <div class="column is-one-quarter">
+          <div className="box">
+            <div class="field">
+              <label class="label">Username</label>
+              <div class="control">
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Please enter a valid username"
+                    onChange={handleUsername}
+                  ></input>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Password</label>
+              <div class="control">
+                <input type="text" name="password" placeholder="********" onChange={handlePassword}></input>
+              </div>
+            </div>
+            <input class="button is-primary" type="button" onClick={handleSubmit} value="Create Account"></input>
+          </div>
         </div>
-        <div>
-          Password{" "}
-          <input type="text" name="password" onChange={handlePassword}></input>
-        </div>
-        <input type="button" onClick={handleSubmit} value="Create Account"></input>
       </div>
     </div>
   );
