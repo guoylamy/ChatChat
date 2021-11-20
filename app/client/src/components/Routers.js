@@ -4,6 +4,7 @@ import Profile from "./Profile";
 import Register from "./Register";
 import "../App.css";
 import GroupsPage from "./GroupsPage";
+import Chat from "./Chat";
 function Routers() {
   return (
     <div>
@@ -15,6 +16,7 @@ function Routers() {
           <Route exact path="/profile" render={() => <Profile />} />
           <Route exact path="/groupsPage/:username" render={() => <GroupsPage />} />
           <Route exact path="/profile/:userName" render={userName => <Profile {...userName}/>} />
+          <Route exact path="/chat/:userName/:friendName" render={(userName, friendName) => <Chat userName={userName} friendName={friendName}/>} />
         </Switch>
       </Router>
     </div>

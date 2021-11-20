@@ -4,7 +4,7 @@ import Router from "react-router-dom";
 // import renderer from 'react-test-renderer';
 import Profile from './Profile';
 
-// const getProfileInfoLab = require('../getProfileInfo');
+const getProfileInfoLab = require('../getProfileInfo');
 
 // const renderer = require('react-test-renderer');
 jest.mock("react-router-dom", () => ({
@@ -12,7 +12,9 @@ jest.mock("react-router-dom", () => ({
   useParams: jest.fn(),
 }));
 
-// jest.mock(getProfileInfoLab);
+jest.mock('../getProfileInfo');
+
+getProfileInfoLab.getUserGroups.mockResolvedValue(["Group0", "Group1"]);
 
 const createWrapper = () => {
   return render(<Profile />);
@@ -68,11 +70,11 @@ test('has title: About Me', () => {
   expect(profileTitle).toBeInTheDocument();
 });
 
-// test('renders user name', () => {
-//   jest.spyOn(Router, 'useParams').mockReturnValue({ userName: 'user1' });
+test('renders user name', async () => {
+  jest.spyOn(Router, 'useParams').mockReturnValue({ userName: 'user1' });
 //   jest.spyOn(getProfileInfoLab, "getUserGroups").mockReturnValue(["Group0", "Group1"]);
-//   const container = createWrapper();
-//   const userNameElement = container.getByTestId('user-name');
-//   expect(userNameElement).toBeInTheDocument();
-//   expect(userNameElement.innerHTML).toBe("user1");
-// });
+  const container = await createWrapper();
+  const userNameElement = container.getByTestId('user-name');
+  expect(userNameElement).toBeInTheDocument();
+  expect(userNameElement.innerHTML).toBe("user1");
+});
