@@ -17,6 +17,7 @@ function GroupsPage() {
       
     })
     function getPublicGroups() {
+        let public_group = group_data.public_group;
         console.log(username)
         axios.get(baseUrl + username).then(res => {
             setPublic_group([])
@@ -27,26 +28,18 @@ function GroupsPage() {
             setLoading(false)
         })
         return (
-            <div>
-                <h1>
-                    Public Groups {public_group}
-                </h1>
+            <div class="box">
+                <h1 className="title is-5"> Public Groups</h1>
                 {public_group.map((group_name) => (
                     <div key={group_name}>
-                        <div
-                            style = {{
-                                background: 'yellow',
-                                width: 100,
-                                height: 100,
-                            }}
+                        <div class="is-clickable"
                             onClick = {jumpToGroupDetailsPage}
                         >
-                        <div>{group_name}</div>
-                        {/* <div>topics : {topic_data[group_name]}</div> */}
+                       <p class="has-text-info">{group_name}</p>
+                        <div>topics: {topic_data[group_name]}</div>
                         </div>
-                        <button onClick={deletePublicGroups(group_name)}>Delete</button>
+                        <button class="button is-light" onClick={deletePublicGroups(group_name)}>Delete</button>
                     </div>
-                    
                 ))}
             </div>
         )
@@ -70,24 +63,17 @@ function GroupsPage() {
     function getPrivateGroups() {
         let private_group = group_data.private_group
         return (
-            <div>
-                <h1>
-                    Private Groups
-                </h1>
+            <div className="box">
+                <h1 className="title is-5"> Private Groups</h1>
                 {private_group.map((group_name) => (
                     <div key={group_name}>
-                        <div
-                            style = {{
-                                background: 'yellow',
-                                width: 100,
-                                height: 100
-                            }}
+                        <div class="is-clickable"
                             onClick = {jumpToGroupDetailsPage}
                         >
-                            <div>{group_name}</div>
-                            <div>topics: {topic_data[group_name]}</div>
+                        <p class="has-text-info">{group_name}</p>
+                        <div>topics: {topic_data[group_name]}</div>
                         </div>
-                        <button onClick={deletePrivateGroups(group_name)}>Delete</button>
+                        <button class="button is-light" onClick={deletePrivateGroups(group_name)}>Delete</button>
                     </div>
                 ))}
             </div>
@@ -109,24 +95,35 @@ function GroupsPage() {
     }
     function createGroup() {
         return (
-            <div> 
-                <h1>Create Your Group</h1>
-                <div>Group Name <input type="text" value={groupNameToBeCreated} onChange={createGroupGroupName}></input></div>
-                <div>Group Type</div>
-                <select onChange={createGroupSelectOption}>
-                    <option value="Private">Private</option>
-                    <option value="Public">Public</option>
-                </select>
-                <button onClick={createGroupButton}>create</button>
+            <div className="box"> 
+                <h1 className="title is-5">Create Your Group</h1>
+                <div class="field">
+                <label class="label">Group Name </label> 
+                    <input type="text" value={groupNameToBeCreated} onChange={createGroupGroupName}></input>
+                </div>
+                <label class="label">Group Type </label> 
+                <div class="select is-info"> 
+                    <select onChange={createGroupSelectOption}>
+                        <option class="dropdown-item" value="Private">Private</option>
+                        <option class="dropdown-item" value="Public">Public</option>
+                    </select>
+                </div>
+                <br></br>
+                <br></br>
+                <button class="button is-info" onClick={createGroupButton}>Create</button>
             </div>
         )
     }
     function joinPublicGroup(){
         return (
-            <div> 
-                <h1>Join Public Group</h1>
-                <div>Group Name <input type="text"></input></div>
-                <button>Join</button>
+            <div className="box"> 
+                <h1 className="title is-5">Join Public Group</h1>
+                <div>
+                    <label class="label"> Group Name </label>
+                    <input type="text"></input>
+                </div>
+                <br></br>
+                <button class="button is-info">Join</button>
             </div>
         )
     }
@@ -135,20 +132,31 @@ function GroupsPage() {
     }
     function filterByGroup() {
         return (
-            <div>
-                filter
+            <div className="box">
+                 <h1 className="title is-5">Filter By Topic</h1>
                 <input type="text" placeholder="topic" value={topic} onChange={handleFilterChange}></input>
+                <br></br>
+                <br></br>
+                <button class="button is-info">Submit</button>
             </div>
         )
     }
     return (
         <div>
-            <NavBar />
-            {getPublicGroups()}
-            {getPrivateGroups()}
-            {createGroup()}
-            {joinPublicGroup()}
-            {filterByGroup()}
+             <NavBar />
+            <div class="columns">
+                <div class="column is-one-third">{getPublicGroups()}</div>
+                <div class="column is-one-third"> {getPrivateGroups()}</div>
+                <div class="column is-one-third">
+                    <div class="columns">
+                        <div class="row">
+                            <div class="column">  {filterByGroup()}</div>
+                            <div class="column"> {joinPublicGroup()}</div>
+                            <div class="column"> {createGroup()}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
