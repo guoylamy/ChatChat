@@ -1,24 +1,38 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import NavBar from './NavBar'
+import axios from "axios";
 import { useParams } from "react-router-dom";
 function GroupsPage() {
-    const {useName} = useParams()
+    const {username} = useParams()
     const [topic, setTopic] = useState('')
+    const [public_group, setPublic_group] = useState([])
     const [groupNameToBeCreated, setGroupNameToBeCreated] = useState('')
     const [groupTypeToBeCreated, setGroupTypeToBeCreated] = useState('')
+    const [isLoading, setLoading] = useState(true)
+    const baseUrl = 'http://localhost:8081/grouppage/'
     let group_data = {"public_group" : ["Dua Lipa fans group", "Ed sheeran fans group"], "private_group" : ["cis557 project team", "cis521 team"],}
-    let topic_data = {"Dua Lipa fans group" : ['pop'], "Ed sheeran fans group" : ["beautiful people"], 
+    let topic_data = {"another" : ['pop'], "Ed sheeran fans group" : ["beautiful people"], 
                        "cis557 project team" : ['api'], "cis521 team":['robot']}
+    useEffect(() => {
+      
+    })
     function getPublicGroups() {
-        let public_group = group_data.public_group
-
+        console.log(username)
+        axios.get(baseUrl + username).then(res => {
+            setPublic_group([])
+            for (var i = 0; i < res.data.length; i++) {
+                setPublic_group(old => [...old, res.data[i].group_name])
+            }
+            console.log(res.data)
+            setLoading(false)
+        })
         return (
             <div>
                 <h1>
-                    Public Groups
+                    Public Groups {public_group}
                 </h1>
                 {public_group.map((group_name) => (
-                    <div>
+                    <div key={group_name}>
                         <div
                             style = {{
                                 background: 'yellow',
@@ -28,7 +42,7 @@ function GroupsPage() {
                             onClick = {jumpToGroupDetailsPage}
                         >
                         <div>{group_name}</div>
-                        <div>topics : {topic_data[group_name]}</div>
+                        {/* <div>topics : {topic_data[group_name]}</div> */}
                         </div>
                         <button onClick={deletePublicGroups(group_name)}>Delete</button>
                     </div>
@@ -36,6 +50,7 @@ function GroupsPage() {
                 ))}
             </div>
         )
+        
     }
 
     function deletePublicGroups(group_name) {
@@ -60,7 +75,7 @@ function GroupsPage() {
                     Private Groups
                 </h1>
                 {private_group.map((group_name) => (
-                    <div>
+                    <div key={group_name}>
                         <div
                             style = {{
                                 background: 'yellow',
@@ -80,6 +95,11 @@ function GroupsPage() {
     }
     function createGroupButton() {
         // pass two parameters: group name and group type. connect database to create a group
+        axios.post(baseUrl + groupNameToBeCreated + '/' + groupTypeToBeCreated + '/' + username).then(res => {
+            console.log(res.data)
+            window.location.reload(false);
+        })
+
     }
     function createGroupGroupName(event) {
         setGroupNameToBeCreated(event.target.value)

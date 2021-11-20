@@ -6,23 +6,24 @@ import axios from 'axios';
 function Login() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const baseUrl = 'http://localhost:8081/verifyLogin/'
+  const baseUrl = 'http://localhost:8081/login/'
   function checkIfAcountExists() {
     //should use username and password to get record
-    // axios.get(baseUrl + username + '/' + password.password).then(res => {
-    //   if (res.data.length === 1) {
-    //     window.location.href =
-    //     window.location.protocol + "//" + window.location.host + "/groupsPage/" + username.username;
-    //   }
-    //   else {
-    //     alert("user doesn't exist or password is not right!")
-    //   }
-    // })
-    if (username === '123') {
+    axios.get(baseUrl + username + '/' + password).then(res => {
+      console.log(res)
+      if (res.data.length === 1) {
         window.location.href =
         window.location.protocol + "//" + window.location.host + "/groupsPage/" + username.username;
+      }
+      else {
+        alert("user doesn't exist or password is not right!")
+      }
+    })
+    // if (username === '123') {
+    //     window.location.href =
+    //     window.location.protocol + "//" + window.location.host + "/groupsPage/" + username.username;
       
-    }
+    // }
     // else {
     //   // if the username doesn't exist or password is right, should prompt warning
     //   alert("User name doesn't exist or password is not right");
@@ -30,9 +31,7 @@ function Login() {
     
   }
   function handleUsername(event) {
-    console.log(event.target.value)
     setUsername(event.target.value); 
-    console.log(username)
   }
 
   function handlePassword(event) {
@@ -46,11 +45,11 @@ function Login() {
       <div className="login-div">
       <div>
         Username{" "}
-        <input type="text" name="username" onChange={handleUsername}></input>
+        <input type="text" name="username" onChange={handleUsername} value={username}></input>
       </div>
       <div>
         Password{" "}
-        <input type="text" name="password" onChange={handlePassword}></input>
+        <input type="text" name="password" onChange={handlePassword} value={password}></input>
       </div>
       <div>
         <input

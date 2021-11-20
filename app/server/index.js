@@ -15,7 +15,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/register/:username/:password", routes.register)
 app.get("/login/:username/:password", routes.verifyLogin);
-
+app.get("/profile/getmygroups/:username", routes.getMyGroups);
+app.get("/grouppage/:username", routes.getPublicGroups)
+app.post("/grouppage/:groupname/:grouptype/:username", routes.createGroup)
 app.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
 });
