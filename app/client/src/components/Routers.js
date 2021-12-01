@@ -4,6 +4,7 @@ import Profile from "./Profile";
 import Register from "./Register";
 import "../App.css";
 import GroupsPage from "./GroupsPage";
+import Chat from "./Chat";
 import GroupDetails from "./GroupDetails";
 import ManageGroupMembers from './ManageGroupMembers'
 function Routers() {
@@ -21,6 +22,7 @@ function Routers() {
           <Route exact path="/groupDetails/:groupName" render={groupName => <GroupDetails />}/>
           <Route exact path="/manageGroupMembers" render={groupName => <ManageGroupMembers />}/>
           <Route exact path="/profile/:userName" render={userName => <Profile {...userName}/>} />
+          <Route exact path="/chat/:userName/:friendName" render={(userName, friendName) => <Chat userName={userName} friendName={friendName}/>} />
         </Switch>
       </Router>
     </div>

@@ -40,6 +40,7 @@ function Profile() {
   }
 
   async function UserInfoBox() {
+    console.log("loading userInfoBox");
     let userInfo;
     try {
       userInfo = await getProfileInfoLab.getUserData(userName);
