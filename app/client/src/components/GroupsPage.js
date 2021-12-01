@@ -13,9 +13,9 @@ function GroupsPage() {
     let group_data = {"public_group" : ["Dua Lipa fans group", "Ed sheeran fans group"], "private_group" : ["cis557 project team", "cis521 team"],}
     let topic_data = {"another" : ['pop'], "Ed sheeran fans group" : ["beautiful people"], 
                        "cis557 project team" : ['api'], "cis521 team":['robot']}
-    useEffect(() => {
+    // useEffect(() => {
       
-    })
+    // })
     function getPublicGroups() {
         console.log(username)
         axios.get(baseUrl + username).then(res => {
