@@ -10,7 +10,8 @@ function Login() {
   function checkIfAcountExists() {
     //should use username and password to get record
     axios.get(baseUrl + username + '/' + password).then(res => {
-      console.log(res)
+      console.log(res.data)
+      console.log(username)
       if (res.data.length === 1) {
         window.location.href =
         window.location.protocol + "//" + window.location.host + "/groupsPage/" + username;
@@ -31,7 +32,6 @@ function Login() {
     
   }
   function handleUsername(event) {
-    console.log(username)
     setUsername(event.target.value); 
   }
 

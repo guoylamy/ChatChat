@@ -29,7 +29,7 @@ const register = (req, res) => {
     if (err) console.log(err);
     else {
         if (rows.length === 0) {
-            const query = `INSERT INTO user_table (user_id, user_name, password) VALUES ('${user_id}', '${username}', '${password}')`
+            const query = `INSERT INTO user_table (user_id, user_name, password, register_date) VALUES ('${user_id}', '${username}', md5('${password}'), CURDATE())`
             connection.query(query, (err, rows, fields) => {
                 if (err) console.log(err)
                 else {
@@ -51,12 +51,13 @@ const verifyLogin = (req, res) => {
   const query = `
     SELECT *
     FROM user_table
-    WHERE user_name='${username}' AND password='${password}'
+    WHERE user_name='${username}' AND password=md5('${password}')
   `;
 
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+        console.log(rows)
         res.json(rows)
     };
   });
@@ -156,9 +157,8 @@ const joinPublicGroup = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      console.log(rows)
-      console.log(rows[0][0].group_id, rows[1][0].user_id)
-      const query1 = `insert into group_user_table (group_id, user_id, is_admin) VALUES ('${rows[0][0].group_id}', '${rows[1][0].user_id}', 0);
+      if (rows[0].length !== 0 && rows[1].length != 0) {
+        const query1 = `insert into group_user_table (group_id, user_id, is_admin) VALUES ('${rows[0][0].group_id}', '${rows[1][0].user_id}', 0);
       insert into group_topic_table (group_id, topics) VALUES ('${rows[0][0].group_id}', '')`
       connection.query(query1, (err, rows, fields) => {
       if (err) console.log(err);
@@ -167,6 +167,7 @@ const joinPublicGroup = (req, res) => {
         // console.log(rows)
         };
       });
+      }
     };
   });
 }

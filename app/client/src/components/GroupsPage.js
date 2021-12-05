@@ -144,6 +144,7 @@ function GroupsPage() {
         axios.get(baseUrl + 'join/' + joinGroupName + '/' + username).then(res => {
             console.log(res.data)
         })
+        window.location.reload(false);
     }
     function joinPublicGroup(){
         return (
