@@ -18,7 +18,7 @@ const register = (req, res) => {
     if (err) console.log(err);
     else {
         if (rows.length === 0) {
-            const query = `INSERT INTO user_table (user_id, user_name, password) VALUES ('${user_id}', '${username}', '${password}')`
+            const query = `INSERT INTO user_table (user_id, user_name, password, register_date) VALUES ('${user_id}', '${username}', md5('${password}'), CURDATE())`
             connection.query(query, (err, rows, fields) => {
                 if (err) console.log(err)
                 else {
@@ -40,7 +40,7 @@ const verifyLogin = (req, res) => {
   const query = `
     SELECT *
     FROM user_table
-    WHERE user_name='${username}' AND password='${password}'
+    WHERE user_name='${username}' AND password=md5('${password}')
   `;
 
   connection.query(query, (err, rows, fields) => {
