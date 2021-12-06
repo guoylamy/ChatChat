@@ -111,11 +111,62 @@ const createGroup = (req, res) => {
   
 };
 
+const sendFile = (req, res) => {
+  if (!req.params.group_id || !req.params.timestamp || !req.params.sender || !req.params.receiver || req.file === undefined) {
+    res.status(404).json({ error: 'missing groupid or timestamp or sender or message' });
+    return;
+  }
+  console.log(req.file);
+  const query = 'INSERT INTO user_chat_table (group_id, timestamp, sender, receiver, message, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  connection.query(query, [req.params.group_id, req.params.timestamp, req.params.sender, req.params.receiver, req.file.buffer, req.params.type, req.file.mimetype], (err, rows, fields) => {
+      if (err) {
+        console.log(err);
+        res.status(404).json({ error: `${err}`});
+      } else {
+        // console.log(rows);
+        res.status(200).json(rows);
+      }
+  });
+}
+
+const sendMessage = (req, res) => {
+  if (!req.body.group_id || !req.body.timestamp || !req.body.sender || !req.body.receiver || req.body.message === undefined) {
+    res.status(404).json({ error: 'missing groupid or timestamp or sender or message' });
+    return;
+  }
+  const query = 'INSERT INTO user_chat_table (group_id, timestamp, sender, receiver, message, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  connection.query(query, [req.body.group_id, req.body.timestamp, req.body.sender, req.body.receiver, Buffer.from(req.body.message, "binary"), "string", "text/plain"], (err, rows, fields) => {
+      if (err) {
+        console.log(err);
+        res.status(404).json({ error: `${err}`});
+      } else {
+        // console.log(rows);
+        res.status(200).json(rows);
+      }
+  });
+}
+
+const receiveMessage = (req, res) => {
+  const query = `SELECT * FROM user_chat_table WHERE group_id = '${req.params.group_id}' ORDER BY timestamp`;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
     verifyLogin:verifyLogin,
     register:register,
     getMyGroups:getMyGroups,
     getPublicGroups:getPublicGroups,
-    createGroup:createGroup
+    createGroup:createGroup,
+    sendFile:sendFile,
+    sendMessage:sendMessage,
+    receiveMessage:receiveMessage,
 };
