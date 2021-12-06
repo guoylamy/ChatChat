@@ -4,41 +4,54 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 function GroupsPage() {
     const {username} = useParams()
-    const [topic, setTopic] = useState('')
-    const [public_group, setPublic_group] = useState([])
+    const [joinGroupName, setJoinGroupName] = useState('')
+    const [filterTopic, setFilterTopic] = useState('')
+    const [publicGroup, setPublicGroup] = useState([])
+    const [publicGroupTopics, setPublicGroupTopics] = useState([])
+    const [privateGroup, setPrivateGroup] = useState([])
+    const [privateGroupTopics, setPrivateGroupTopics] = useState([])
     const [groupNameToBeCreated, setGroupNameToBeCreated] = useState('')
-    const [groupTypeToBeCreated, setGroupTypeToBeCreated] = useState('')
-    const [isLoading, setLoading] = useState(true)
+    const [groupTypeToBeCreated, setGroupTypeToBeCreated] = useState('1')
+    const [topics, setTopics] = useState([])
+    const [topicToBeAdded, setTopicToBeAdded] = useState('')
+    const [filterTopics, setFilterTopics] = useState([])
     const baseUrl = 'http://localhost:8081/grouppage/'
-    let group_data = {"public_group" : ["Dua Lipa fans group", "Ed sheeran fans group"], "private_group" : ["cis557 project team", "cis521 team"],}
-    let topic_data = {"another" : ['pop'], "Ed sheeran fans group" : ["beautiful people"], 
-                       "cis557 project team" : ['api'], "cis521 team":['robot']}
-    // useEffect(() => {
-      
-    // })
-    function getPublicGroups() {
-        let public_group = group_data.public_group;
-        console.log(username)
-        axios.get(baseUrl + username).then(res => {
-            setPublic_group([])
-            for (var i = 0; i < res.data.length; i++) {
-                setPublic_group(old => [...old, res.data[i].group_name])
+    useEffect(() => {
+      axios.get(baseUrl + 'public/' + username).then(res => {
+            setPublicGroup([])
+            setPublicGroupTopics([])
+            for (var i = 0; i < res.data[0].length; i++) {
+                setPublicGroup(old => [...old, res.data[0][i].group_name])
             }
-            console.log(res.data)
-            setLoading(false)
+            for (var i = 0; i < res.data[1].length; i++) {
+                setPublicGroupTopics(old => [...old, res.data[1][i].topics])
+            }         
         })
+        axios.get(baseUrl + 'private/' + username).then(res => {
+            setPrivateGroup([])
+            setPrivateGroupTopics([])
+            for (var i = 0; i < res.data[0].length; i++) {
+                setPrivateGroup(old => [...old, res.data[0][i].group_name])
+            }
+            for (var i = 0; i < res.data[1].length; i++) {
+                setPrivateGroupTopics(old => [...old, res.data[1][i].topics])
+            }
+        })
+    }, [])
+    function getPublicGroups() {
+        
         return (
             <div class="box">
                 <h1 className="title is-5"> Public Groups</h1>
-                {public_group.map((group_name) => (
+                {publicGroup.map((group_name, i) => (
                     <div key={group_name}>
                         <div class="is-clickable"
                             onClick = {jumpToGroupDetailsPage}
                         >
                        <p class="has-text-info">{group_name}</p>
-                        <div>topics: {topic_data[group_name]}</div>
+                        <div>topics: {publicGroupTopics[i]}</div>
                         </div>
-                        <button class="button is-light" onClick={deletePublicGroups(group_name)}>Delete</button>
+                        {/* <button class="button is-light" onClick={deletePrivateGroups(group_name)}>Delete</button> */}
                     </div>
                 ))}
             </div>
@@ -61,31 +74,31 @@ function GroupsPage() {
     }
 
     function getPrivateGroups() {
-        let private_group = group_data.private_group
+        
         return (
-            <div className="box">
+            <div class="box">
                 <h1 className="title is-5"> Private Groups</h1>
-                {private_group.map((group_name) => (
+                {privateGroup.map((group_name, i) => (
                     <div key={group_name}>
                         <div class="is-clickable"
                             onClick = {jumpToGroupDetailsPage}
                         >
-                        <p class="has-text-info">{group_name}</p>
-                        <div>topics: {topic_data[group_name]}</div>
+                       <p class="has-text-info">{group_name}</p>
+                        <div>topics: {privateGroupTopics[i]}</div>
                         </div>
-                        <button class="button is-light" onClick={deletePrivateGroups(group_name)}>Delete</button>
+                        {/* <button class="button is-light" onClick={deletePublicGroups(group_name)}>Delete</button> */}
                     </div>
                 ))}
             </div>
         )
     }
     function createGroupButton() {
+        console.log(groupNameToBeCreated, groupTypeToBeCreated);
         // pass two parameters: group name and group type. connect database to create a group
-        axios.post(baseUrl + groupNameToBeCreated + '/' + groupTypeToBeCreated + '/' + username).then(res => {
+        axios.post(baseUrl + groupNameToBeCreated + '/' + groupTypeToBeCreated + '/' + username, {topics:topics}).then(res => {
             console.log(res.data)
-            window.location.reload(false);
         })
-
+        window.location.reload(false);
     }
     function createGroupGroupName(event) {
         setGroupNameToBeCreated(event.target.value)
@@ -93,17 +106,30 @@ function GroupsPage() {
     function createGroupSelectOption(event) {
         setGroupTypeToBeCreated(event.target.value)
     }
+    function addTopic() {
+        if (topicToBeAdded !== '') {
+            setTopics(old => [...old, topicToBeAdded])
+            setTopicToBeAdded('')
+        }
+    }
     function createGroup() {
         return (
-            <div className="box"> 
+            <div className="box">
                 <h1 className="title is-5">Create Your Group</h1>
                 <div class="field">
                 <label class="label">Group Name </label> 
                     <input type="text" value={groupNameToBeCreated} onChange={createGroupGroupName}></input>
                 </div>
+                <label class="label">Group Topics </label>
+                <div>{topics.map((each) => (
+                    <div>{each}</div>
+                ))}</div>
+                <input type="text" value={topicToBeAdded} onChange={e => setTopicToBeAdded(e.target.value)}></input>
+                <button onClick={addTopic}>Add topic</button>
                 <label class="label">Group Type </label> 
                 <div class="select is-info"> 
-                    <select onChange={createGroupSelectOption}>
+                    <select value={groupTypeToBeCreated}onChange={createGroupSelectOption}>
+                        <option class="dropdown-item" value="1" disabled>Select</option>
                         <option class="dropdown-item" value="Private">Private</option>
                         <option class="dropdown-item" value="Public">Public</option>
                     </select>
@@ -114,30 +140,56 @@ function GroupsPage() {
             </div>
         )
     }
+    function joinPublicGroupButton() {
+        axios.get(baseUrl + 'join/' + joinGroupName + '/' + username).then(res => {
+            console.log(res.data)
+        })
+        window.location.reload(false);
+    }
     function joinPublicGroup(){
         return (
             <div className="box"> 
                 <h1 className="title is-5">Join Public Group</h1>
                 <div>
                     <label class="label"> Group Name </label>
-                    <input type="text"></input>
+                    <input type="text" value={joinGroupName} onChange={e => setJoinGroupName(e.target.value)}></input>
                 </div>
                 <br></br>
-                <button class="button is-info">Join</button>
+                <button class="button is-info" onClick={joinPublicGroupButton}>Join</button>
             </div>
         )
     }
-    function handleFilterChange(event) {
-        setTopic(event.target.value)
+    function handleFilterSubmit() {
+        axios.post(baseUrl + 'filter/' + username, {topics:filterTopics}).then(res => {
+            console.log(res.data)
+            if (res.data !== 'empty') {
+                setPublicGroup([])
+                setPublicGroupTopics([])
+                for (var i = 0; i < res.data[0].length; i++) {
+                    setPublicGroup(old => [...old, res.data[0][i]])
+                }
+                for (var i = 0; i < res.data[1].length; i++) {
+                    setPublicGroupTopics(old => [...old, res.data[1][i]])
+                }  
+            }
+        })
+    }
+    function addTopicToFilter() {
+        if (filterTopic !== '') {
+            setFilterTopics(old => [...old, filterTopic])
+            setFilterTopic('')
+        }
     }
     function filterByGroup() {
         return (
             <div className="box">
                  <h1 className="title is-5">Filter By Topic</h1>
-                <input type="text" placeholder="topic" value={topic} onChange={handleFilterChange}></input>
-                <br></br>
-                <br></br>
-                <button class="button is-info">Submit</button>
+                <div>{filterTopics.map((each) => (
+                    <div>{each}</div>
+                ))}</div>
+                <input type="text" value={filterTopic} onChange={e => setFilterTopic(e.target.value)}></input>
+                <button onClick={addTopicToFilter}>Add topic</button>
+                <button class="button is-info" onClick={handleFilterSubmit}>Submit</button>
             </div>
         )
     }
