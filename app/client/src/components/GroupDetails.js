@@ -1,15 +1,30 @@
-import React, {useState} from "react"
-import NavBar from './NavBar'
+import React, {useState, useEffect} from "react"
+import NavBar from './NavBar';
+import axios from "axios";
 import { useParams } from "react-router-dom";
+import Post from './Post'
 function GroupDetails() {
-    const {groupName} = useParams()
-    const message1 = [{'sender':"Kinna", 'message':"This is a message I wanna share with u guys", 'comments':[{'sender':'Tom', 'comment':"cool!!!!!"}]}, {'sender':"Talan", 'message':"They are so cute", 'comments':[{'sender':'Karen', 'comment':"I love them!"}, {'sender':'Jerry', 'comment':"So cute!"}]}]
+    const {groupName, username} = useParams()
+    const [topics, setTopics] = useState('')
+    const [allPostsIds, setAllPostsIds] = useState([])
     const members = ['Tom', 'Amy', 'Martin', 'Brandon', 'Talan']
+    const baseUrl = 'http://localhost:8081/groupDetails/'
+    useEffect(() => {
+      axios.get(baseUrl + 'topics/' + groupName).then(res => {
+            setTopics(res.data[0].topics)
+        })
+    // need to get all post_id
+      axios.get(baseUrl + 'allpostsids/' + groupName).then(res => {
+          console.log(res.data)
+          for (var i = 0; i < res.data.length; i++) {
+            setAllPostsIds(old => [...old, res.data[i].post_id])
+          }
+        })
+    }, [])
     function getTopics() {
-        // need to connect to database to grab topics according to groupName
         return (
             <div>
-                Topics: Travels, Pets
+                Topics: {topics}
             </div>
         )
     }
@@ -17,22 +32,10 @@ function GroupDetails() {
         return (
             <div>
                 <h1>Board</h1>
-                {message1.map((message) => (
-                    <div>
-                        <div>{message.message}</div>
-                        <div>Posted by: {message.sender}</div>
-                        <div>Comments:
-                            {message.comments.map((comment) => (
-                                <div>
-                                    <div>{comment.comment}</div>
-                                <div>{comment.sender}</div>
-                                </div>
-                            ))}
-                        </div>
-                        <br></br>
-                        <br></br>
+                {allPostsIds.map((id, i) => (
+                    <div key={id}>
+                        <Post postId={id}/>
                     </div>
-                    
                 ))}
             </div>
         )
@@ -43,7 +46,7 @@ function GroupDetails() {
             <div>
                 <h1>Members</h1>
                 {members.map((member) => (
-                    <div>{member}</div>
+                    <div></div>
                 ))}
             </div>
         )

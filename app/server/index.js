@@ -51,8 +51,25 @@ app.delete("/grouppage/public/:username", routes.deletePublicGroups)
 app.delete("/grouppage/private/:username", routes.deletePrivateGroups)
 app.get("/grouppage/join/:groupname/:username", routes.joinPublicGroup)
 app.post("/grouppage/filter/:username", routes.filterByTopics)
-// app.get("/grouppage/filter/:username", routes)
 app.post("/grouppage/:groupname/:grouptype/:username", routes.createGroup)
+// app.get("/grouppage/filter/:username", routes)
+
+// group details api
+app.get("/groupDetails/topics/:groupName", routes.getGroupDetailsTopics)
+app.get("/groupDetails/allpostsids/:groupName", routes.getGroupDetailsAllPostsIds)
+
+// post api
+app.get("/post/:postId", routes.getPostInfo)
+
+// postDetails api
+app.get("/postDetails/:postId", routes.getPostDetails)
+app.get("/postDetails/allCommentsIds/:postId", routes.getPostDetailsAllCommentsIds)
+
+// comment api
+app.get("/comment/:commentId", routes.getCommentInfo)
+app.get("/comment/getCreatorName/:creatorId", routes.getCommentCreatorName)
+
+
 server.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
 });

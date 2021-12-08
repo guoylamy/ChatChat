@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react"
 import NavBar from './NavBar'
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams, Redirect  } from "react-router-dom";
 function GroupsPage() {
     const {username} = useParams()
     const [joinGroupName, setJoinGroupName] = useState('')
@@ -46,7 +46,7 @@ function GroupsPage() {
                 {publicGroup.map((group_name, i) => (
                     <div key={group_name}>
                         <div class="is-clickable"
-                            onClick = {jumpToGroupDetailsPage}
+                            onClick = {e => jumpToGroupDetailsPage(group_name, username)}
                         >
                        <p class="has-text-info">{group_name}</p>
                         <div>topics: {publicGroupTopics[i]}</div>
@@ -56,7 +56,6 @@ function GroupsPage() {
                 ))}
             </div>
         )
-        
     }
 
     function deletePublicGroups(group_name) {
@@ -68,9 +67,10 @@ function GroupsPage() {
         // need to connect database to delete group with group_name
     }
 
-    function jumpToGroupDetailsPage(group_name) {
+    function jumpToGroupDetailsPage(group_name, username) {
         window.location.href =
-        window.location.protocol + "//" + window.location.host + "/groupDetails/" + group_name;
+        window.location.protocol + "//" + window.location.host + "/groupDetails/" + group_name + "/" + username;
+    //    return  <Redirect to='/login'/>
     }
 
     function getPrivateGroups() {
@@ -81,12 +81,11 @@ function GroupsPage() {
                 {privateGroup.map((group_name, i) => (
                     <div key={group_name}>
                         <div class="is-clickable"
-                            onClick = {jumpToGroupDetailsPage}
+                            onClick = {e => jumpToGroupDetailsPage(group_name, username)}
                         >
                        <p class="has-text-info">{group_name}</p>
                         <div>topics: {privateGroupTopics[i]}</div>
                         </div>
-                        {/* <button class="button is-light" onClick={deletePublicGroups(group_name)}>Delete</button> */}
                     </div>
                 ))}
             </div>

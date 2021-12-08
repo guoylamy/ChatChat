@@ -240,15 +240,114 @@ const createGroup = (req, res) => {
         
     };
   });
-  
   // we need to update group_table, group_user_table
-  
+};
+
+
+
+
+const getGroupDetailsTopics = (req, res) => {
+  const groupName = req.params.groupName
+  // find id in group table and 
+  const query= `select topics from group_topic_table where group_id in 
+  (select group_id from group_table where group_name='${groupName}') limit 1`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        // console.log(rows)
+    };
+  });
+};
+
+const getGroupDetailsAllPostsIds = (req, res) => {
+  const groupName = req.params.groupName
+  // find id in group table and 
+  const query= `select post_id from post_table where group_id in 
+  (select group_id from group_table where group_name='${groupName}')`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        // console.log(rows)
+    };
+  });
+};
+
+const getPostInfo = (req, res) => {
+  const postId = req.params.postId
+  // find id in group table and 
+  const query= `select post_table.post_content, post_table.create_time, user_table.user_name from post_table
+  inner join user_table on post_table.creator_id=user_table.user_id
+  where post_table.post_id='${postId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        // console.log(rows)
+    };
+  });
+};
+
+const getPostDetails = (req, res) => {
+  const postId = req.params.postId
+  // find id in group table and 
+  const query= `select post_table.post_content, post_table.create_time, user_table.user_name from post_table
+  inner join user_table on post_table.creator_id=user_table.user_id
+  where post_table.post_id='${postId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        // console.log(rows)
+    };
+  });
+};
+
+const getPostDetailsAllCommentsIds = (req, res) => {
+  const postId = req.params.postId
+  // find id in group table and 
+  const query= `select comment_table.* from comment_table 
+  join post_table on comment_table.post_id=post_table.post_id 
+  where post_table.post_id='${postId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        // console.log(rows)
+    };
+  });
+};
+
+const getCommentInfo = (req, res) => {
+  const commentId = req.params.commentId
+  const query= `select * from comment_table where comment_id='${commentId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+    };
+  });
+};
+
+const getCommentCreatorName = (req, res) => {
+  const creatorId = req.params.creatorId
+  const query= `select user_name from user_table where user_id='${creatorId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        console.log(rows)
+    };
+  });
 };
 
 // The exported functions, which can be accessed in index.js.
 module.exports = {
     verifyLogin:verifyLogin,
     register:register,
+
+    //below is api for group page
     getMyGroups:getMyGroups,
     getPublicGroups:getPublicGroups,
     getPrivateGroups:getPrivateGroups,
@@ -256,5 +355,20 @@ module.exports = {
     deletePrivateGroups:deletePrivateGroups,
     createGroup:createGroup,
     joinPublicGroup:joinPublicGroup,
-    filterByTopics:filterByTopics
+    filterByTopics:filterByTopics,
+
+    // below is api for groupDetails page
+    getGroupDetailsTopics:getGroupDetailsTopics,
+    getGroupDetailsAllPostsIds:getGroupDetailsAllPostsIds,
+
+    //below is post api
+    getPostInfo:getPostInfo,
+
+    //below is postDetails api
+    getPostDetails:getPostDetails,
+    getPostDetailsAllCommentsIds:getPostDetailsAllCommentsIds,
+
+    // below is comment api
+    getCommentInfo:getCommentInfo,
+    getCommentCreatorName:getCommentCreatorName
 };
