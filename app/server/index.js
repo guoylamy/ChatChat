@@ -5,10 +5,13 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const app = express();
 const http = require("http");
+var multer = require('multer');
+var upload = multer();
 
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+
 // /usr/local/mysql/bin/mysql -u admin -h database-557project.cxzfj2bee5gh.us-east-2.rds.amazonaws.com cis557 -p
 
 const server = http.createServer(app);
@@ -70,6 +73,9 @@ app.get("/comment/:commentId", routes.getCommentInfo)
 app.get("/comment/getCreatorName/:creatorId", routes.getCommentCreatorName)
 
 
+app.post("/sendfile/:group_id/:timestamp/:sender/:type/:receiver", upload.single('fileUpload'), routes.sendFile);
+app.post("/sendmessage", routes.sendMessage);
+app.get("/receivemessage/:group_id", routes.receiveMessage);
 server.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
 });
