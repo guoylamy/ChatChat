@@ -384,11 +384,71 @@ const receiveMessage = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      console.log(rows);
+      // console.log(rows);
       res.status(200).json(rows);
     }
   });
 }
+
+
+
+const getCreatorName = (req, res) => {
+  const groupName = req.params.groupName
+  // from group_table to find creator
+  const query = `select user_name from user_table where user_id in (
+  select creator_id from group_table where group_name='${groupName}')`;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
+
+
+const getAdminsNames = (req, res) => {
+  const groupName = req.params.groupName
+  // from group_table to get group_id, from group_user_table to get admins id, 
+  const query = `
+  select user_name from user_table where user_id in (
+  select user_id from group_user_table where (group_id in
+  (select group_id from group_table where group_name='${groupName}')) 
+  and (is_admin='1') 
+  and user_id not in (
+  select creator_id from group_table where group_name='${groupName}'))`;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
+
+const getNormalUsersNames = (req, res) => {
+  const groupName = req.params.groupName
+  const query = `
+  select user_name from user_table where user_id in 
+  (select user_id from group_user_table where group_id in 
+  (select group_id from group_table where group_name='${groupName}') and is_admin='0')
+  `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
+
+
 
 // The exported functions, which can be accessed in index.js.
 module.exports = {
@@ -411,6 +471,9 @@ module.exports = {
     // below is api for groupDetails page
     getGroupDetailsTopics:getGroupDetailsTopics,
     getGroupDetailsAllPostsIds:getGroupDetailsAllPostsIds,
+    getCreatorName:getCreatorName,
+    getAdminsNames: getAdminsNames,
+    getNormalUsersNames:getNormalUsersNames,
 
     //below is post api
     getPostInfo:getPostInfo,
@@ -418,6 +481,7 @@ module.exports = {
     //below is postDetails api
     getPostDetails:getPostDetails,
     getPostDetailsAllCommentsIds:getPostDetailsAllCommentsIds,
+    
 
     // below is comment api
     getCommentInfo:getCommentInfo,

@@ -60,6 +60,9 @@ app.post("/grouppage/:groupname/:grouptype/:username", routes.createGroup)
 // group details api
 app.get("/groupDetails/topics/:groupName", routes.getGroupDetailsTopics)
 app.get("/groupDetails/allpostsids/:groupName", routes.getGroupDetailsAllPostsIds)
+app.get("/groupDetails/getCreatorName/:groupName", routes.getCreatorName)
+app.get("/groupDetails/getAdminsNames/:groupName", routes.getAdminsNames)
+app.get("/groupDetails/getNormalUsersNames/:groupName", routes.getNormalUsersNames)
 
 // post api
 app.get("/post/:postId", routes.getPostInfo)

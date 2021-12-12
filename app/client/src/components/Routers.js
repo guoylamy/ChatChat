@@ -23,7 +23,7 @@ function Routers() {
           <Route exact path="/groupDetails/:groupName/:username" render={groupName => <GroupDetails />}/>
           <Route exact path="/postDetails/:postId" render={postId => <PostDetails />}/>
 
-          <Route exact path="/manageGroupMembers" render={groupName => <ManageGroupMembers />}/>
+          <Route exact path="/manageGroupMembers/:groupName" render={groupName => <ManageGroupMembers />}/>
           <Route exact path="/profile/:userName" render={userName => <Profile {...userName}/>} />
           <Route exact path="/chat/:userName/:friendName" render={(userName, friendName) => <Chat userName={userName} friendName={friendName}/>} />
         </Switch>
