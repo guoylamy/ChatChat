@@ -343,11 +343,10 @@ const getCommentCreatorName = (req, res) => {
 };
 
 const sendFile = (req, res) => {
-  if (!req.params.group_id || !req.params.timestamp || !req.params.sender || !req.params.receiver || req.file === undefined) {
+  if (!req.params.group_id || !req.params.timestamp || !req.params.sender || !req.params.receiver || !req.params.type || req.file === undefined) {
     res.status(404).json({ error: 'missing groupid or timestamp or sender or message' });
     return;
   }
-  console.log(req.file);
   const query = 'INSERT INTO user_chat_table (group_id, timestamp, sender, receiver, message, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
   connection.query(query, [req.params.group_id, req.params.timestamp, req.params.sender, req.params.receiver, req.file.buffer, req.params.type, req.file.mimetype], (err, rows, fields) => {
       if (err) {
@@ -390,7 +389,41 @@ const receiveMessage = (req, res) => {
   });
 }
 
+const postMessage = (req, res) => {
+  if (!req.body.group_id || !req.body.timestamp || !req.body.sender || req.body.message === undefined) {
+    res.status(404).json({ error: 'missing groupid or timestamp or sender or message or group_id' });
+    return;
+  }
+  const post_id = uuid();
+  const query = 'INSERT INTO post_table (post_id, creator_id, group_id, create_time, post_content, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  connection.query(query, [post_id, req.body.sender, req.body.group_id, req.body.timestamp, Buffer.from(req.body.message, "binary"), "string", "text/plain"], (err, rows, fields) => {
+      if (err) {
+        console.log(err);
+        res.status(404).json({ error: `${err}`});
+      } else {
+        // console.log(rows);
+        res.status(200).json(rows);
+      }
+  });
+}
 
+const postFile = (req, res) => {
+  if (!req.params.group_id || !req.params.timestamp || !req.params.creator_id || !req.params.type || req.file === undefined) {
+    res.status(404).json({ error: 'missing groupid or timestamp or sender or message or type' });
+    return;
+  }
+  const post_id = uuid();
+  const query = 'INSERT INTO post_table (post_id, creator_id, group_id, create_time, post_content, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  connection.query(query, [post_id, req.params.creator_id, req.params.group_id, req.params.timestamp, req.file.buffer, req.params.type, req.file.mimetype], (err, rows, fields) => {
+      if (err) {
+        console.log(err);
+        res.status(404).json({ error: `${err}`});
+      } else {
+        // console.log(rows);
+        res.status(200).json(rows);
+      }
+  });
+}
 
 const getCreatorName = (req, res) => {
   const groupName = req.params.groupName
@@ -448,8 +481,6 @@ const getNormalUsersNames = (req, res) => {
   });
 }
 
-
-
 // The exported functions, which can be accessed in index.js.
 module.exports = {
     verifyLogin:verifyLogin,
@@ -461,6 +492,8 @@ module.exports = {
     sendFile:sendFile,
     sendMessage:sendMessage,
     receiveMessage:receiveMessage,
+    postMessage:postMessage,
+    postFile:postFile,
     getPrivateGroups:getPrivateGroups,
     deletePublicGroups:deletePublicGroups,
     deletePrivateGroups:deletePrivateGroups,
