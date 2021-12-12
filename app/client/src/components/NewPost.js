@@ -1,11 +1,11 @@
 import React, {useState} from "react"
 import {useParams} from "react-router-dom"
 import axios from "axios";
-import "./Post.css";
+import "./NewPost.css";
 // https://github.com/machadop1407/react-socketio-chat-app/blob/main/client/src/App.css
 const baseUrl = 'http://localhost:8081';
 
-function Post() {
+function NewPost() {
     const {creator_id, group_id} = useParams(); // creator_id = 5b746bd-cdee-301d-fe5-cfe4064af26f, group_id = 0863ccd-d673-71d1-ddb4-4f1b1f2ad8a
     const [currentMessage, setCurrentMessage] = useState("");
     // const [messageList, setMessageList] = useState([]);
@@ -96,4 +96,4 @@ function Post() {
     )
 }
 
-export default Post;
+export default NewPost;
