@@ -1,38 +1,66 @@
-import React, {useState} from "react"
-import NavBar from './NavBar'
+import React, {useState, useEffect} from "react"
+import NavBar from './NavBar';
+import axios from "axios";
 import { useParams } from "react-router-dom";
+import Post from './Post'
 function GroupDetails() {
-    const {groupName} = useParams()
-    const message1 = [{'sender':"Kinna", 'message':"This is a message I wanna share with u guys", 'comments':[{'sender':'Tom', 'comment':"cool!!!!!"}]}, {'sender':"Talan", 'message':"They are so cute", 'comments':[{'sender':'Karen', 'comment':"I love them!"}, {'sender':'Jerry', 'comment':"So cute!"}]}]
+    const {groupName, username} = useParams()
+    const [topics, setTopics] = useState('')
+    const [allPostsIds, setAllPostsIds] = useState([])
+    const [creator, setCreator] = useState([])
+    const [admins, setAdmins] = useState([])
+    const [normalUsers, setNormalUsers] = useState([])
     const members = ['Tom', 'Amy', 'Martin', 'Brandon', 'Talan']
+    const baseUrl = 'http://localhost:8081/groupDetails/'
+    useEffect(() => {
+        setCreator([])
+        setAdmins([])
+        setNormalUsers([])
+      axios.get(baseUrl + 'topics/' + groupName).then(res => {
+            setTopics(res.data[0].topics)
+        })
+    // need to get all post_id
+      axios.get(baseUrl + 'allpostsids/' + groupName).then(res => {
+          for (var i = 0; i < res.data.length; i++) {
+            setAllPostsIds(old => [...old, res.data[i].post_id])
+          }
+        })
+    // get creator name
+    axios.get(baseUrl + 'getCreatorName/' + groupName).then(res => {
+          console.log(res.data)
+          setCreator(old => [...old, res.data[0].user_name])
+        })
+
+    // get all admins of this group except for creator
+    axios.get(baseUrl + 'getAdminsNames/' + groupName).then(res => {
+          console.log(res.data)
+          for (var i = 0; i < res.data.length; i++) {
+            setAdmins(old => [...old, res.data[i].user_name])
+          }
+        })
+    // normal users
+    axios.get(baseUrl + 'getNormalUsersNames/' + groupName).then(res => {
+          console.log(res.data)
+          for (var i = 0; i < res.data.length; i++) {
+            setNormalUsers(old => [...old, res.data[i].user_name])
+          }
+        })
+    }, [])
     function getTopics() {
-        // need to connect to database to grab topics according to groupName
         return (
-            <div>
-                Topics: Travels, Pets
+            <div class="has-text-left has-text-justified">
+                Topics: {topics}
             </div>
         )
     }
     function getBoard() {
         return (
-            <div>
-                <h1>Board</h1>
-                {message1.map((message) => (
-                    <div>
-                        <div>{message.message}</div>
-                        <div>Posted by: {message.sender}</div>
-                        <div>Comments:
-                            {message.comments.map((comment) => (
-                                <div>
-                                    <div>{comment.comment}</div>
-                                <div>{comment.sender}</div>
-                                </div>
-                            ))}
-                        </div>
-                        <br></br>
-                        <br></br>
+            <div class = "column is-half">
+                <div class="is-size-4"> Board </div>
+                {allPostsIds.map((id, i) => (
+                    <div class="box" key={id}>
+                        <Post postId={id}/>
                     </div>
-                    
                 ))}
             </div>
         )
@@ -40,9 +68,18 @@ function GroupDetails() {
     function getMembers() {
         // need to get members from database (distinguish creator, adminstrator)
         return (
-            <div>
-                <h1>Members</h1>
-                {members.map((member) => (
+            <div class = "column is-half">
+                <div class="is-size-4">Members</div>
+                <div class="is-size-5">Creator</div>
+                {creator.map((member) => (
+                    <div>{member}</div>
+                ))}
+                <div class="is-size-5">Admins</div>
+                {admins.map((member) => (
+                    <div>{member}</div>
+                ))}
+                <div class="is-size-5">Other Users</div>
+                {normalUsers.map((member) => (
                     <div>{member}</div>
                 ))}
             </div>
@@ -54,7 +91,7 @@ function GroupDetails() {
         if (true) {
             return (
                 <div>
-                    <a href={window.location.protocol + "//" + window.location.host + "/manageGroupMembers"}>manage</a>
+                    <a href={window.location.protocol + "//" + window.location.host + "/manageGroupMembers/" + groupName}>Manage Group</a>
                 </div>
             )
         }
@@ -62,10 +99,22 @@ function GroupDetails() {
     return (
         <div>
             <NavBar />
-            {getTopics()}
-            {getBoard()}
-            {getMembers()}
-            {manageGroup()}
+            <div class="columns is-mobile is-vcentered">
+                <div class="column is-three-quarters px-6">
+                    <div class="row">
+                        <div class="has-text-weight-bold has-text-left has-text-info"> Group: {groupName}</div>
+                    </div>
+                    <div class="row has-text-weight-bold">{getTopics()}</div> 
+                </div>
+                <div class="column is-one-third is-pulled-right"> {manageGroup()}</div>
+                
+            </div>
+
+            <div class = "columns is-mobile">
+                {getBoard()}
+                {getMembers()}
+            </div>
+            
         </div>  
     )
 }
