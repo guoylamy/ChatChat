@@ -27,9 +27,9 @@ function PostDetails() {
 
     function getAllComments() {
         return (
-            <div>
+            <div class="rows">
                 {allCommentsIds.map((id, i) => (
-                    <div key={id}>
+                    <div class="box" key={id}>
                         <Comment commentId={id}/>
                     </div>
                 ))}
@@ -38,17 +38,27 @@ function PostDetails() {
     }
     return (
         <div>
-            <div>
-                {postContent}
+            <NavBar />
+            <div class="row px-6">
+                <div class="has-text-weight-bold has-text-left has-text-info"> View Post </div>
+            </div>
+            <article class="media">
+                <div class="media-content">
+                lll:{postContent}
                 <br></br>
-                poster:{posterName}
+                posted by:{posterName}
                 <br></br>
                 post time:{postTime}
                 <br></br>
-            </div>
+                </div>
+            </article>
             <div>
-                <h1>comments</h1>
-                {getAllComments()}
+                <div class="is-size-4 has-text-info">comments:</div>
+                <br></br>
+                <div class="columns is-half is-centered">
+                    {getAllComments()}
+                </div>
+                
             </div>
         </div>
     )
