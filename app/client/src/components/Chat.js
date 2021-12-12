@@ -5,21 +5,19 @@ import ScrollToBottom from "react-scroll-to-bottom";
 import axios from "axios";
 import "./Chat.css";
 // https://github.com/machadop1407/react-socketio-chat-app/blob/main/client/src/App.css
-
-const socket = io.connect("http://localhost:8081");
+const baseUrl = 'http://localhost:8081';
+const socket = io.connect(baseUrl);
 
 function Chat() {
     const {userName, friendName} = useParams();
     const [currentMessage, setCurrentMessage] = useState("");
     const [messageList, setMessageList] = useState([]);
-    const [currentFile, setCurrentFile] = useState([]);
     let group_id;
     if (userName < friendName) {
         group_id = userName + ";" + friendName;
     } else {
         group_id = friendName + ";" + userName;
     }
-    const baseUrl = 'http://localhost:8081';
 
     socket.emit("join_room", group_id);
 
@@ -57,7 +55,7 @@ function Chat() {
             receiver: friendName,
             message: currentMessage,
         };
-        // await socket.emit("send_message", messageData);
+        await socket.emit("send_message", group_id);
         axios.post(baseUrl + `/sendmessage`, messageData)
         .then(res => {
             console.log(res.data)
@@ -82,18 +80,20 @@ function Chat() {
               'Content-Type': 'multipart/form-data',
             },
         }).then(res => {
-            console.log(res.data)
+            console.log(res.data);
         }).catch(err => {
             console.log(`error: ${err}`);
         })
+        await socket.emit("send_message", group_id);
         await receiveMessage();
     }
 
-    // useEffect(() => {
-    //     socket.on("receive_message", (data) => {
-    //         setMessageList((list) => [...list, data]);
-    //     });
-    // }, [socket]);
+    useEffect(() => {
+        socket.on("receive_message", async (data) => {
+            await receiveMessage();
+        });
+    }, [socket]);
+
     return (
         <div>
             <h1 className="chatchat-h1">chatchat!</h1>
@@ -183,15 +183,17 @@ function Chat() {
             </div>
             <div className="chat-footer">
                 <label htmlFor="imageUpload">Send Image</label>
-                <input type="file" value={currentFile} name="fileUpload" id="imageUpload" onChange={(event) => {
+                <input type="file" name="fileUpload" id="imageUpload" onChange={(event) => {
                         sendFile("image", event.target.files[0]);
                 }} />
                 <label htmlFor="audioUpload">Send Audio</label>
-                <input type="file" value={currentFile} name="fileUpload" id="audioUpload" onChange={(event) => {
+                <input type="file" name="fileUpload" id="audioUpload" onChange={(event) => {
+                        console.log(event.target.files[0]);
                         sendFile("audio", event.target.files[0]);
                 }} />
                 <label htmlFor="videoUpload">Send Video</label>
-                <input type="file" value={currentFile} name="fileUpload" id="videoUpload" onChange={(event) => {
+                <input type="file" name="fileUpload" id="videoUpload" onChange={(event) => {
+                        console.log(event.target.files[0]);
                         sendFile("video", event.target.files[0]);
                 }} />
                 <input 
