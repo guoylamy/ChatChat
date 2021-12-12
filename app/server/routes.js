@@ -292,7 +292,7 @@ const getPostInfo = (req, res) => {
 const getPostDetails = (req, res) => {
   const postId = req.params.postId
   // find id in group table and 
-  const query= `select post_table.post_content, post_table.create_time, user_table.user_name from post_table
+  const query= `select post_table.post_content, post_table.create_time, post_table.message_type, post_table.mimetype, user_table.user_name from post_table
   inner join user_table on post_table.creator_id=user_table.user_id
   where post_table.post_id='${postId}'`
   connection.query(query, (err, rows, fields) => {
