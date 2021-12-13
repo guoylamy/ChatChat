@@ -31,9 +31,13 @@ const register = (req, res) => {
         if (rows.length === 0) {
             const query = `INSERT INTO user_table (user_id, user_name, password, register_date) VALUES ('${user_id}', '${username}', md5('${password}'), CURDATE())`
             connection.query(query, (err, rows, fields) => {
-                if (err) console.log(err)
+                if (err) console.log(err);
+                else if (res === '1') {
+                  // console.log('res', res);
+                  return JSON.stringify(rows);
+                }
                 else {
-                    res.json(rows)
+                  res.json(rows);
                 }
             })
         }
@@ -44,7 +48,6 @@ const register = (req, res) => {
   });
 };
 
-
 const verifyLogin = (req, res) => {
   const username = req.params.username
   const password = req.params.password
@@ -53,9 +56,12 @@ const verifyLogin = (req, res) => {
     FROM user_table
     WHERE user_name='${username}' AND password=md5('${password}')
   `;
-
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      // console.log('verify login rows', rows);
+      return JSON.stringify(rows);
+    }
     else {
         console.log(rows)
         res.json(rows)
@@ -73,6 +79,9 @@ const getMyGroups = (req, res) => {
 
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
     else {
         res.json(rows)
     };
@@ -92,6 +101,9 @@ const getPublicGroups = (req, res) => {
     // console.log(username)
   connection.query(query, [username, username], (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
     else {
         res.json(rows)
         // console.log(rows)
@@ -113,6 +125,9 @@ const getPrivateGroups = (req, res) => {
     // console.log(username)
   connection.query(query, [username, username], (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
     else {
         res.json(rows)
         // console.log(rows)
