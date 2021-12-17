@@ -5,6 +5,7 @@ import Register from "./Register";
 import "../App.css";
 import GroupsPage from "./GroupsPage";
 import Chat from "./Chat";
+import NewPost from "./NewPost";
 import GroupDetails from "./GroupDetails";
 import ManageGroupMembers from './ManageGroupMembers'
 import PostDetails from "./PostDetails";
@@ -44,7 +45,8 @@ function Routers() {
           <Route exact path="/manageGroupMembers/:groupName" render={groupName => <ManageGroupMembers />}/>
           <Route exact path="/profile/:userName" render={userName => <Profile {...userName}/>} />
           <Route exact path="/chat/:userName/:friendName" render={(userName, friendName) => <Chat userName={userName} friendName={friendName}/>} />
-                </Switch>
+          <Route exact path="/post/:creator_id/:group_id" render={(creator_id, group_id) => <NewPost creator_id={creator_id} group_id={group_id} />} />
+        </Switch>
       </Router>
     </div>
   );

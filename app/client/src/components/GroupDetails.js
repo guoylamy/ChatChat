@@ -48,17 +48,17 @@ function GroupDetails() {
     }, [])
     function getTopics() {
         return (
-            <div>
+            <div class="has-text-left has-text-justified">
                 Topics: {topics}
             </div>
         )
     }
     function getBoard() {
         return (
-            <div>
-                <h1>Board</h1>
+            <div class = "column is-half">
+                <div class="is-size-4"> Board </div>
                 {allPostsIds.map((id, i) => (
-                    <div key={id}>
+                    <div class="box" key={id}>
                         <Post postId={id}/>
                     </div>
                 ))}
@@ -68,17 +68,17 @@ function GroupDetails() {
     function getMembers() {
         // need to get members from database (distinguish creator, adminstrator)
         return (
-            <div>
-                <h1>Members</h1>
-                <h2>Creator</h2>
+            <div class = "column is-half">
+                <div class="is-size-4">Members</div>
+                <div class="is-size-5">Creator</div>
                 {creator.map((member) => (
                     <div>{member}</div>
                 ))}
-                <h2>Admins</h2>
+                <div class="is-size-5">Admins</div>
                 {admins.map((member) => (
                     <div>{member}</div>
                 ))}
-                <h2>Normal Users</h2>
+                <div class="is-size-5">Other Users</div>
                 {normalUsers.map((member) => (
                     <div>{member}</div>
                 ))}
@@ -91,7 +91,7 @@ function GroupDetails() {
         if (true) {
             return (
                 <div>
-                    <a href={window.location.protocol + "//" + window.location.host + "/manageGroupMembers/" + groupName}>manage</a>
+                    <a href={window.location.protocol + "//" + window.location.host + "/manageGroupMembers/" + groupName}>Manage Group</a>
                 </div>
             )
         }
@@ -99,10 +99,22 @@ function GroupDetails() {
     return (
         <div>
             <NavBar />
-            {getTopics()}
-            {getBoard()}
-            {getMembers()}
-            {manageGroup()}
+            <div class="columns is-mobile is-vcentered">
+                <div class="column is-three-quarters px-6">
+                    <div class="row">
+                        <div class="has-text-weight-bold has-text-left has-text-info"> Group: {groupName}</div>
+                    </div>
+                    <div class="row has-text-weight-bold">{getTopics()}</div> 
+                </div>
+                <div class="column is-one-third is-pulled-right"> {manageGroup()}</div>
+                
+            </div>
+
+            <div class = "columns is-mobile">
+                {getBoard()}
+                {getMembers()}
+            </div>
+            
         </div>  
     )
 }

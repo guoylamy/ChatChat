@@ -103,9 +103,9 @@ function ManageGroupMembers() {
     function leaveGroup() {
         axios.post(baseUrl + 'leaveGroup', {groupName:groupName, userName:userName}).then(res => {
                 
-                window.location.href =
-        window.location.protocol + "//" + window.location.host + '/groupsPage/' + userName
             })
+            window.location.href =
+        window.location.protocol + "//" + window.location.host + '/groupsPage/' + userName
     }
 
     // only for user who is not in this group
@@ -123,6 +123,7 @@ function ManageGroupMembers() {
 
     return (
         <div>
+            <NavBar />
             <div>
                 {getAllMembers()}
             </div>

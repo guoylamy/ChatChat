@@ -29,11 +29,15 @@ const register = (req, res) => {
     if (err) console.log(err);
     else {
         if (rows.length === 0) {
-            const query = `INSERT INTO user_table (user_id, user_name, password, register_date) VALUES ('${user_id}', '${userName}', md5('${password}'), CURDATE())`
+            const query = `INSERT INTO user_table (user_id, user_name, password, register_date) VALUES ('${user_id}', '${userName}', ('${password}'), CURDATE())`
             connection.query(query, (err, rows, fields) => {
-                if (err) console.log(err)
+                if (err) console.log(err);
+                else if (res === '1') {
+                  // console.log('res', res);
+                  return JSON.stringify(rows);
+                }
                 else {
-                    res.json(rows)
+                  res.json(rows);
                 }
             })
         }
@@ -44,7 +48,6 @@ const register = (req, res) => {
   });
 };
 
-
 const verifyLogin = (req, res) => {
   const userName = req.params.userName
   const password = req.params.password
@@ -53,9 +56,12 @@ const verifyLogin = (req, res) => {
     FROM user_table
     WHERE user_name='${userName}' AND password='${password}'
   `;
-
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      // console.log('verify login rows', rows);
+      return JSON.stringify(rows);
+    }
     else {
         // console.log(rows)
         // console.log(typeof res)
@@ -309,6 +315,9 @@ const getMyGroups = (req, res) => {
 
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
     else {
         res.json(rows)
     };
@@ -328,6 +337,9 @@ const getPublicGroups = (req, res) => {
     // console.log(userName)
   connection.query(query, [userName, userName], (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
     else {
         res.json(rows)
         // console.log(rows)
@@ -349,6 +361,9 @@ const getPrivateGroups = (req, res) => {
     // console.log(userName)
   connection.query(query, [userName, userName], (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
     else {
         res.json(rows)
         // console.log(rows)
@@ -521,7 +536,7 @@ const getPostInfo = (req, res) => {
 const getPostDetails = (req, res) => {
   const postId = req.params.postId
   // find id in group table and 
-  const query= `select post_table.post_content, post_table.create_time, user_table.user_name from post_table
+  const query= `select post_table.post_content, post_table.create_time, post_table.message_type, post_table.mimetype, user_table.user_name from post_table
   inner join user_table on post_table.creator_id=user_table.user_id
   where post_table.post_id='${postId}'`
   connection.query(query, (err, rows, fields) => {
@@ -571,11 +586,10 @@ const getCommentCreatorName = (req, res) => {
 };
 
 const sendFile = (req, res) => {
-  if (!req.params.group_id || !req.params.timestamp || !req.params.sender || !req.params.receiver || req.file === undefined) {
+  if (!req.params.group_id || !req.params.timestamp || !req.params.sender || !req.params.receiver || !req.params.type || req.file === undefined) {
     res.status(404).json({ error: 'missing groupid or timestamp or sender or message' });
     return;
   }
-  console.log(req.file);
   const query = 'INSERT INTO user_chat_table (group_id, timestamp, sender, receiver, message, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
   connection.query(query, [req.params.group_id, req.params.timestamp, req.params.sender, req.params.receiver, req.file.buffer, req.params.type, req.file.mimetype], (err, rows, fields) => {
       if (err) {
@@ -618,7 +632,41 @@ const receiveMessage = (req, res) => {
   });
 }
 
+const postMessage = (req, res) => {
+  if (!req.body.group_id || !req.body.timestamp || !req.body.sender || req.body.message === undefined) {
+    res.status(404).json({ error: 'missing groupid or timestamp or sender or message or group_id' });
+    return;
+  }
+  const post_id = uuid();
+  const query = 'INSERT INTO post_table (post_id, creator_id, group_id, create_time, post_content, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  connection.query(query, [post_id, req.body.sender, req.body.group_id, req.body.timestamp, Buffer.from(req.body.message, "binary"), "string", "text/plain"], (err, rows, fields) => {
+      if (err) {
+        console.log(err);
+        res.status(404).json({ error: `${err}`});
+      } else {
+        // console.log(rows);
+        res.status(200).json(rows);
+      }
+  });
+}
 
+const postFile = (req, res) => {
+  if (!req.params.group_id || !req.params.timestamp || !req.params.creator_id || !req.params.type || req.file === undefined) {
+    res.status(404).json({ error: 'missing groupid or timestamp or sender or message or type' });
+    return;
+  }
+  const post_id = uuid();
+  const query = 'INSERT INTO post_table (post_id, creator_id, group_id, create_time, post_content, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  connection.query(query, [post_id, req.params.creator_id, req.params.group_id, req.params.timestamp, req.file.buffer, req.params.type, req.file.mimetype], (err, rows, fields) => {
+      if (err) {
+        console.log(err);
+        res.status(404).json({ error: `${err}`});
+      } else {
+        // console.log(rows);
+        res.status(200).json(rows);
+      }
+  });
+}
 
 const getCreatorName = (req, res) => {
   const groupName = req.params.groupName
@@ -752,7 +800,7 @@ const leaveGroup = (req, res) => {
       and
       user_id in (select user_id from user_table where user_name='${userName}'));
       delete from group_table where (
-        group_id in (select group_id from group_table where group_name='${groupName}')
+        group_name ='${groupName}'
       and
       creator_id in (select user_id from user_table where user_name='${userName}')
       )
@@ -798,6 +846,8 @@ module.exports = {
     sendFile:sendFile,
     sendMessage:sendMessage,
     receiveMessage:receiveMessage,
+    postMessage:postMessage,
+    postFile:postFile,
     getPrivateGroups:getPrivateGroups,
     deletePublicGroups:deletePublicGroups,
     deletePrivateGroups:deletePrivateGroups,

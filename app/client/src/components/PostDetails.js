@@ -6,16 +6,24 @@ import Comment from './Comment'
 
 function PostDetails() {
     const {postId} = useParams()
-    const [postContent, setPostContent] = useState('')
+    const [postContent, setPostContent] = useState([])
     const [posterName, setPosterName] = useState('')
     const [postTime, setPostTime] = useState('')
     const [allCommentsIds, setAllCommentsIds] = useState([])
     const baseUrl = 'http://localhost:8081/postDetails/'
     useEffect(() => {
       axios.get(baseUrl + postId).then(res => {
-            setPostContent(res.data[0].post_content)
+            let resList = [];
+            resList.push({
+                post_content: res.data[0].post_content,
+                post_type: res.data[0].message_type,
+                mimetype: res.data[0].mimetype,
+            });
+            console.log(res.data[0]);
+            setPostContent(resList);
             setPosterName(res.data[0].user_name)
-            setPostTime(res.data[0].create_time)
+            const date = new Date(res.data[0].create_time);
+            setPostTime(date.getFullYear() + "-" + date.getMonth() + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
         })
      axios.get(baseUrl + 'allCommentsIds/' + postId).then(res => {
             // console.log(res.data)
@@ -27,9 +35,9 @@ function PostDetails() {
 
     function getAllComments() {
         return (
-            <div>
+            <div class="rows">
                 {allCommentsIds.map((id, i) => (
-                    <div key={id}>
+                    <div class="box" key={id}>
                         <Comment commentId={id}/>
                     </div>
                 ))}
@@ -38,17 +46,75 @@ function PostDetails() {
     }
     return (
         <div>
-            <div>
-                {postContent}
-                <br></br>
-                poster:{posterName}
-                <br></br>
-                post time:{postTime}
-                <br></br>
+            <NavBar />
+            <div class="row px-6">
+                <div class="has-text-weight-bold has-text-left has-text-info"> View Post </div>
             </div>
+            <article class="media">
+                   {postContent.map((postContent) => {
+                        if (postContent.post_type === "string") {
+                            return (
+                                <div class="media-content">
+                                    <div className="message-content">
+                                    <p>{Buffer.from(postContent.post_content).toString('utf8')}</p>
+                                </div>
+                                    <div className="message-meta">
+                                        <p id="time">post time: {postTime}</p>
+                                        <p id="author">posted by: {posterName}</p>
+                                    </div>
+                                </div>
+                            );
+                        } else if (postContent.post_type === "image") {
+                            const img = `data:${postContent.mimetype};base64,` + Buffer.from(postContent.post_content).toString('base64');
+                            return (
+                                <div class="media-content">
+                                    <div className="message-content">
+                                        <img src={img} />
+                                    </div>
+                                    <div className="message-meta">
+                                        <p id="time">post time: {postTime}</p>
+                                        <p id="author">posted by: {posterName}</p>
+                                    </div>
+                                </div>
+                            );
+                        } else if (postContent.post_type === "audio") {
+                            const audio = `data:${postContent.mimetype};base64,` + Buffer.from(postContent.post_content).toString('base64');
+                            return (
+                                <div class="media-content">
+                                    <div className="message-content">
+                                        <audio controls src={audio} />
+                                    </div>
+                                    <div className="message-meta">
+                                        <p id="time">post time: {postTime}</p>
+                                        <p id="author">posted by: {posterName}</p>
+                                    </div>                                
+                                </div>
+                            );
+                        } else {
+                            const video = `data:${postContent.mimetype};base64,` + Buffer.from(postContent.post_content).toString('base64');
+                            return (
+                                <div class="media-content">
+                                    <div className="message-content">
+                                        <video width="400" height="300" controls>
+                                            <source src={video} type={postContent.mimetype} />
+                                        </video>
+                                    </div>
+                                    <div className="message-meta">
+                                        <p id="time">post time:{postTime}</p>
+                                        <p id="author">posted by: {posterName}</p>
+                                    </div>                                
+                                </div>
+                            );
+                        }
+                    })}
+            </article>
             <div>
-                <h1>comments</h1>
-                {getAllComments()}
+                <div class="is-size-4 has-text-info">comments:</div>
+                <br></br>
+                <div class="columns is-half is-centered">
+                    {getAllComments()}
+                </div>
+                
             </div>
         </div>
     )

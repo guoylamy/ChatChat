@@ -6,7 +6,12 @@ const { Server } = require("socket.io");
 const app = express();
 const http = require("http");
 var multer = require('multer');
-var upload = multer();
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 4 * 1024 * 1024,  
+  },
+});
 
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(bodyParser.json());
@@ -31,7 +36,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send_message", (data) => {
-    socket.to(data.room).emit("receive_message", data);
+    socket.to(data).emit("receive_message", data);
   })
 
   socket.on("disconnect", () => {
@@ -101,6 +106,8 @@ app.post("/manageGroupMembers/leaveGroup", routes.leaveGroup)
 app.post("/sendfile/:group_id/:timestamp/:sender/:type/:receiver", upload.single('fileUpload'), routes.sendFile);
 app.post("/sendmessage", routes.sendMessage);
 app.get("/receivemessage/:group_id", routes.receiveMessage);
+app.post("/postmessage", routes.postMessage);
+app.post("/postfile/:group_id/:timestamp/:creator_id/:type", upload.single('fileUpload'), routes.postFile);
 server.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
 });
