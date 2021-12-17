@@ -42,7 +42,10 @@ const register = (req, res) => {
             })
         }
         else {
-            res.json(rows)
+          if (res === '1') {
+            return JSON.stringify(rows);
+          }
+          res.json(rows)
         }
     };
   });
@@ -80,6 +83,9 @@ const getRegsiterDate = (req, res) => {
 
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
     else {
         res.json(rows)
     };
@@ -96,7 +102,10 @@ const changePassword = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-        res.json(rows)
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
+      res.json(rows)
     };
   });
 };
@@ -115,6 +124,9 @@ const getGroupsInvitations = (req, res) => {
     if (err) console.log(err);
     else {
       // console.log(rows)
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -410,6 +422,9 @@ const joinPublicGroup = (req, res) => {
     // console.log(userName)
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
     else {
      res.json(rows)
     };
@@ -442,7 +457,13 @@ const filterByTopics = (req, res) => {
                 } 
               }
             }
+            if (res === '1') {
+              console.log('routes res===1 return', JSON.stringify(results));
+              return JSON.stringify(results);
+            }
+            else {
             res.json(results)
+          }
         };
       });
       
@@ -783,6 +804,9 @@ const inviteUser = (req, res) => {
       res.status(404).json({ error: `${err}`});
     } else {
       // console.log(rows);
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
