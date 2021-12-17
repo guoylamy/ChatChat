@@ -607,8 +607,8 @@ const getCommentCreatorName = (req, res) => {
 };
 
 const uploadAvatar = (req, res) => {
-  if (!req.params) {
-    res.status(404).json({ error: 'missing userid' });
+  if (!req.file) {
+    res.status(404).json({ error: 'missing avatar content' });
     return;
   }
   const query = 'UPDATE user_table SET avatar=?, mimetype=? WHERE user_name=?';
@@ -626,6 +626,19 @@ const uploadAvatar = (req, res) => {
 const getAvatar = (req, res) => {
   const query = `SELECT * FROM user_table WHERE user_name = '${req.params.userName}'`;
   connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
+
+const deleteAvatar = (req, res) => {
+  const query = 'UPDATE user_table SET avatar=null, mimetype=null WHERE user_name=?';
+  connection.query(query, [req.params.userName], (err, rows, fields) => {
     if (err) {
       console.log(err);
       res.status(404).json({ error: `${err}`});
@@ -895,6 +908,7 @@ module.exports = {
     resolveNotification:resolveNotification,
     uploadAvatar:uploadAvatar,
     getAvatar:getAvatar,
+    deleteAvatar:deleteAvatar,
 
     // below is api for group page
     getMyGroups:getMyGroups,

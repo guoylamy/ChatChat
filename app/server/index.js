@@ -69,6 +69,7 @@ app.get("/profile/getNotifications/:userName", routes.getNotifications);
 app.delete("/profile/resolveNotification/:userId/:groupId", routes.resolveNotification);
 app.post("/profile/uploadavatar/:userName", upload.single('fileUpload'), routes.uploadAvatar);
 app.get("/profile/getavatar/:userName", routes.getAvatar);
+app.delete("/profile/deleteavatar/:userName", routes.deleteAvatar);
 
 // group page api
 app.get("/grouppage/public/:userName", routes.getPublicGroups)

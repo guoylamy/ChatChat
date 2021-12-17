@@ -75,6 +75,14 @@ function Profile() {
       })
     }
 
+    function deleteAvatar() {
+      axios.delete(baseUrl + "deleteavatar/" + userName).then(res => {
+        console.log(res);
+      }).catch(err => {
+        console.log(`delete error: ${err}`);
+      })
+    }
+
     function handleChangePassword() {
       axios.post(baseUrl + 'changePassword/' + userName + '/' + newPassword).then(res => {
           
@@ -191,6 +199,7 @@ function Profile() {
               await handleUploadAvatar(event.target.files[0]);
               event.target.value = null;
             }} />
+            <button onClick={deleteAvatar}>Delete your avatar</button>
           </div>
           <div>
               <img id="avatar" src="images/avatar.png" alt="Avatar" ></img>
