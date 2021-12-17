@@ -68,27 +68,6 @@ function Chat() {
     }
 
     const sendFile = async (fileType, selectedFile) => {
-        // let selectedFile;
-        // console.log("sendFile...");
-        // console.log(fileType);
-        // if (fileType === "image") {
-        //     selectedFile = imageFileSelected;
-        // } else if (fileType === "audio") {
-        //     selectedFile = audioFileSelected;
-        // } else {
-        //     selectedFile = videoFileSelected;
-        // }
-        // console.log(selectedFile);
-        // if (selectedFile === undefined) {
-        //     return;
-        // }
-        // 
-        // console.log("sendFile");
-        // console.log(selectedFile);
-        // if (selectedFile === undefined) {
-        //     return;
-        // }
-        // console.log("has selectedFile");
         const formData = new FormData();
         formData.append('fileUpload', selectedFile);
         axios.post(baseUrl + `/sendfile/${group_id}/${Date.now()}/${userName}/${fileType}/${friendName}`, formData, {
