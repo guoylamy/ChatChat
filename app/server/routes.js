@@ -585,6 +585,36 @@ const getCommentCreatorName = (req, res) => {
   });
 };
 
+const uploadAvatar = (req, res) => {
+  if (!req.params) {
+    res.status(404).json({ error: 'missing userid' });
+    return;
+  }
+  const query = 'UPDATE user_table SET avatar=?, mimetype=? WHERE user_name=?';
+  connection.query(query, [req.file.buffer, req.file.mimetype, req.params.userName], (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
+
+const getAvatar = (req, res) => {
+  const query = `SELECT * FROM user_table WHERE user_name = '${req.params.userName}'`;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
+
 const sendFile = (req, res) => {
   if (!req.params.group_id || !req.params.timestamp || !req.params.sender || !req.params.receiver || !req.params.type || req.file === undefined) {
     res.status(404).json({ error: 'missing groupid or timestamp or sender or message' });
@@ -839,6 +869,8 @@ module.exports = {
     declinePublicRequest:declinePublicRequest,
     getNotifications:getNotifications,
     resolveNotification:resolveNotification,
+    uploadAvatar:uploadAvatar,
+    getAvatar:getAvatar,
 
     // below is api for group page
     getMyGroups:getMyGroups,
