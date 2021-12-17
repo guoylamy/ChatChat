@@ -4,32 +4,29 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import axios from 'axios';
 
 function Login() {
-  const [username, setUsername] = useState("")
+  const [userName, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const baseUrl = 'http://localhost:8081/login/'
   function checkIfAcountExists() {
-    //should use username and password to get record
-    axios.get(baseUrl + username + '/' + password).then(res => {
-      console.log(res.data)
-      console.log(username)
+    //should use userName and password to get record
+    axios.get(baseUrl + userName + '/' + password).then(res => {
       if (res.data.length === 1) {
+        var oldDateObj = new Date();
+        var newDateObj = new Date();
+        newDateObj.setTime(oldDateObj.getTime() + (60 * 60 * 1000));
+        var sessionObject = {
+          expiresAt:newDateObj,
+          userName:userName,
+          password:password
+        }
+        sessionStorage.setItem('sessionObject', JSON.stringify(sessionObject))
         window.location.href =
-        window.location.protocol + "//" + window.location.host + "/groupsPage/" + username;
+        window.location.protocol + "//" + window.location.host + "/groupsPage/" + userName;
       }
       else {
         alert("user doesn't exist or password is not right!")
       }
     })
-    // if (username === '123') {
-    //     window.location.href =
-    //     window.location.protocol + "//" + window.location.host + "/groupsPage/" + username.username;
-      
-    // }
-    // else {
-    //   // if the username doesn't exist or password is right, should prompt warning
-    //   alert("User name doesn't exist or password is not right");
-    // }
-    
   }
   function handleUsername(event) {
     setUsername(event.target.value); 
@@ -50,7 +47,7 @@ function Login() {
             <div class="field">
               <label class="label">Username</label>
               <div class="control">
-                <input type="text" name="username" placeholder="e.g. user123" onChange={handleUsername} value={username}></input>
+                <input type="text" name="userName" placeholder="e.g. user123" onChange={handleUsername} value={userName}></input>
               </div>
             </div>
             <div class="field">

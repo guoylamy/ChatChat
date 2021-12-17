@@ -9,7 +9,25 @@ import GroupDetails from "./GroupDetails";
 import ManageGroupMembers from './ManageGroupMembers'
 import PostDetails from "./PostDetails";
 function Routers() {
-  return (
+  var currentDate = new Date()
+  var sessionObject = JSON.parse(sessionStorage.getItem('sessionObject'))
+  if (sessionObject == null ) {
+    return (
+      <Router>
+        <Switch>
+          
+          <Route exact path="/login" render={() => <Login />} />
+          <Route exact path="/register" render={() => <Register />} />
+          <Route exact path="/*" render={() => <Login />} />
+        </Switch>
+      </Router>
+    )
+  }
+  console.log(sessionObject)
+  var expirationDate = sessionObject.expiresAt
+
+  if (Date.parse(currentDate) < Date.parse(expirationDate)) {
+    return (
     <div>
       <Router>
         <Switch>
@@ -17,19 +35,29 @@ function Routers() {
           <Route exact path="/login" render={() => <Login />} />
           <Route exact path="/register" render={() => <Register />} />
           <Route exact path="/profile" render={() => <Profile />} />
-          <Route exact path="/groupsPage/:username" render={() => <GroupsPage />} />
+          <Route exact path="/groupsPage/:userName" render={() => <GroupsPage />} />
           {/* <Route exact path="/profile/:userId" render={userId => <Profile {...userId}/>} /> */}
-          {/* probably need more params to pass, such as username and password*/}
-          <Route exact path="/groupDetails/:groupName/:username" render={groupName => <GroupDetails />}/>
+          {/* probably need more params to pass, such as userName and password*/}
+          <Route exact path="/groupDetails/:groupName/:userName" render={groupName => <GroupDetails />}/>
           <Route exact path="/postDetails/:postId" render={postId => <PostDetails />}/>
 
           <Route exact path="/manageGroupMembers/:groupName" render={groupName => <ManageGroupMembers />}/>
           <Route exact path="/profile/:userName" render={userName => <Profile {...userName}/>} />
           <Route exact path="/chat/:userName/:friendName" render={(userName, friendName) => <Chat userName={userName} friendName={friendName}/>} />
-        </Switch>
+                </Switch>
       </Router>
     </div>
   );
+  }
+  else {
+    sessionStorage.removeItem('sessionObject')
+    return (
+      <div>
+        <Login />
+      </div>
+    )
+  }
+  
 }
 
 export default Routers;

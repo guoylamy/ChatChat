@@ -19,17 +19,17 @@ connection.connect();
 /* ------------------- Route Handlers --------------- */
 /* -------------------------------------------------- */
 const register = (req, res) => {
-  const username = req.params.username
+  const userName = req.params.userName
   const password = req.params.password
   const user_id = uuid()
   const ifUserExists = `
-    SELECT * FROM user_table WHERE user_name='${username}'
+    SELECT * FROM user_table WHERE user_name='${userName}'
   `;
   connection.query(ifUserExists, (err, rows, fields) => {
     if (err) console.log(err);
     else {
         if (rows.length === 0) {
-            const query = `INSERT INTO user_table (user_id, user_name, password, register_date) VALUES ('${user_id}', '${username}', md5('${password}'), CURDATE())`
+            const query = `INSERT INTO user_table (user_id, user_name, password, register_date) VALUES ('${user_id}', '${userName}', md5('${password}'), CURDATE())`
             connection.query(query, (err, rows, fields) => {
                 if (err) console.log(err)
                 else {
@@ -46,29 +46,265 @@ const register = (req, res) => {
 
 
 const verifyLogin = (req, res) => {
-  const username = req.params.username
+  const userName = req.params.userName
   const password = req.params.password
   const query = `
     SELECT *
     FROM user_table
-    WHERE user_name='${username}' AND password=md5('${password}')
+    WHERE user_name='${userName}' AND password='${password}'
   `;
 
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-        console.log(rows)
+        // console.log(rows)
+        // console.log(typeof res)
+        res.json(rows)
+    };
+  });
+};
+
+const getRegsiterDate = (req, res) => {
+  const userName = req.params.userName
+  const query = `
+    SELECT register_date
+    FROM user_table
+    WHERE user_name='${userName}'
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+    };
+  });
+};
+
+const changePassword = (req, res) => {
+  const userName = req.params.userName
+  const password = req.params.password
+  const query = `
+    update user_table set password='${password}' where user_name='${userName}'
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+    };
+  });
+};
+
+
+const getGroupsInvitations = (req, res) => {
+  const userName = req.params.userName
+  // 1. get user id, 2. get group_id from invite table
+  const query = `
+  select group_id, group_name from group_table where group_id in 
+  (select group_id from invite where user_to_be_invited in 
+    (select user_id from user_table where user_name='${userName}') and accept_or_decline=0)
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const acceptInvitation = (req, res) => {
+  const userName = req.params.userName
+  const groupId = req.params.groupId
+  // update accept_or_decline as 1, inviter_get_notified as 1
+  const query = `
+  update invite set accept_or_decline=1, inviter_get_notified=1 where user_to_be_invited in 
+    (select user_id from user_table where user_name='${userName}') and group_id='${groupId}';
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+
+const declineInvitation = (req, res) => {
+  const userName = req.params.userName
+  const groupId = req.params.groupId
+  // update accept_or_decline as 2, inviter_get_notified as 1
+  // update group_user_table
+  const query = `
+  update invite set accept_or_decline=2, inviter_get_notified=1 where user_to_be_invited in 
+    (select user_id from user_table where user_name='${userName}') and group_id='${groupId}'
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+
+const getAdminGroupsIds = (req, res) => {
+  const userName = req.params.userName
+  // 1. get groups where user is admin, 2. get user_to_be_invited from the invite according to group_id and inviter_get_notified
+  const query = `
+  select user_name, tmp2.group_name, tmp2.user_to_be_invited, tmp2.group_id from user_table join
+  (select group_name, tmp.user_to_be_invited, tmp.group_id from group_table join
+  (select user_to_be_invited, group_id from invite where group_id in 
+    (select group_id from group_user_table where user_id in 
+    (select user_id from user_table where user_name='${userName}') and is_admin=1) and accept_or_decline=1) tmp
+    on group_table.group_id=tmp.group_id) tmp2 
+    on user_table.user_id=tmp2.user_to_be_invited
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const getPublicGroupsRequestsIds = (req, res) => {
+  const userName = req.params.userName
+  const query = `
+  select tmp2.user_id, tmp2.user_name, tmp2.group_id, group_table.group_name from
+    (select user_table.user_id, user_table.user_name, tmp.group_id from
+    (select user_id, group_id from join_public_table where group_id in 
+    (select group_id from group_user_table where user_id in 
+    (select user_id from user_table where user_name='${userName}') and is_admin=1) and notified=0) tmp
+    join user_table on tmp.user_id=user_table.user_id) tmp2
+    join group_table on group_table.group_id=tmp2.group_id
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const approveRequest = (req, res) => {
+  const userId = req.params.userId
+  const groupId = req.params.groupId
+  // 1. get groups where user is admin, 2. get user_to_be_invited from the invite according to group_id and inviter_get_notified
+  const query = `
+    insert into group_user_table (group_id, user_id, is_admin) values('${groupId}', '${userId}', 0);
+    delete from invite where user_to_be_invited='${userId}' and group_id='${groupId}'
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const declineRequest = (req, res) => {
+  const userId = req.params.userId
+  const groupId = req.params.groupId
+  const query = `
+    delete from invite where user_to_be_invited='${userId}' and group_id='${groupId}'
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const approvePublicRequest = (req, res) => {
+  const userId = req.params.userId
+  const groupId = req.params.groupId
+  const query = `
+    insert into group_user_table (group_id, user_id, is_admin) values('${groupId}', '${userId}', 0);
+    update join_public_table set notified=1 where (user_id='${userId}' and group_id='${groupId}')
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const declinePublicRequest = (req, res) => {
+  const userId = req.params.userId
+  const groupId = req.params.groupId
+  const query = `
+    update join_public_table set notified=2 where (user_id='${userId}' and group_id='${groupId}')
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+
+
+const getNotifications = (req, res) => {
+  const userName = req.params.userName
+  const query = `
+  select tmp.group_id, group_table.group_name, tmp.notified , tmp.user_id from group_table join
+ (select group_id, notified, user_id from join_public_table where user_id in 
+    (select user_id from user_table where user_name='${userName}')) tmp
+  on tmp.group_id=group_table.group_id
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const resolveNotification = (req, res) => {
+  const userId = req.params.userId
+  const groupId = req.params.groupId
+  const query = `
+  delete from join_public_table where user_id='${userId}' and group_id='${groupId}'
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
         res.json(rows)
     };
   });
 };
 
 const getMyGroups = (req, res) => {
-  const username = req.params.username
+  const userName = req.params.userName
   // get user_id by user_table
   const query = ` SELECT group_name FROM group_table WHERE group_id in 
   (SELECT group_id FROM group_user_table WHERE user_id IN
-    (SELECT user_id FROM user_table WHERE user_name='${username}))'
+    (SELECT user_id FROM user_table WHERE user_name='${userName}))'
   `;
 
   connection.query(query, (err, rows, fields) => {
@@ -80,17 +316,17 @@ const getMyGroups = (req, res) => {
 };
 
 const getPublicGroups = (req, res) => {
-  const username = req.params.username
+  const userName = req.params.userName
   // 
   const query = `SELECT group_name FROM group_table WHERE group_id IN 
   (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${username}')) AND group_type='Public';
+    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Public';
     SELECT topics FROM group_topic_table WHERE group_id in 
     (SELECT group_id FROM group_table WHERE group_id IN 
   (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${username}')) AND group_type='Public')`
-    // console.log(username)
-  connection.query(query, [username, username], (err, rows, fields) => {
+    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Public')`
+    // console.log(userName)
+  connection.query(query, [userName, userName], (err, rows, fields) => {
     if (err) console.log(err);
     else {
         res.json(rows)
@@ -100,18 +336,18 @@ const getPublicGroups = (req, res) => {
 };
 
 const getPrivateGroups = (req, res) => {
-  const username = req.params.username
+  const userName = req.params.userName
   // 
   const query = `SELECT group_name FROM group_table WHERE group_id IN 
   (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${username}')) AND group_type='Private';
+    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Private';
     SELECT topics FROM group_topic_table WHERE group_id in 
     (SELECT group_id FROM group_table WHERE group_id IN 
   (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${username}')) AND group_type='Private')
+    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Private')
   `;
-    // console.log(username)
-  connection.query(query, [username, username], (err, rows, fields) => {
+    // console.log(userName)
+  connection.query(query, [userName, userName], (err, rows, fields) => {
     if (err) console.log(err);
     else {
         res.json(rows)
@@ -123,7 +359,7 @@ const getPrivateGroups = (req, res) => {
 const deletePublicGroups = (req, res) => {
 
   const query = ``
-    // console.log(username)
+    // console.log(userName)
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
@@ -136,7 +372,7 @@ const deletePublicGroups = (req, res) => {
 const deletePrivateGroups = (req, res) => {
 
   const query = ``
-    // console.log(username)
+    // console.log(userName)
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
@@ -148,43 +384,36 @@ const deletePrivateGroups = (req, res) => {
 
 const joinPublicGroup = (req, res) => {
   const groupnName = req.params.groupname
-  const userName = req.params.username
-  //find group_id from group_table, find user_id in user_table, add one more row in group_user_table 
+  const userName = req.params.userName
+
   const query = `
-  SELECT group_id from group_table where (group_name='${groupnName}' and group_type='Public');
-  select user_id from user_table where (user_name='${userName}')`
-    // console.log(username)
+  insert into join_public_table (user_id, group_id, notified) values
+  ((select user_id from user_table where user_name='${userName}'), 
+  (select group_id from group_table where group_name='${groupnName}'),
+  0)
+  `
+    // console.log(userName)
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      if (rows[0].length !== 0 && rows[1].length != 0) {
-        const query1 = `insert into group_user_table (group_id, user_id, is_admin) VALUES ('${rows[0][0].group_id}', '${rows[1][0].user_id}', 0);
-      insert into group_topic_table (group_id, topics) VALUES ('${rows[0][0].group_id}', '')`
-      connection.query(query1, (err, rows, fields) => {
-      if (err) console.log(err);
-      else {
-          res.json(rows)
-        // console.log(rows)
-        };
-      });
-      }
+     res.json(rows)
     };
   });
 }
 
 const filterByTopics = (req, res) => {
   const topics = req.body.topics
-  const username = req.params.username
+  const userName = req.params.userName
   // result is two list, first one is group_name. second one is topics
   let results = [[], []]
   if (topics.length !== 0) {
       const query = `SELECT group_name FROM group_table WHERE group_id IN 
   (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${username}')) AND group_type='Public';
+    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Public';
     SELECT topics FROM group_topic_table WHERE group_id in 
     (SELECT group_id FROM group_table WHERE group_id IN 
   (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${username}')) AND group_type='Public')`
+    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Public')`
       connection.query(query, (err, rows, fields) => {
         if (err) console.log(err);
         else {
@@ -212,11 +441,11 @@ const filterByTopics = (req, res) => {
 const createGroup = (req, res) => {
   const groupname = req.params.groupname
   const grouptype = req.params.grouptype
-  const username = req.params.username
+  const userName = req.params.userName
   const topics = req.body.topics
   const group_id = uuid()
   var creator_id = ''
-  const getCreatorId = `SELECT user_id FROM user_table WHERE user_name='${username}'`
+  const getCreatorId = `SELECT user_id FROM user_table WHERE user_name='${userName}'`
   connection.query(getCreatorId, (err, rows, fields) => {
     if (err) console.log(err);
     else {
@@ -299,7 +528,6 @@ const getPostDetails = (req, res) => {
     if (err) console.log(err);
     else {
         res.json(rows)
-        // console.log(rows)
     };
   });
 };
@@ -314,7 +542,7 @@ const getPostDetailsAllCommentsIds = (req, res) => {
     if (err) console.log(err);
     else {
         res.json(rows)
-        // console.log(rows)
+    
     };
   });
 };
@@ -337,7 +565,7 @@ const getCommentCreatorName = (req, res) => {
     if (err) console.log(err);
     else {
         res.json(rows)
-        console.log(rows)
+        // console.log(rows)
     };
   });
 };
@@ -403,7 +631,7 @@ const getCreatorName = (req, res) => {
       res.status(404).json({ error: `${err}`});
     } else {
       // console.log(rows);
-      res.status(200).json(rows);
+      res.json(rows)
     }
   });
 }
@@ -425,7 +653,7 @@ const getAdminsNames = (req, res) => {
       res.status(404).json({ error: `${err}`});
     } else {
       // console.log(rows);
-      res.status(200).json(rows);
+      res.json(rows)
     }
   });
 }
@@ -443,10 +671,104 @@ const getNormalUsersNames = (req, res) => {
       res.status(404).json({ error: `${err}`});
     } else {
       // console.log(rows);
-      res.status(200).json(rows);
+      res.json(rows)
     }
   });
 }
+
+const addAdmin = (req, res) => {
+  const groupName = req.body.groupName
+  const userName = req.body.userName
+  // 
+  const query = `
+    update group_user_table set is_admin = '1' where group_id in 
+    (select group_id from group_table where group_name='${groupName}') and user_id 
+    in (select user_id from user_table where user_name='${userName}')
+  `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.json(rows)
+    }
+  });
+}
+
+const removeAdmin = (req, res) => {
+  const groupName = req.body.groupName
+  const userName = req.body.userName
+  // 
+  const query = `
+    update group_user_table set is_admin = '0' where group_id in 
+    (select group_id from group_table where group_name='${groupName}') 
+    and user_id in (select user_id from user_table where user_name='${userName}')
+  `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.json(rows)
+    }
+  });
+}
+
+const inviteUser = (req, res) => {
+  const groupName = req.body.groupName
+  const inviter = req.body.inviter
+  const userToBeInvited = req.body.userToBeInvited
+  // find group_id, 
+  const query = `
+  insert into invite(inviter, user_to_be_invited, group_id, accept_or_decline, inviter_get_notified) values 
+  ((select user_id from user_table where user_name='${inviter}'),
+  (select user_id from user_table where user_name='${userToBeInvited}'),
+  (select group_id from group_table where group_name='${groupName}'),
+  0,
+  0
+   )`;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.json(rows)
+    }
+  });
+}
+
+const leaveGroup = (req, res) => {
+  const groupName = req.body.groupName
+  const userName = req.body.userName
+  // if the userName is the creator of this group, we need to remove it 
+  // from group_user_table and group_table
+  // console.log(groupName, userName)
+  const query = `
+    delete from group_user_table where (
+      group_id in (select group_id from group_table where group_name='${groupName}')
+      and
+      user_id in (select user_id from user_table where user_name='${userName}'));
+      delete from group_table where (
+        group_id in (select group_id from group_table where group_name='${groupName}')
+      and
+      creator_id in (select user_id from user_table where user_name='${userName}')
+      )
+      
+      `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.json(rows)
+    }
+  });
+}
+
 
 
 
@@ -455,7 +777,22 @@ module.exports = {
     verifyLogin:verifyLogin,
     register:register,
 
-    //below is api for group page
+    // below is profile api
+    getRegsiterDate:getRegsiterDate,
+    changePassword:changePassword,
+    getGroupsInvitations:getGroupsInvitations,
+    acceptInvitation:acceptInvitation,
+    declineInvitation:declineInvitation,
+    getAdminGroupsIds:getAdminGroupsIds,
+    getPublicGroupsRequestsIds:getPublicGroupsRequestsIds,
+    approveRequest:approveRequest,
+    declineRequest:declineRequest,
+    approvePublicRequest:approvePublicRequest,
+    declinePublicRequest:declinePublicRequest,
+    getNotifications:getNotifications,
+    resolveNotification:resolveNotification,
+
+    // below is api for group page
     getMyGroups:getMyGroups,
     getPublicGroups:getPublicGroups,
     sendFile:sendFile,
@@ -485,5 +822,11 @@ module.exports = {
 
     // below is comment api
     getCommentInfo:getCommentInfo,
-    getCommentCreatorName:getCommentCreatorName
+    getCommentCreatorName:getCommentCreatorName,
+
+    // below is manageGroupMembers api
+    addAdmin:addAdmin,
+    removeAdmin:removeAdmin,
+    inviteUser:inviteUser,
+    leaveGroup:leaveGroup
 };

@@ -22,7 +22,7 @@ function Register() {
         }
         else {
           window.location.href =
-        window.location.protocol + "//" + window.location.host + "/profile";
+        window.location.protocol + "//" + window.location.host;
         }
       })
       

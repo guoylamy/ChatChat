@@ -5,10 +5,10 @@ import React, {useState} from "react";
 
 function NavBar() {
   // const { userName } = useParams(); 
-  const userName = window.location.href.substring(window.location.href.lastIndexOf('/') + 1)
+  const userName = JSON.parse(sessionStorage.getItem('sessionObject')).userName
   const profileUrl = window.location.protocol + "//" + window.location.host + "/profile/" + userName;
   const groupsUrl = window.location.protocol + "//" + window.location.host + "/groupsPage/" + userName;
-
+  const logOutUrl = window.location.protocol + "//" + window.location.host
 
     return (
       <div>
@@ -41,6 +41,9 @@ function NavBar() {
                     </a>
                     <a class="navbar-item" href = {groupsUrl}>
                         My Groups
+                    </a>
+                    <a class="navbar-item" href = {logOutUrl}>
+                        Log Out
                     </a>
                 </div>
         </div>

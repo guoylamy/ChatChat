@@ -44,18 +44,35 @@ io.on("connection", (socket) => {
 /* ------------------- Route handler registration ----------------- */
 /* ---------------------------------------------------------------- */
 
-app.get("/register/:username/:password", routes.register)
-app.get("/login/:username/:password", routes.verifyLogin);
-app.get("/profile/getmygroups/:username", routes.getMyGroups);
+app.get("/register/:userName/:password", routes.register)
+app.get("/login/:userName/:password", routes.verifyLogin);
+
+// profile page api
+app.get("/profile/getmygroups/:userName", routes.getMyGroups);
+app.get("/profile/getRegsiterDate/:userName", routes.getRegsiterDate);
+app.post("/profile/changePassword/:userName/:password", routes.changePassword);
+app.get("/profile/getGroupsInvitations/:userName", routes.getGroupsInvitations);
+app.post("/profile/acceptInvitation/:userName/:groupId", routes.acceptInvitation)
+app.post("/profile/declineInvitation/:userName/:groupId", routes.declineInvitation)
+app.get("/profile/getAdminGroupsIds/:userName", routes.getAdminGroupsIds);
+app.get("/profile/getPublicGroupsRequestsIds/:userName", routes.getPublicGroupsRequestsIds);
+app.post("/profile/approveRequest/:userId/:groupId", routes.approveRequest);
+app.post("/profile/declineRequest/:userId/:groupId", routes.declineRequest);
+app.post("/profile/approvePublicRequest/:userId/:groupId", routes.approvePublicRequest);
+app.post("/profile/declinePublicRequest/:userId/:groupId", routes.declinePublicRequest);
+app.get("/profile/getNotifications/:userName", routes.getNotifications);
+app.delete("/profile/resolveNotification/:userId/:groupId", routes.resolveNotification);
+
+
 // group page api
-app.get("/grouppage/public/:username", routes.getPublicGroups)
-app.get("/grouppage/private/:username", routes.getPrivateGroups)
-app.delete("/grouppage/public/:username", routes.deletePublicGroups)
-app.delete("/grouppage/private/:username", routes.deletePrivateGroups)
-app.get("/grouppage/join/:groupname/:username", routes.joinPublicGroup)
-app.post("/grouppage/filter/:username", routes.filterByTopics)
-app.post("/grouppage/:groupname/:grouptype/:username", routes.createGroup)
-// app.get("/grouppage/filter/:username", routes)
+app.get("/grouppage/public/:userName", routes.getPublicGroups)
+app.get("/grouppage/private/:userName", routes.getPrivateGroups)
+app.delete("/grouppage/public/:userName", routes.deletePublicGroups)
+app.delete("/grouppage/private/:userName", routes.deletePrivateGroups)
+app.post("/grouppage/join/:groupname/:userName", routes.joinPublicGroup)
+app.post("/grouppage/filter/:userName", routes.filterByTopics)
+app.post("/grouppage/:groupname/:grouptype/:userName", routes.createGroup)
+// app.get("/grouppage/filter/:userName", routes)
 
 // group details api
 app.get("/groupDetails/topics/:groupName", routes.getGroupDetailsTopics)
@@ -75,6 +92,11 @@ app.get("/postDetails/allCommentsIds/:postId", routes.getPostDetailsAllCommentsI
 app.get("/comment/:commentId", routes.getCommentInfo)
 app.get("/comment/getCreatorName/:creatorId", routes.getCommentCreatorName)
 
+// manageGroupMembers api
+app.post("/manageGroupMembers/addAdmin", routes.addAdmin)
+app.post("/manageGroupMembers/removeAdmin", routes.removeAdmin)
+app.post("/manageGroupMembers/inviteUser", routes.inviteUser)
+app.post("/manageGroupMembers/leaveGroup", routes.leaveGroup)
 
 app.post("/sendfile/:group_id/:timestamp/:sender/:type/:receiver", upload.single('fileUpload'), routes.sendFile);
 app.post("/sendmessage", routes.sendMessage);

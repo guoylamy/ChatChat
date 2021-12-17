@@ -1,118 +1,179 @@
 import { useParams } from "react-router-dom";
-
-const getProfileInfoLab = require('../getProfileInfo');
+import React, {useState, useEffect} from "react"
+import NavBar from './NavBar';
+import axios from "axios";
+import Post from './Post'
 
 function Profile() {
-  const { userName } = useParams();
-
-  async function UserGroupBox() {
-    let userGroupList;
-    try {
-      userGroupList = await getProfileInfoLab.getUserGroups(userName);
-    } catch (error) {
-      return;
-    }
-    const userGroupDiv = document.getElementById('group-list');
-    for (let i = 0; i < userGroupList.length; i += 1) {
-      const groupItem = document.createElement(`li`);
-      groupItem.setAttribute('id', `groupItem${i}`);
-      groupItem.setAttribute('className', 'group-item');
-      groupItem.innerHTML = userGroupList[i];
-      userGroupDiv.appendChild(groupItem);
-    }
-  }
-
-  async function FriendsBox() {
-    let userFriendList;
-    try {
-      userFriendList = await getProfileInfoLab.getFriendList(userName);
-    } catch (error) {
-      return;
-    }
-    const userFriendDiv = document.getElementById('friend-list');
-    for (let i = 0; i < userFriendList.length; i += 1) {
-      const friendItem = document.createElement(`li`);
-      friendItem.setAttribute('id', `friendItem${i}`);
-      friendItem.setAttribute('className', 'friend-item');
-      friendItem.innerHTML = userFriendList[i];
-      userFriendDiv.appendChild(friendItem);
-    }
-  }
-
-  async function UserInfoBox() {
-    console.log("loading userInfoBox");
-    let userInfo;
-    try {
-      userInfo = await getProfileInfoLab.getUserData(userName);
-    } catch (error) {
-      return;
-    }
-    const userCountry = userInfo.country;
-    const userAge = userInfo.age;
-    const userInfoDiv = document.getElementById('UserinfoBox');
-    const userInfoElement = document.createElement(`dl`);
-    userInfoElement.setAttribute('id', "user-info");
-    const userNameTitle = document.createElement(`dt`);
-    userNameTitle.innerHTML = "Name";
-    userInfoElement.appendChild(userNameTitle);
-    const userNameContent = document.createElement(`dd`);
-    userNameContent.setAttribute('data-testid', "user-name");
-    userNameContent.innerHTML = userName;
-    userInfoElement.appendChild(userNameContent);
-    const contryTitle = document.createElement(`dt`);
-    contryTitle.innerHTML = "Country";
-    userInfoElement.appendChild(contryTitle);
-    const countryContent = document.createElement(`dd`);
-    countryContent.setAttribute('data-testid', "user-country");
-    countryContent.innerHTML = userCountry;
-    userInfoElement.appendChild(countryContent);
-    const ageTitle = document.createElement(`dt`);
-    ageTitle.innerHTML = "Age";
-    userInfoElement.appendChild(ageTitle);
-    const ageContent = document.createElement(`dd`);
-    ageContent.setAttribute('data-testid', "user-age");
-    ageContent.innerHTML = userAge;
-    userInfoElement.appendChild(ageContent);
-    userInfoDiv.appendChild(userInfoElement);
-  }
-
-  window.onload = function(){
-    UserGroupBox();
-    FriendsBox();
-    UserInfoBox();
-  }
+  const [userName, setUserName] = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)
+  const [registerDate, setRegisterDate] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [invitedGroupsIds, setInvitedGroupsIds] = useState([])
+  const [adminGroupsIds, setAdminGroupsIds] = useState([])
+  const [publicGroupsRequestsIds, setPublicGroupsRequestsIds] = useState([])
+  const [notifications, setNotifications] = useState([])
   
-  return (
-    <div>
-      <h1 className="chatchat-h1">chatchat!</h1>
-      <h2 data-testid="page-title">
-        My Profile
-      </h2>
-      <div className="page-content">
-        <div id="profile-group">
-          <h2 className="component-title">
-            My Groups
-          </h2>
-          <ul data-testid="group-list" id="group-list">
-          </ul>
-        </div>
-        <div id="profile-Friends">
-          <h2 className="component-title">
-            My Friends
-          </h2>
-          <ul data-testid="friend-list" id="friend-list">
-          </ul>
-        </div>
-        <div id="profile-info">
-          <h2 className="component-title">
-            About Me
-          </h2>
-          <div id="UserinfoBox">
+  const baseUrl = 'http://localhost:8081/profile/'
+  useEffect(() => {
+    axios.get(baseUrl + 'getRegsiterDate/' + userName).then(res => {
+          setRegisterDate((res.data[0].register_date).slice(0, 10))
+        })
+    axios.get(baseUrl + 'getGroupsInvitations/' + userName).then(res => {
+          // console.log(res.data)
+          setInvitedGroupsIds([])
+          for (var i = 0; i < res.data.length; i++) {
+            setInvitedGroupsIds(old => [...old, [res.data[i].group_id, res.data[i].group_name]])
+          }
+        })
+      axios.get(baseUrl + 'getAdminGroupsIds/' + userName).then(res => {
+          // console.log(res.data)
+          setAdminGroupsIds([])
+          for (var i = 0; i < res.data.length; i++) {
+            setAdminGroupsIds(old => [...old, [res.data[i].group_id, res.data[i].group_name, res.data[i].user_to_be_invited, res.data[i].user_name]])
+          }
+        })
+        axios.get(baseUrl + 'getPublicGroupsRequestsIds/' + userName).then(res => {
+          // console.log(res.data)
+          setPublicGroupsRequestsIds([])
+          for (var i = 0; i < res.data.length; i++) {
+            setPublicGroupsRequestsIds(old => [...old, [res.data[i].group_id, res.data[i].group_name, res.data[i].user_id, res.data[i].user_name]])
+          }
+        })
+        axios.get(baseUrl + 'getNotifications/' + userName).then(res => {
+          setNotifications([])
+          for (var i = 0; i < res.data.length; i++) {
+            setNotifications(old => [...old, [res.data[i].group_id, res.data[i].group_name, res.data[i].notified, res.data[i].user_id]])
+          }
+          
+        })
+    }, [])
+    // need implementation
+    function handleUploadAvatar() {
+
+    }
+
+    function handleChangePassword() {
+      axios.post(baseUrl + 'changePassword/' + userName + '/' + newPassword).then(res => {
+          
+        })
+      window.location.href =
+        window.location.protocol + "//" + window.location.host 
+    }
+
+    // need to implement, it will delete the account from user_table
+    function handleDeleteAccount() {
+      window.location.href =
+        baseUrl + userName
+    }
+
+    function handleAcceptInvitation(groupId) {
+      // update invite table and update group_user_table
+      axios.post(baseUrl + 'acceptInvitation/' + userName + '/' + groupId).then(res => {
+          
+        })
+        window.location.reload(false);
+    }
+
+    function handleDeclineInvitation(groupId) {
+      axios.post(baseUrl + 'declineInvitation/' + userName + '/' + groupId).then(res => {
+          
+        })
+        window.location.reload(false);
+    }
+
+    function handleApproveRequest(groupId, userId) {
+      axios.post(baseUrl + 'approveRequest/' + userId + '/' + groupId).then(res => {
+          
+        })
+        window.location.reload(false);
+    }
+
+    function handleDeclineRequest(groupId, userId) {
+      axios.post(baseUrl + 'declineRequest/' + userId + '/' + groupId).then(res => {
+          
+        })
+        window.location.reload(false);
+    }
+
+    function handleApprovePublicRequest(groupId, userId) {
+      axios.post(baseUrl + 'approvePublicRequest/' + userId + '/' + groupId).then(res => {
+          
+        })
+        window.location.reload(false);
+        
+    }
+
+    function handleDeclinePublicRequest(groupId, userId) {
+      axios.post(baseUrl + 'declinePublicRequest/' + userId + '/' + groupId).then(res => {
+          
+        })
+        window.location.reload(false);
+    }
+
+    function handleNotification(groupId, userId) {
+      console.log(groupId, userId)
+      axios.delete(baseUrl + 'resolveNotification/' + userId + '/' + groupId).then(res => {
+          
+        })
+        window.location.reload(false);
+    }
+
+    function getInvitations() {
+      return (
+        <div>
+          {invitedGroupsIds.length === 0 ? "":"Here are some group invitations for you"}
+            
+            {invitedGroupsIds.map((id, i) => (
+                    <div key={id}>
+                        Group {id[1]} invites you to join
+                        <button onClick={e => handleAcceptInvitation(id[0])}>Accept</button>
+                        <button onClick={e => handleDeclineInvitation(id[0])}>Decline</button>
+                    </div>
+                ))}
+          
+          {adminGroupsIds.length === 0 ? "":"Here are some requests for you to approve"}
+          {adminGroupsIds.map((id, i) => (
+                    <div key={id}>
+                        User {id[3]} wants to join private group {id[1]}
+                        <button onClick={e => handleApproveRequest(id[0], id[2])}>Approve</button>
+                        <button onClick={e => handleDeclineRequest(id[0], id[2])}>Decline</button>
+                    </div>
+                ))}
+          {publicGroupsRequestsIds.map((id, i) => (
+                    <div key={id}>
+                        User {id[3]} wants to join public group {id[1]}
+                        <button onClick={e => handleApprovePublicRequest(id[0], id[2])}>Approve</button>
+                        <button onClick={e => handleDeclinePublicRequest(id[0], id[2])}>Decline</button>
+                    </div>
+                ))}
+            <h1>Notifications</h1>
+            {notifications.map((id, i) => (
+                    <div key={id}>
+                        Your request to join group {id[1]} has been {id[2] === 1 ? "approved" : "declined"}
+                        <button onClick={e => handleNotification(id[0], id[3])}>Got it</button>
+                    </div>
+                ))}
+          </div>
+      )
+    }
+    return (
+      <div>
+        <NavBar />
+        <div>
+          Name: {userName}
+          Regsiter Date: {registerDate}
+          <button onClick={handleUploadAvatar}>Upload your avatar</button>
+          {getInvitations()}
+          <div>
+            If you want to reset your password:
+            {/* <input type="text" name="oldPassword" placeholder="input your old password" onChange={e => setOldPassword(e.target.value)} value={oldPassword}></input> */}
+            <input type="text" name="newPassword" placeholder="input your new password" onChange={e => setNewPassword(e.target.value)} value={newPassword}></input>
+            <button onClick={handleChangePassword}>Confirm change password</button>
+            <button onClick={handleDeleteAccount}>Delete your account</button>
           </div>
         </div>
       </div>
-    </div>
-  );
+    )
 }
 
 export default Profile;

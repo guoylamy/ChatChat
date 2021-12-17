@@ -3,7 +3,7 @@ import NavBar from './NavBar'
 import axios from "axios";
 import { Link, useParams, Redirect  } from "react-router-dom";
 function GroupsPage() {
-    const {username} = useParams()
+    const {userName} = useParams()
     const [joinGroupName, setJoinGroupName] = useState('')
     const [filterTopic, setFilterTopic] = useState('')
     const [publicGroup, setPublicGroup] = useState([])
@@ -17,7 +17,7 @@ function GroupsPage() {
     const [filterTopics, setFilterTopics] = useState([])
     const baseUrl = 'http://localhost:8081/grouppage/'
     useEffect(() => {
-      axios.get(baseUrl + 'public/' + username).then(res => {
+      axios.get(baseUrl + 'public/' + userName).then(res => {
             setPublicGroup([])
             setPublicGroupTopics([])
             for (var i = 0; i < res.data[0].length; i++) {
@@ -27,7 +27,7 @@ function GroupsPage() {
                 setPublicGroupTopics(old => [...old, res.data[1][i].topics])
             }         
         })
-        axios.get(baseUrl + 'private/' + username).then(res => {
+        axios.get(baseUrl + 'private/' + userName).then(res => {
             setPrivateGroup([])
             setPrivateGroupTopics([])
             for (var i = 0; i < res.data[0].length; i++) {
@@ -46,7 +46,7 @@ function GroupsPage() {
                 {publicGroup.map((group_name, i) => (
                     <div key={group_name}>
                         <div class="is-clickable"
-                            onClick = {e => jumpToGroupDetailsPage(group_name, username)}
+                            onClick = {e => jumpToGroupDetailsPage(group_name, userName)}
                         >
                        <p class="has-text-info">{group_name}</p>
                         <div>topics: {publicGroupTopics[i]}</div>
@@ -58,18 +58,9 @@ function GroupsPage() {
         )
     }
 
-    function deletePublicGroups(group_name) {
-        // need to connect database to delete group with group_name
-
-    }
-
-    function deletePrivateGroups(group_name) {
-        // need to connect database to delete group with group_name
-    }
-
-    function jumpToGroupDetailsPage(group_name, username) {
+    function jumpToGroupDetailsPage(group_name, userName) {
         window.location.href =
-        window.location.protocol + "//" + window.location.host + "/groupDetails/" + group_name + "/" + username;
+        window.location.protocol + "//" + window.location.host + "/groupDetails/" + group_name + "/" + userName;
     //    return  <Redirect to='/login'/>
     }
 
@@ -81,7 +72,7 @@ function GroupsPage() {
                 {privateGroup.map((group_name, i) => (
                     <div key={group_name}>
                         <div class="is-clickable"
-                            onClick = {e => jumpToGroupDetailsPage(group_name, username)}
+                            onClick = {e => jumpToGroupDetailsPage(group_name, userName)}
                         >
                        <p class="has-text-info">{group_name}</p>
                         <div>topics: {privateGroupTopics[i]}</div>
@@ -94,7 +85,7 @@ function GroupsPage() {
     function createGroupButton() {
         console.log(groupNameToBeCreated, groupTypeToBeCreated);
         // pass two parameters: group name and group type. connect database to create a group
-        axios.post(baseUrl + groupNameToBeCreated + '/' + groupTypeToBeCreated + '/' + username, {topics:topics}).then(res => {
+        axios.post(baseUrl + groupNameToBeCreated + '/' + groupTypeToBeCreated + '/' + userName, {topics:topics}).then(res => {
             console.log(res.data)
         })
         window.location.reload(false);
@@ -140,8 +131,8 @@ function GroupsPage() {
         )
     }
     function joinPublicGroupButton() {
-        axios.get(baseUrl + 'join/' + joinGroupName + '/' + username).then(res => {
-            console.log(res.data)
+        axios.post(baseUrl + 'join/' + joinGroupName + '/' + userName).then(res => {
+            // console.log(res.data)
         })
         window.location.reload(false);
     }
@@ -159,7 +150,7 @@ function GroupsPage() {
         )
     }
     function handleFilterSubmit() {
-        axios.post(baseUrl + 'filter/' + username, {topics:filterTopics}).then(res => {
+        axios.post(baseUrl + 'filter/' + userName, {topics:filterTopics}).then(res => {
             console.log(res.data)
             if (res.data !== 'empty') {
                 setPublicGroup([])
