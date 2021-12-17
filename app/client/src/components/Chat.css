@@ -156,15 +156,12 @@
 }
   
 .chat-window .chat-footer button {
-    border: 0;
-    display: grid;
+    border: 1 px;
+    display: black;
     place-items: center;
     cursor: pointer;
-    flex: 15%;
-    height: 100%;
-    background: transparent;
+    background: grey;
     outline: none;
-    font-size: 25px;
     color: lightgray;
 }
   
