@@ -41,7 +41,7 @@ afterEach(async () => {
   await db.end();
 });
 
-describe('API tests (routes)', () => {
+describe('Unit tests (backend)', () => {
   // test data
   const testPlayer = {
     username: 'RoutesTestUser',
@@ -83,5 +83,15 @@ describe('API tests (routes)', () => {
     expect(PrivateGroups).not.toBeNull();
   });
 
+  test('joinPublicGroup works', async () => {
+    db = await connect(config);
+    await dbLib.joinPublicGroup({ params: { username: '123', groupname:'dua lipa'} },  '1');
+    const get_group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'dua lipa');
+    const try_group_id = get_group_id[0].group_id;
+    const get_user_id = await knex.select('user_id').from('user_table').where('user_name', '=', '123');
+    const try_user_id = get_user_id[0].user_id;
+    const check_join = await knex.select('group_id').from('group_user_table').where('group_id', '=', try_group_id).andWhere('user_id', '=', try_user_id);
+    expect(check_join).not.toBeNull();
+});
 
 });
