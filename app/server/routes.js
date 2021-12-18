@@ -458,7 +458,7 @@ const filterByTopics = (req, res) => {
               }
             }
             if (res === '1') {
-              console.log('routes res===1 return', JSON.stringify(results));
+              // console.log('routes res===1 return', JSON.stringify(results));
               return JSON.stringify(results);
             }
             else {
@@ -485,6 +485,9 @@ const createGroup = (req, res) => {
   connection.query(getCreatorId, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+        if (res === '1'){
+          return JSON.stringify(res);
+        }
         creator_id = rows[0].user_id
         console.log(creator_id)
         const query = `INSERT INTO group_table (group_id, group_name, group_type, creator_id) VALUES ('${group_id}', '${groupname}', '${grouptype}', '${creator_id}')`;
@@ -743,6 +746,9 @@ const getCreatorName = (req, res) => {
       res.status(404).json({ error: `${err}`});
     } else {
       // console.log(rows);
+      if (res === '1'){
+        return JSON.stringify(results);
+      }
       res.json(rows)
     }
   });

@@ -92,15 +92,22 @@ describe('Unit tests (backend)', () => {
   test('inviteUser works', async () => {
     db = await connect(config);
     await dbLib.register({ params: testPlayer },  '1');
+    const user_inviter_id = await knex.select('user_id').from('user_table').where('user_name', '=', 'RoutesTestUser');
     await dbLib.register({ params: testPlayer2 },  '1');
     await dbLib.inviteUser({ body: {groupName: 'public1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');
-    const user_invited_id = await knex.select('user_id').from('user_table').where('user_name', '=', 'RoutesTestUser');
-    const get_id = user_invited_id[0].user_id;
+    const get_id = user_inviter_id[0].user_id;
     const invited = await knex.select('inviter').from('invite').where('user_to_be_invited', '=', get_id);
     expect(invited).not.toBeNull();;
   });
 
-  
+  test('createGroup', async () => {
+    db = await connect(config);
+    await dbLib.register({ params: testPlayer },  '1');
+    await dbLib.createGroup({ params: {groupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+    const check_group_created = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+    expect(check_group_created).not.toBeNull();;
+  });
+
 
   test('getMyGroups works', async () => {
     db = await connect(config);
@@ -133,6 +140,13 @@ describe('Unit tests (backend)', () => {
     const check_join = await knex.select('group_id').from('group_user_table').where('group_id', '=', try_group_id).andWhere('user_id', '=', try_user_id);
     expect(check_join).not.toBeNull();
 });
+
+// test('getCreatorName works', async () => {
+//   db = await connect(config);
+//   await dbLib.getCreatorName({ params: { groupName: 'public1'} },  '1');
+//   const get_user_id = await knex.select('user_id').from('group_table').where('group_name', '=', 'public1');
+//   expect(get_user_id).not.toBeNull();
+// });
 
 test('filterByTopics works', async () => {
   db = await connect(config);

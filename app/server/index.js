@@ -113,3 +113,5 @@ app.post("/postfile/:group_id/:timestamp/:creator_id/:type", upload.single('file
 server.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
 });
+
+module.exports = app;

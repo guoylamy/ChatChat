@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+  - "14"
+cache:
+  directories:
+    - node_modules
+# blocklist
+branches:
+jobs:
+  include:
+    - stage: clinet, server  
+      name: clinet
+      script:
+        - cd app/client
+        - npm install
+        - npm test
+    - name: server
+      script:
+        - cd app/server
+        - npm install
+        - npm test
