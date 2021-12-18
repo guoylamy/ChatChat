@@ -6,26 +6,40 @@ import Comment from './Comment'
 
 function PostDetails() {
     const {postId} = useParams()
-    const [postContent, setPostContent] = useState([])
+    const [postContentList, setPostContent] = useState([])
     const [posterName, setPosterName] = useState('')
     const [postTime, setPostTime] = useState('')
     const [allCommentsIds, setAllCommentsIds] = useState([])
     const baseUrl = 'http://localhost:8081/postDetails/'
     useEffect(() => {
+      let resList = [];
       axios.get(baseUrl + postId).then(res => {
-            let resList = [];
             resList.push({
                 post_content: res.data[0].post_content,
                 post_type: res.data[0].message_type,
                 mimetype: res.data[0].mimetype,
             });
-            console.log(res.data[0]);
-            setPostContent(resList);
+            console.log("text res");
+            console.log(resList);
+            // setPostContent(resList);
             setPosterName(res.data[0].user_name)
             const date = new Date(res.data[0].create_time);
             setPostTime(date.getFullYear() + "-" + date.getMonth() + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
-        })
-     axios.get(baseUrl + 'allCommentsIds/' + postId).then(res => {
+        });
+      axios.get(baseUrl + 'attachments/' + postId).then(res => {
+          for (let i = 0; i < res.data.length; i++) {
+            resList.push({
+                post_content: res.data[i].post_content,
+                post_type: res.data[i].message_type,
+                mimetype: res.data[i].mimetype,
+            });
+            console.log("attach res");
+            console.log(resList);
+          }; 
+          console.log("resList");
+          setPostContent(resList);
+        });
+      axios.get(baseUrl + 'allCommentsIds/' + postId).then(res => {
             // console.log(res.data)
             for (var i = 0; i < res.data.length; i++) {
                 setAllCommentsIds(old => [...old, res.data[i].comment_id])
@@ -51,16 +65,14 @@ function PostDetails() {
                 <div class="has-text-weight-bold has-text-left has-text-info"> View Post </div>
             </div>
             <article class="media">
-                   {postContent.map((postContent) => {
+                   {postContentList.map((postContent) => {
+                       console.log("postContentList has length " + postContentList.length);
+                       console.log(postContentList);
                         if (postContent.post_type === "string") {
                             return (
                                 <div class="media-content">
                                     <div className="message-content">
                                     <p>{Buffer.from(postContent.post_content).toString('utf8')}</p>
-                                </div>
-                                    <div className="message-meta">
-                                        <p id="time">post time: {postTime}</p>
-                                        <p id="author">posted by: {posterName}</p>
                                     </div>
                                 </div>
                             );
@@ -69,11 +81,7 @@ function PostDetails() {
                             return (
                                 <div class="media-content">
                                     <div className="message-content">
-                                        <img src={img} />
-                                    </div>
-                                    <div className="message-meta">
-                                        <p id="time">post time: {postTime}</p>
-                                        <p id="author">posted by: {posterName}</p>
+                                        <img src={img} alt="cannot load" width="200px" height="200px"/>
                                     </div>
                                 </div>
                             );
@@ -84,10 +92,6 @@ function PostDetails() {
                                     <div className="message-content">
                                         <audio controls src={audio} />
                                     </div>
-                                    <div className="message-meta">
-                                        <p id="time">post time: {postTime}</p>
-                                        <p id="author">posted by: {posterName}</p>
-                                    </div>                                
                                 </div>
                             );
                         } else {
@@ -98,15 +102,15 @@ function PostDetails() {
                                         <video width="400" height="300" controls>
                                             <source src={video} type={postContent.mimetype} />
                                         </video>
-                                    </div>
-                                    <div className="message-meta">
-                                        <p id="time">post time:{postTime}</p>
-                                        <p id="author">posted by: {posterName}</p>
                                     </div>                                
                                 </div>
                             );
                         }
                     })}
+                    <div className="message-meta">
+                        <p id="time">post time:{postTime}</p>
+                        <p id="author">posted by: {posterName}</p>
+                    </div>
             </article>
             <div>
                 <div class="is-size-4 has-text-info">comments:</div>
