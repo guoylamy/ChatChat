@@ -94,6 +94,7 @@ app.get("/post/:postId", routes.getPostInfo)
 // postDetails api
 app.get("/postDetails/:postId", routes.getPostDetails)
 app.get("/postDetails/allCommentsIds/:postId", routes.getPostDetailsAllCommentsIds)
+app.get("/postDetails/attachments/:postId", routes.getPostAttachmentDetails);
 
 // comment api
 app.get("/comment/:commentId", routes.getCommentInfo)
@@ -109,7 +110,7 @@ app.post("/sendfile/:group_id/:timestamp/:sender/:type/:receiver", upload.single
 app.post("/sendmessage", routes.sendMessage);
 app.get("/receivemessage/:group_id", routes.receiveMessage);
 app.post("/postmessage", routes.postMessage);
-app.post("/postfile/:group_id/:timestamp/:creator_id/:type", upload.single('fileUpload'), routes.postFile);
+app.post("/postfile/:post_id/:type", upload.single('fileUpload'), routes.postFile);
 server.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
 });

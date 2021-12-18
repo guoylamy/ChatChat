@@ -571,6 +571,21 @@ const getPostDetails = (req, res) => {
   });
 };
 
+const getPostAttachmentDetails = (req, res) => {
+  const postId = req.params.postId
+  // find id in group table and 
+  const query= `select *
+  from post_attachment
+  where post_id='${postId}'
+  order by attachement_id asc`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+    };
+  });
+};
+
 const getPostDetailsAllCommentsIds = (req, res) => {
   const postId = req.params.postId
   // find id in group table and 
@@ -712,19 +727,18 @@ const postMessage = (req, res) => {
         res.status(404).json({ error: `${err}`});
       } else {
         // console.log(rows);
-        res.status(200).json(rows);
+        res.status(200).json(post_id);
       }
   });
 }
 
 const postFile = (req, res) => {
-  if (!req.params.group_id || !req.params.timestamp || !req.params.creator_id || !req.params.type || req.file === undefined) {
-    res.status(404).json({ error: 'missing groupid or timestamp or sender or message or type' });
+  if (req.file === undefined) {
+    res.status(404).json({ error: 'missing post attachment' });
     return;
   }
-  const post_id = uuid();
-  const query = 'INSERT INTO post_table (post_id, creator_id, group_id, create_time, post_content, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  connection.query(query, [post_id, req.params.creator_id, req.params.group_id, req.params.timestamp, req.file.buffer, req.params.type, req.file.mimetype], (err, rows, fields) => {
+  const query = 'INSERT INTO post_attachment (post_id, post_content, message_type, mimetype) VALUES (?, ?, ?, ?)';
+  connection.query(query, [req.params.post_id,  req.file.buffer, req.params.type, req.file.mimetype], (err, rows, fields) => {
       if (err) {
         console.log(err);
         res.status(404).json({ error: `${err}`});
@@ -944,6 +958,7 @@ module.exports = {
     //below is postDetails api
     getPostDetails:getPostDetails,
     getPostDetailsAllCommentsIds:getPostDetailsAllCommentsIds,
+    getPostAttachmentDetails:getPostAttachmentDetails,
     
 
     // below is comment api
