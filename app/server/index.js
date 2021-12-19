@@ -51,6 +51,7 @@ io.on("connection", (socket) => {
 
 app.get("/register/:userName/:password", routes.register)
 app.get("/login/:userName/:password", routes.verifyLogin);
+app.get("/login/:userName", routes.ifUserNameExists);
 
 // profile page api
 app.get("/profile/getmygroups/:userName", routes.getMyGroups);
