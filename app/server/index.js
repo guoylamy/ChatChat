@@ -85,17 +85,29 @@ app.get("/groupDetails/allpostsids/:groupName", routes.getGroupDetailsAllPostsId
 app.get("/groupDetails/getCreatorName/:groupName", routes.getCreatorName)
 app.get("/groupDetails/getAdminsNames/:groupName", routes.getAdminsNames)
 app.get("/groupDetails/getNormalUsersNames/:groupName", routes.getNormalUsersNames)
+app.get("/groupDetails/getUserId/:userName", routes.getGroupDetailsUserId)
+app.get("/groupDetails/getGroupId/:groupName", routes.getGroupDetailsGroupId)
+app.get("/groupDetails/getHidePostIds/:userName", routes.getHidePostIds)
 
 // post api
 app.get("/post/:postId", routes.getPostInfo)
+app.delete("/post/deletePost/:postId", routes.deletePost)
+app.get("/post/findUserId/:userName", routes.getPostUserId)
+app.post("/post/hidePost", routes.hidePost)
 
 // postDetails api
 app.get("/postDetails/:postId", routes.getPostDetails)
 app.get("/postDetails/allCommentsIds/:postId", routes.getPostDetailsAllCommentsIds)
+app.get("/postDetails/getUserId/:userName", routes.getPostDetailsGetUserId)
+app.post("/postDetails/makeComment", routes.getPostDetailsMakeComment)
+
 
 // comment api
 app.get("/comment/:commentId", routes.getCommentInfo)
 app.get("/comment/getCreatorName/:creatorId", routes.getCommentCreatorName)
+app.delete("/comment/deleteComment/:commentId", routes.deleteComment)
+app.post("/comment/editComment", routes.editComment)
+
 
 // manageGroupMembers api
 app.post("/manageGroupMembers/addAdmin", routes.addAdmin)

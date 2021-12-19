@@ -4,18 +4,22 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Post from './Post'
 function GroupDetails() {
-    const {groupName, username} = useParams()
+    const {groupName, userName} = useParams()
+    const [userId, setUserId] = useState('')
+    const [groupId, setGroupId] = useState('')
     const [topics, setTopics] = useState('')
     const [allPostsIds, setAllPostsIds] = useState([])
     const [creator, setCreator] = useState([])
     const [admins, setAdmins] = useState([])
     const [normalUsers, setNormalUsers] = useState([])
-    const members = ['Tom', 'Amy', 'Martin', 'Brandon', 'Talan']
+    const [hidePostIds, setHidePostIds] = useState([])
     const baseUrl = 'http://localhost:8081/groupDetails/'
     useEffect(() => {
         setCreator([])
         setAdmins([])
         setNormalUsers([])
+        setUserId('')
+        setGroupId('')
       axios.get(baseUrl + 'topics/' + groupName).then(res => {
             setTopics(res.data[0].topics)
         })
@@ -25,26 +29,43 @@ function GroupDetails() {
             setAllPostsIds(old => [...old, res.data[i].post_id])
           }
         })
+
     // get creator name
     axios.get(baseUrl + 'getCreatorName/' + groupName).then(res => {
-          console.log(res.data)
+        //   console.log(res.data)
           setCreator(old => [...old, res.data[0].user_name])
         })
 
     // get all admins of this group except for creator
     axios.get(baseUrl + 'getAdminsNames/' + groupName).then(res => {
-          console.log(res.data)
+        //   console.log(res.data)
           for (var i = 0; i < res.data.length; i++) {
             setAdmins(old => [...old, res.data[i].user_name])
           }
         })
     // normal users
     axios.get(baseUrl + 'getNormalUsersNames/' + groupName).then(res => {
-          console.log(res.data)
+        //   console.log(res.data)
           for (var i = 0; i < res.data.length; i++) {
             setNormalUsers(old => [...old, res.data[i].user_name])
           }
         })
+    // get user id
+    axios.get(baseUrl + 'getUserId/' + userName).then(res => {
+        //   console.log(res.data)
+          setUserId(res.data[0].user_id)
+        })
+    // get hide post id
+    axios.get(baseUrl + 'getHidePostIds/' + userName).then(res => {
+        for (var i = 0; i < res.data.length; i++) {
+            setHidePostIds(old => [...old, res.data[i].post_id])
+          }
+    })
+    // get group id
+    axios.get(baseUrl + 'getGroupId/' + groupName).then(res => {
+        // console.log(res.data)
+        setGroupId(res.data[0].group_id)
+    })
     }, [])
     function getTopics() {
         return (
@@ -57,11 +78,12 @@ function GroupDetails() {
         return (
             <div class = "column is-half">
                 <div class="is-size-4"> Board </div>
-                {allPostsIds.map((id, i) => (
-                    <div class="box" key={id}>
+                {allPostsIds.map((id, i) => 
+                    hidePostIds.includes(id) ? ('') : (<div class="box" key={id}>
                         <Post postId={id}/>
-                    </div>
-                ))}
+                    </div>)
+                    
+                )}
             </div>
         )
     }
@@ -113,8 +135,9 @@ function GroupDetails() {
             <div class = "columns is-mobile">
                 {getBoard()}
                 {getMembers()}
+                
             </div>
-            
+            <a href={window.location.protocol + "//" + window.location.host + "/post/" + userId + '/' + groupId}>Make a post</a>
         </div>  
     )
 }

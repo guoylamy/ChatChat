@@ -63,7 +63,7 @@ const verifyLogin = (req, res) => {
       return JSON.stringify(rows);
     }
     else {
-        // console.log(rows)
+        
         // console.log(typeof res)
         res.json(rows)
     };
@@ -114,7 +114,7 @@ const getGroupsInvitations = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      // console.log(rows)
+      
         res.json(rows)
     };
   });
@@ -132,7 +132,7 @@ const acceptInvitation = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      // console.log(rows)
+      
         res.json(rows)
     };
   });
@@ -152,7 +152,7 @@ const declineInvitation = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      // console.log(rows)
+      
         res.json(rows)
     };
   });
@@ -175,7 +175,7 @@ const getAdminGroupsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      // console.log(rows)
+      
         res.json(rows)
     };
   });
@@ -196,7 +196,7 @@ const getPublicGroupsRequestsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      // console.log(rows)
+      
         res.json(rows)
     };
   });
@@ -214,7 +214,6 @@ const approveRequest = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      console.log(rows)
         res.json(rows)
     };
   });
@@ -230,7 +229,7 @@ const declineRequest = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      // console.log(rows)
+      
         res.json(rows)
     };
   });
@@ -247,7 +246,7 @@ const approvePublicRequest = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      // console.log(rows)
+      
         res.json(rows)
     };
   });
@@ -263,7 +262,7 @@ const declinePublicRequest = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      // console.log(rows)
+      
         res.json(rows)
     };
   });
@@ -283,7 +282,7 @@ const getNotifications = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      // console.log(rows)
+      
         res.json(rows)
     };
   });
@@ -299,7 +298,7 @@ const resolveNotification = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      // console.log(rows)
+      
         res.json(rows)
     };
   });
@@ -342,7 +341,7 @@ const getPublicGroups = (req, res) => {
     }
     else {
         res.json(rows)
-        // console.log(rows)
+        
     };
   });
 };
@@ -366,7 +365,7 @@ const getPrivateGroups = (req, res) => {
     }
     else {
         res.json(rows)
-        // console.log(rows)
+        
     };
   });
 }
@@ -379,7 +378,7 @@ const deletePublicGroups = (req, res) => {
     if (err) console.log(err);
     else {
         res.json(rows)
-        // console.log(rows)
+        
     };
   });
 }
@@ -392,7 +391,7 @@ const deletePrivateGroups = (req, res) => {
     if (err) console.log(err);
     else {
         res.json(rows)
-        // console.log(rows)
+        
     };
   });
 }
@@ -499,7 +498,7 @@ const getGroupDetailsTopics = (req, res) => {
     if (err) console.log(err);
     else {
         res.json(rows)
-        // console.log(rows)
+        
     };
   });
 };
@@ -513,7 +512,7 @@ const getGroupDetailsAllPostsIds = (req, res) => {
     if (err) console.log(err);
     else {
         res.json(rows)
-        // console.log(rows)
+        
     };
   });
 };
@@ -521,14 +520,56 @@ const getGroupDetailsAllPostsIds = (req, res) => {
 const getPostInfo = (req, res) => {
   const postId = req.params.postId
   // find id in group table and 
-  const query= `select post_table.post_content, post_table.create_time, user_table.user_name from post_table
+  const query= `select post_table.*, user_table.user_name from post_table
   inner join user_table on post_table.creator_id=user_table.user_id
   where post_table.post_id='${postId}'`
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
         res.json(rows)
-        // console.log(rows)
+        
+    };
+  });
+};
+
+const deletePost = (req, res) => {
+  const postId = req.params.postId
+  const query= `
+  delete from post_table where post_id='${postId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        
+    };
+  });
+};
+
+const getPostUserId = (req, res) => {
+  const userName = req.params.userName
+  const query= `
+  select user_id from user_table where user_name='${userName}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        
+    };
+  });
+};
+
+
+const hidePost = (req, res) => {
+  const userId = req.body.userId
+  const postId = req.body.postId
+  // find id in group table and 
+  const query= `
+  insert into hide_post_table (post_id, user_id) values ('${postId}', '${userId}')`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        
     };
   });
 };
@@ -562,6 +603,39 @@ const getPostDetailsAllCommentsIds = (req, res) => {
   });
 };
 
+const getPostDetailsGetUserId = (req, res) => {
+  const userName = req.params.userName
+  const query= `select user_id from user_table where user_name='${userName}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        
+    };
+  });
+};
+
+const getPostDetailsMakeComment = (req, res) => {
+  const commentId = req.body.commentId
+  const commentContent = req.body.commentContent
+  const creatTime = req.body.creatTime
+  const creatorId = req.body.creatorId
+  const postId = req.body.postId
+  const query= `insert into comment_table (comment_id, comment_content, create_time, creator_id, post_id)
+  values
+  ('${commentId}', '${commentContent}', '${creatTime}', '${creatorId}', '${postId}')
+  `
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+        
+    };
+  });
+};
+
+
+
 const getCommentInfo = (req, res) => {
   const commentId = req.params.commentId
   const query= `select * from comment_table where comment_id='${commentId}'`
@@ -580,10 +654,34 @@ const getCommentCreatorName = (req, res) => {
     if (err) console.log(err);
     else {
         res.json(rows)
-        // console.log(rows)
     };
   });
 };
+
+const deleteComment = (req, res) => {
+  const commentId = req.params.commentId
+  const query= `delete from comment_table where comment_id='${commentId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+    };
+  });
+};
+
+const editComment = (req, res) => {
+  const commentId = req.body.commentId
+  const commentContent = req.body.commentContent
+  const query= `update comment_table set comment_content='${commentContent}' 
+  where comment_id='${commentId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+    };
+  });
+};
+
 
 const sendFile = (req, res) => {
   if (!req.params.group_id || !req.params.timestamp || !req.params.sender || !req.params.receiver || !req.params.type || req.file === undefined) {
@@ -596,7 +694,7 @@ const sendFile = (req, res) => {
         console.log(err);
         res.status(404).json({ error: `${err}`});
       } else {
-        // console.log(rows);
+        
         res.status(200).json(rows);
       }
   });
@@ -613,7 +711,6 @@ const sendMessage = (req, res) => {
         console.log(err);
         res.status(404).json({ error: `${err}`});
       } else {
-        // console.log(rows);
         res.status(200).json(rows);
       }
   });
@@ -626,7 +723,6 @@ const receiveMessage = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      // console.log(rows);
       res.status(200).json(rows);
     }
   });
@@ -644,7 +740,6 @@ const postMessage = (req, res) => {
         console.log(err);
         res.status(404).json({ error: `${err}`});
       } else {
-        // console.log(rows);
         res.status(200).json(rows);
       }
   });
@@ -662,7 +757,6 @@ const postFile = (req, res) => {
         console.log(err);
         res.status(404).json({ error: `${err}`});
       } else {
-        // console.log(rows);
         res.status(200).json(rows);
       }
   });
@@ -678,7 +772,6 @@ const getCreatorName = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      // console.log(rows);
       res.json(rows)
     }
   });
@@ -700,7 +793,6 @@ const getAdminsNames = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      // console.log(rows);
       res.json(rows)
     }
   });
@@ -718,11 +810,61 @@ const getNormalUsersNames = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      // console.log(rows);
       res.json(rows)
     }
   });
 }
+
+
+const getGroupDetailsUserId = (req, res) => {
+  const userName = req.params.userName
+  const query = `
+  select user_id from user_table where user_name='${userName}'
+  `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      
+      res.json(rows)
+    }
+  });
+}
+
+const getGroupDetailsGroupId = (req, res) => {
+  const groupName = req.params.groupName
+  const query = `
+  select group_id from group_table where group_name='${groupName}'
+  `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      
+      res.json(rows)
+    }
+  });
+}
+
+const getHidePostIds = (req, res) => {
+  const userName = req.params.userName
+  const query = `
+  select post_id from hide_post_table where user_id in 
+  (select user_id from user_table where user_name='${userName}')
+  `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      console.log(rows)
+      res.json(rows)
+    }
+  });
+}
+
 
 const addAdmin = (req, res) => {
   const groupName = req.body.groupName
@@ -738,7 +880,7 @@ const addAdmin = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      // console.log(rows);
+      
       res.json(rows)
     }
   });
@@ -758,7 +900,7 @@ const removeAdmin = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      // console.log(rows);
+      
       res.json(rows)
     }
   });
@@ -782,7 +924,7 @@ const inviteUser = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      // console.log(rows);
+      
       res.json(rows)
     }
   });
@@ -811,7 +953,7 @@ const leaveGroup = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      // console.log(rows);
+      
       res.json(rows)
     }
   });
@@ -861,18 +1003,27 @@ module.exports = {
     getCreatorName:getCreatorName,
     getAdminsNames: getAdminsNames,
     getNormalUsersNames:getNormalUsersNames,
+    getGroupDetailsUserId:getGroupDetailsUserId,
+    getGroupDetailsGroupId:getGroupDetailsGroupId,
+    getHidePostIds:getHidePostIds,
 
     //below is post api
     getPostInfo:getPostInfo,
+    deletePost:deletePost,
+    getPostUserId:getPostUserId,
+    hidePost:hidePost,
 
     //below is postDetails api
     getPostDetails:getPostDetails,
     getPostDetailsAllCommentsIds:getPostDetailsAllCommentsIds,
-    
+    getPostDetailsGetUserId:getPostDetailsGetUserId,
+    getPostDetailsMakeComment:getPostDetailsMakeComment,
 
     // below is comment api
     getCommentInfo:getCommentInfo,
     getCommentCreatorName:getCommentCreatorName,
+    deleteComment:deleteComment,
+    editComment:editComment,
 
     // below is manageGroupMembers api
     addAdmin:addAdmin,

@@ -3,13 +3,17 @@ import NavBar from './NavBar';
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Comment from './Comment'
+var uuid = require("react-uuid");
 
 function PostDetails() {
+    const [userName, setUserName] = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)
     const {postId} = useParams()
+    const [userId, setUserId] = useState('')
     const [postContent, setPostContent] = useState([])
     const [posterName, setPosterName] = useState('')
     const [postTime, setPostTime] = useState('')
     const [allCommentsIds, setAllCommentsIds] = useState([])
+    const [comment, setComment] = useState('')
     const baseUrl = 'http://localhost:8081/postDetails/'
     useEffect(() => {
       axios.get(baseUrl + postId).then(res => {
@@ -19,7 +23,7 @@ function PostDetails() {
                 post_type: res.data[0].message_type,
                 mimetype: res.data[0].mimetype,
             });
-            console.log(res.data[0]);
+            // console.log(res.data[0]);
             setPostContent(resList);
             setPosterName(res.data[0].user_name)
             const date = new Date(res.data[0].create_time);
@@ -31,6 +35,10 @@ function PostDetails() {
                 setAllCommentsIds(old => [...old, res.data[i].comment_id])
             }
         })
+    axios.get(baseUrl + 'getUserId/' + userName).then(res => {
+        // console.log(res.data)
+        setUserId(res.data[0].user_id)
+    })
     }, [])
 
     function getAllComments() {
@@ -41,6 +49,23 @@ function PostDetails() {
                         <Comment commentId={id}/>
                     </div>
                 ))}
+            </div>
+        )
+    }
+
+    function handleMakeComment() {
+        axios.post(baseUrl + 'makeComment', {commentId:uuid(), commentContent:comment, creatTime:new Date(), creatorId: userId, postId:postId}).then(res => {
+            console.log(res.data)
+    })
+    window.location.reload(false)
+    }
+
+    function makeComment() {
+        return (
+            <div>
+                <input type="text" name="commentBox" placeholder="input your comment" onChange={e => setComment(e.target.value)} value={comment}></input>
+                <button onClick={handleMakeComment}>Make a comment</button>
+                
             </div>
         )
     }
@@ -114,8 +139,8 @@ function PostDetails() {
                 <div class="columns is-half is-centered">
                     {getAllComments()}
                 </div>
-                
             </div>
+            {makeComment()}
         </div>
     )
 }
