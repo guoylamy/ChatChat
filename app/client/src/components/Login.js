@@ -23,17 +23,17 @@ function Login() {
         window.location.href =
         window.location.protocol + "//" + window.location.host + "/groupsPage/" + userName;
       }
+
     })
 
-    axios.get(baseUrl + userName).then(res => {
-       if (res.data.length === 1) {
-
-          alert("Password is not right! You only have 3 chances to try! Be careful!")
-        }
-        else {
-          alert("Username doesn't exist!")
-        }
-    })
+    // axios.get(baseUrl + userName).then(res => {
+    //    if (res.data.length === 1) {
+    //       alert("Password is not right! You only have 3 chances to try! Be careful!")
+    //     }
+    //     else {
+    //       alert("Username doesn't exist!")
+    //     }
+    // })
   }
   function handleUsername(event) {
     setUsername(event.target.value); 

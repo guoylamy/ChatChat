@@ -3,6 +3,7 @@ import NavBar from './NavBar';
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Post from './Post'
+import Chat from "./Chat";
 function GroupDetails() {
     const {groupName, userName} = useParams()
     const [userId, setUserId] = useState('')
@@ -109,15 +110,21 @@ function GroupDetails() {
                 <div class="is-size-4">Members</div>
                 <div class="is-size-5">Creator</div>
                 {creator.map((member) => (
-                    <div>{member}</div>
+                  <div>
+                      {member === userName ? <div>{member}</div> : <a href={window.location.protocol + "//" + window.location.host + "/chat/" + userName + "/" + member}>{member}</a>}
+                  </div>
                 ))}
                 <div class="is-size-5">Admins</div>
                 {admins.map((member) => (
-                    <div>{member}</div>
+                    <div>
+                      {member === userName ? <div>{member}</div> : <a href={window.location.protocol + "//" + window.location.host + "/chat/" + userName + "/" + member}>{member}</a>}
+                  </div>
                 ))}
                 <div class="is-size-5">Other Users</div>
                 {normalUsers.map((member) => (
-                    <div>{member}</div>
+                    <div>
+                      {member === userName ? <div>{member}</div> : <a href={window.location.protocol + "//" + window.location.host + "/chat/" + userName + "/" + member}>{member}</a>}
+                  </div>
                 ))}
             </div>
         )
