@@ -2,7 +2,8 @@ import { useParams } from "react-router-dom";
 import React, {useState, useEffect} from "react"
 import NavBar from './NavBar';
 import axios from "axios";
-import Post from './Post'
+import Post from './Post';
+import './Profile.css';
 
 function Profile() {
   const [userName, setUserName] = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)
@@ -47,9 +48,39 @@ function Profile() {
           
         })
     }, [])
-    // need implementation
-    function handleUploadAvatar() {
+    
+    function handleUploadAvatar(selectedFile) {
+      const formData = new FormData();
+      formData.append('fileUpload', selectedFile);
+      axios.post(baseUrl + 'uploadavatar/' + userName, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+      }).then(res => {
+        console.log(res.data);
+      }).catch(err => {
+        console.log(`error: ${err}`);
+      })
+    }
 
+    function getAvatar() {
+      axios.get(baseUrl + "getavatar/" + userName).then(res => {
+        if (res.data[0].avatar == null) {
+          return;
+        }
+        const img = `data:${res.data[0].mimetype};base64,` + Buffer.from(res.data[0].avatar).toString('base64');
+        document.getElementById("avatar").src = img;
+      }).catch(err => {
+        console.log(`error: ${err}`);
+      })
+    }
+
+    function deleteAvatar() {
+      axios.delete(baseUrl + "deleteavatar/" + userName).then(res => {
+        console.log(res);
+      }).catch(err => {
+        console.log(`delete error: ${err}`);
+      })
     }
 
     function handleChangePassword() {
@@ -162,7 +193,18 @@ function Profile() {
         <div>
           Name: {userName}
           Regsiter Date: {registerDate}
-          <button onClick={handleUploadAvatar}>Upload your avatar</button>
+          <div>
+            <label htmlFor="imageUpload">Upload you avatar</label>
+            <input type="file" name="fileUpload" id="imageUpload" accept="image/*" onChange={async (event) => {
+              await handleUploadAvatar(event.target.files[0]);
+              event.target.value = null;
+            }} />
+            <button onClick={deleteAvatar}>Delete your avatar</button>
+          </div>
+          <div>
+              <img id="avatar" src="/images/avatar.png" alt="Avatar" ></img>
+              {getAvatar()}
+          </div>
           {getInvitations()}
           <div>
             If you want to reset your password:

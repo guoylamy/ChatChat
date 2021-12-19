@@ -42,7 +42,10 @@ const register = (req, res) => {
             })
         }
         else {
-            res.json(rows)
+          if (res === '1') {
+            return JSON.stringify(rows);
+          }
+          res.json(rows)
         }
     };
   });
@@ -80,6 +83,9 @@ const getRegsiterDate = (req, res) => {
 
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
     else {
         res.json(rows)
     };
@@ -96,7 +102,10 @@ const changePassword = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-        res.json(rows)
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
+      res.json(rows)
     };
   });
 };
@@ -114,7 +123,10 @@ const getGroupsInvitations = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      // console.log(rows)
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -409,6 +421,9 @@ const joinPublicGroup = (req, res) => {
     // console.log(userName)
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
     else {
      res.json(rows)
     };
@@ -441,7 +456,13 @@ const filterByTopics = (req, res) => {
                 } 
               }
             }
+            if (res === '1') {
+              // console.log('routes res===1 return', JSON.stringify(results));
+              return JSON.stringify(results);
+            }
+            else {
             res.json(results)
+          }
         };
       });
       
@@ -463,6 +484,9 @@ const createGroup = (req, res) => {
   connection.query(getCreatorId, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+        if (res === '1'){
+          return JSON.stringify(res);
+        }
         creator_id = rows[0].user_id
         console.log(creator_id)
         const query = `INSERT INTO group_table (group_id, group_name, group_type, creator_id) VALUES ('${group_id}', '${groupname}', '${grouptype}', '${creator_id}')`;
@@ -588,6 +612,21 @@ const getPostDetails = (req, res) => {
   });
 };
 
+const getPostAttachmentDetails = (req, res) => {
+  const postId = req.params.postId
+  // find id in group table and 
+  const query= `select *
+  from post_attachment
+  where post_id='${postId}'
+  order by attachement_id asc`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+        res.json(rows)
+    };
+  });
+};
+
 const getPostDetailsAllCommentsIds = (req, res) => {
   const postId = req.params.postId
   // find id in group table and 
@@ -682,6 +721,48 @@ const editComment = (req, res) => {
   });
 };
 
+const uploadAvatar = (req, res) => {
+  if (!req.file) {
+    res.status(404).json({ error: 'missing avatar content' });
+    return;
+  }
+  const query = 'UPDATE user_table SET avatar=?, mimetype=? WHERE user_name=?';
+  connection.query(query, [req.file.buffer, req.file.mimetype, req.params.userName], (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
+
+const getAvatar = (req, res) => {
+  const query = `SELECT * FROM user_table WHERE user_name = '${req.params.userName}'`;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
+
+const deleteAvatar = (req, res) => {
+  const query = 'UPDATE user_table SET avatar=null, mimetype=null WHERE user_name=?';
+  connection.query(query, [req.params.userName], (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
 
 const sendFile = (req, res) => {
   if (!req.params.group_id || !req.params.timestamp || !req.params.sender || !req.params.receiver || !req.params.type || req.file === undefined) {
@@ -740,19 +821,19 @@ const postMessage = (req, res) => {
         console.log(err);
         res.status(404).json({ error: `${err}`});
       } else {
-        res.status(200).json(rows);
+        // console.log(rows);
+        res.status(200).json(post_id);
       }
   });
 }
 
 const postFile = (req, res) => {
-  if (!req.params.group_id || !req.params.timestamp || !req.params.creator_id || !req.params.type || req.file === undefined) {
-    res.status(404).json({ error: 'missing groupid or timestamp or sender or message or type' });
+  if (req.file === undefined) {
+    res.status(404).json({ error: 'missing post attachment' });
     return;
   }
-  const post_id = uuid();
-  const query = 'INSERT INTO post_table (post_id, creator_id, group_id, create_time, post_content, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  connection.query(query, [post_id, req.params.creator_id, req.params.group_id, req.params.timestamp, req.file.buffer, req.params.type, req.file.mimetype], (err, rows, fields) => {
+  const query = 'INSERT INTO post_attachment (post_id, post_content, message_type, mimetype) VALUES (?, ?, ?, ?)';
+  connection.query(query, [req.params.post_id,  req.file.buffer, req.params.type, req.file.mimetype], (err, rows, fields) => {
       if (err) {
         console.log(err);
         res.status(404).json({ error: `${err}`});
@@ -772,6 +853,10 @@ const getCreatorName = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
+      // console.log(rows);
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -793,6 +878,10 @@ const getAdminsNames = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
+      // console.log(rows);
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -925,6 +1014,10 @@ const inviteUser = (req, res) => {
       res.status(404).json({ error: `${err}`});
     } else {
       
+      // console.log(rows);
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -981,6 +1074,9 @@ module.exports = {
     declinePublicRequest:declinePublicRequest,
     getNotifications:getNotifications,
     resolveNotification:resolveNotification,
+    uploadAvatar:uploadAvatar,
+    getAvatar:getAvatar,
+    deleteAvatar:deleteAvatar,
 
     // below is api for group page
     getMyGroups:getMyGroups,
@@ -1018,6 +1114,8 @@ module.exports = {
     getPostDetailsAllCommentsIds:getPostDetailsAllCommentsIds,
     getPostDetailsGetUserId:getPostDetailsGetUserId,
     getPostDetailsMakeComment:getPostDetailsMakeComment,
+    getPostAttachmentDetails:getPostAttachmentDetails,
+    
 
     // below is comment api
     getCommentInfo:getCommentInfo,

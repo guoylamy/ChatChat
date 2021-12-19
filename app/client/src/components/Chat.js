@@ -68,11 +68,6 @@ function Chat() {
     }
 
     const sendFile = async (fileType, selectedFile) => {
-        console.log("sendFile");
-        if (selectedFile === undefined) {
-            return;
-        }
-        console.log("has selectedFile");
         const formData = new FormData();
         formData.append('fileUpload', selectedFile);
         axios.post(baseUrl + `/sendfile/${group_id}/${Date.now()}/${userName}/${fileType}/${friendName}`, formData, {
@@ -182,20 +177,30 @@ function Chat() {
                 </ScrollToBottom>
             </div>
             <div className="chat-footer">
-                <label htmlFor="imageUpload">Send Image</label>
-                <input type="file" name="fileUpload" id="imageUpload" onChange={(event) => {
-                        sendFile("image", event.target.files[0]);
-                }} />
-                <label htmlFor="audioUpload">Send Audio</label>
-                <input type="file" name="fileUpload" id="audioUpload" onChange={(event) => {
-                        console.log(event.target.files[0]);
-                        sendFile("audio", event.target.files[0]);
-                }} />
-                <label htmlFor="videoUpload">Send Video</label>
-                <input type="file" name="fileUpload" id="videoUpload" onChange={(event) => {
-                        console.log(event.target.files[0]);
-                        sendFile("video", event.target.files[0]);
-                }} />
+                <div>
+                    <label htmlFor="imageUpload">Send Image</label>
+                    <input type="file" name="fileUpload" id="imageUpload" accept="image/*" />
+                    <button id="imageSendBtn" onClick={async () => {
+                        await sendFile("image", document.getElementById("imageUpload").files[0]); 
+                        document.getElementById("imageUpload").value = null;
+                    }}> Send Image</button>
+                </div>
+                <div>
+                    <label htmlFor="audioUpload">Send Audio</label>
+                    <input type="file" name="fileUpload" id="audioUpload" accept="audio/*" />
+                    <button id="audioSendBtn" onClick={async () => {
+                        await sendFile("audio", document.getElementById("audioUpload").files[0]); 
+                        document.getElementById("audioUpload").value = null;
+                    }}> Send Audio</button>
+                </div>
+                <div>
+                    <label htmlFor="videoUpload">Send Video</label>
+                    <input type="file" name="fileUpload" id="videoUpload" accept="video/*" />
+                    <button id="videoSendBtn" onClick={async () => {
+                        await sendFile("video", document.getElementById("videoUpload").files[0]); 
+                        document.getElementById("videoUpload").value = null;
+                    }}> Send Video</button>
+                </div>
                 <input 
                   type="text"
                   value={currentMessage}

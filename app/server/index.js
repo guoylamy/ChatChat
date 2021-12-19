@@ -67,7 +67,9 @@ app.post("/profile/approvePublicRequest/:userId/:groupId", routes.approvePublicR
 app.post("/profile/declinePublicRequest/:userId/:groupId", routes.declinePublicRequest);
 app.get("/profile/getNotifications/:userName", routes.getNotifications);
 app.delete("/profile/resolveNotification/:userId/:groupId", routes.resolveNotification);
-
+app.post("/profile/uploadavatar/:userName", upload.single('fileUpload'), routes.uploadAvatar);
+app.get("/profile/getavatar/:userName", routes.getAvatar);
+app.delete("/profile/deleteavatar/:userName", routes.deleteAvatar);
 
 // group page api
 app.get("/grouppage/public/:userName", routes.getPublicGroups)
@@ -101,6 +103,7 @@ app.get("/postDetails/allCommentsIds/:postId", routes.getPostDetailsAllCommentsI
 app.get("/postDetails/getUserId/:userName", routes.getPostDetailsGetUserId)
 app.post("/postDetails/makeComment", routes.getPostDetailsMakeComment)
 
+app.get("/postDetails/attachments/:postId", routes.getPostAttachmentDetails);
 
 // comment api
 app.get("/comment/:commentId", routes.getCommentInfo)
@@ -119,7 +122,9 @@ app.post("/sendfile/:group_id/:timestamp/:sender/:type/:receiver", upload.single
 app.post("/sendmessage", routes.sendMessage);
 app.get("/receivemessage/:group_id", routes.receiveMessage);
 app.post("/postmessage", routes.postMessage);
-app.post("/postfile/:group_id/:timestamp/:creator_id/:type", upload.single('fileUpload'), routes.postFile);
+app.post("/postfile/:post_id/:type", upload.single('fileUpload'), routes.postFile);
 server.listen(8081, () => {
   console.log(`Server listening on PORT 8081`);
 });
+
+module.exports = app;

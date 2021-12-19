@@ -22,31 +22,80 @@ function NewPost() {
             message: currentMessage,
         };
         axios.post(baseUrl + `/postmessage`, messageData)
-        .then(res => {
-            document.getElementById("post-result").innerHTML = 'post message successfully!';
+        .then(async (res) => {
+            console.log(res);
+            let success = true;
+            let tmpSuccess;
+            const postId = res.data; // todo
+            const imageList =  document.getElementById("imageUpload").files;
+            console.log("imageList");
+            console.log(imageList);
+            for (let i = 0; i < imageList.length; i++) {
+                tmpSuccess = await sendFile("image", imageList[i], postId);
+                console.log(tmpSuccess);
+                if (!tmpSuccess) {
+                    success = false;
+                }
+            }
+            const audioList =  document.getElementById("audioUpload").files;
+            console.log("audioList");
+            console.log(audioList);
+            for (let i = 0; i < audioList.length; i++) {
+                tmpSuccess = await sendFile("audio", audioList[i], postId);
+                console.log(tmpSuccess);
+                if (!tmpSuccess) {
+                    success = false;
+                }
+            }
+            const videoList =  document.getElementById("videoUpload").files;
+            console.log("videoList");
+            console.log(videoList);
+            for (let i = 0; i < audioList.length; i++) {
+                tmpSuccess = await sendFile("video", videoList[i], postId);
+                console.log(tmpSuccess);
+                if (!tmpSuccess) {
+                    success = false;
+                }
+            }
+            if (success) {
+                document.getElementById("post-result").innerHTML = 'post message successfully!';
+            } else {
+                document.getElementById("post-result").innerHTML = 'post message attachment failed!';
+            }
+            setCurrentMessage("");
+            document.getElementById("imageUpload").value = null;
+            document.getElementById("audioUpload").value = null;
+            document.getElementById("videoUpload").value = null;
         }).catch(err => {
             document.getElementById("post-result").innerHTML = `error: ${err}`;
+            setCurrentMessage("");
+            document.getElementById("imageUpload").value = null;
+            document.getElementById("audioUpload").value = null;
+            document.getElementById("videoUpload").value = null;
         })
         // setMessageList((list) => [...list, messageData]);
-        setCurrentMessage("");
     }
 
-    const sendFile = async (fileType, selectedFile) => {
+    const sendFile = async (fileType, selectedFile, postId) => {
+        console.log("sending file...");
+        console.log(selectedFile);
         if (selectedFile === undefined) {
             return;
         }
-        console.log("has selectedFile");
+        console.log("attach element to " + postId + " with type " + fileType);
         const formData = new FormData();
         formData.append('fileUpload', selectedFile);
-        axios.post(baseUrl + `/postfile/${group_id}/${Date.now()}/${creator_id}/${fileType}`, formData, {
+        axios.post(baseUrl + `/postfile/${postId}/${fileType}`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
         }).then(res => {
-            document.getElementById("post-result").innerHTML = 'post file successfully!';
+            return true;
         }).catch(err => {
-            document.getElementById("post-result").innerHTML = `error: ${err}`;
+            console.log(`post attachment error: ${err}`);
+            return false;
         })
+        return true;
     }
 
     return (
@@ -67,28 +116,26 @@ function NewPost() {
                         }}
                         onKeyPress={(event) => {event.key === "Enter" && sendMessage();}}
                     />
-                    <button onClick={sendMessage}>&#9658;</button>
                 </div>
                 <div className="post-attachment">
-                    <label htmlFor="imageUpload">Send Image</label>
-                    <input type="file" name="fileUpload" id="imageUpload" onChange={(event) => {
-                            sendFile("image", event.target.files[0]);
-                    }} />
+                    <label htmlFor="imageUpload">Add Image</label>
+                    <input type="file" name="fileUpload" id="imageUpload" accept="image/*" multiple/>
                 </div>
                 <div className="post-attachment">
-                    <label htmlFor="audioUpload">Send Audio</label>
-                    <input type="file" name="fileUpload" id="audioUpload" onChange={(event) => {
-                            console.log(event.target.files[0]);
-                            sendFile("audio", event.target.files[0]);
-                    }} />
+                    <label htmlFor="audioUpload">Add Audio</label>
+                    <input type="file" name="fileUpload" id="audioUpload" accept="audio/*" multiple/>
                 </div>
                 <div className="post-attachment">
-                    <label htmlFor="videoUpload">Send Video</label>
-                    <input type="file" name="fileUpload" id="videoUpload" onChange={(event) => {
-                            console.log(event.target.files[0]);
-                            sendFile("video", event.target.files[0]);
-                    }} />
+                    <label htmlFor="videoUpload">Add Video</label>
+                    <input type="file" name="fileUpload" id="videoUpload" accept="video/*" multiple/>
                 </div>
+                <button onClick={async() => {
+                    await sendMessage();
+                }}>&#9658;</button>
+                {/* <button id="videoSendBtn" onClick={async () => {
+                        await sendFile("video", document.getElementById("videoUpload").files[0]); 
+                        document.getElementById("videoUpload").value = null;
+                    }}> Send Video</button> */}
               </div>
               <p id="post-result">{" "}</p>
             </div>
