@@ -66,8 +66,27 @@ const verifyLogin = (req, res) => {
       return JSON.stringify(rows);
     }
     else {
-        
-        // console.log(typeof res)
+        res.json(rows)
+    };
+  });
+};
+
+const ifUserNameExists = (req, res) => {
+  const userName = req.params.userName
+  
+  const query = `
+    SELECT *
+    FROM user_table
+    WHERE user_name='${userName}'
+  `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else if (res === '1') {
+      
+      return JSON.stringify(rows);
+    }
+    else {
+      // console.log(rows);
         res.json(rows)
     };
   });
@@ -1257,6 +1276,7 @@ const getNewPostCreatorNameAndGroupName = (req, res) => {
 module.exports = {
     verifyLogin:verifyLogin,
     register:register,
+    ifUserNameExists:ifUserNameExists,
 
     // below is profile api
     getRegsiterDate:getRegsiterDate,

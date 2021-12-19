@@ -8,7 +8,7 @@ function Login() {
   const [password, setPassword] = useState("")
   const baseUrl = 'http://localhost:8081/login/'
   function checkIfAcountExists() {
-    //should use userName and password to get record
+    
     axios.get(baseUrl + userName + '/' + password).then(res => {
       if (res.data.length === 1) {
         var oldDateObj = new Date();
@@ -23,10 +23,17 @@ function Login() {
         window.location.href =
         window.location.protocol + "//" + window.location.host + "/groupsPage/" + userName;
       }
-      else {
-        alert("user doesn't exist or password is not right!")
-      }
+
     })
+
+    // axios.get(baseUrl + userName).then(res => {
+    //    if (res.data.length === 1) {
+    //       alert("Password is not right! You only have 3 chances to try! Be careful!")
+    //     }
+    //     else {
+    //       alert("Username doesn't exist!")
+    //     }
+    // })
   }
   function handleUsername(event) {
     setUsername(event.target.value); 
