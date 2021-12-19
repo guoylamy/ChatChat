@@ -559,6 +559,7 @@ const getPostInfo = (req, res) => {
 const deletePost = (req, res) => {
   const postId = req.params.postId
   const query= `
+  delete from comment_table where post_id='${postId}';
   delete from post_table where post_id='${postId}'`
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
@@ -597,6 +598,66 @@ const hidePost = (req, res) => {
     };
   });
 };
+
+const getGroupId = (req, res) => {
+  const postId = req.params.postId
+  // find id in group table and 
+  const query= `select group_id from post_table where post_id='${postId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const getAdminsList = (req, res) => {
+  const groupId = req.params.groupId
+  // find id in group table and 
+  const query= `select user_id from group_user_table where group_id='${groupId}' and is_admin=1`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const getFlagValue = (req, res) => {
+  const postId = req.params.postId
+  // find id in group table and 
+  const query= `select flag from post_table where post_id='${postId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const updateFlagStatus = (req, res) => {
+  const postId = req.params.postId
+  const flag = req.params.flag
+  // find id in group table and 
+  var query
+  if (flag == 'true') {
+    query= `update post_table set flag=0 where post_id='${postId}'`
+  }
+  else {
+    query= `update post_table set flag=1 where post_id='${postId}'`     
+  }
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
 
 const getPostDetails = (req, res) => {
   const postId = req.params.postId
@@ -1052,6 +1113,24 @@ const leaveGroup = (req, res) => {
   });
 }
 
+const getNewPostCreatorNameAndGroupName = (req, res) => {
+  const creatorId = req.params.creatorId
+  const groupId = req.params.groupId
+  const query = `
+    select user_name from user_table where user_id = '${creatorId}';
+    select group_name from group_table where group_id = '${groupId}'
+      `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      
+      res.json(rows)
+    }
+  });
+}
+
 
 
 
@@ -1108,6 +1187,10 @@ module.exports = {
     deletePost:deletePost,
     getPostUserId:getPostUserId,
     hidePost:hidePost,
+    getGroupId:getGroupId,
+    getAdminsList:getAdminsList,
+    getFlagValue:getFlagValue,
+    updateFlagStatus:updateFlagStatus,
 
     //below is postDetails api
     getPostDetails:getPostDetails,
@@ -1127,5 +1210,8 @@ module.exports = {
     addAdmin:addAdmin,
     removeAdmin:removeAdmin,
     inviteUser:inviteUser,
-    leaveGroup:leaveGroup
+    leaveGroup:leaveGroup,
+
+    //below is NewPost api
+    getNewPostCreatorNameAndGroupName:getNewPostCreatorNameAndGroupName
 };

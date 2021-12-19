@@ -96,6 +96,10 @@ app.get("/post/:postId", routes.getPostInfo)
 app.delete("/post/deletePost/:postId", routes.deletePost)
 app.get("/post/findUserId/:userName", routes.getPostUserId)
 app.post("/post/hidePost", routes.hidePost)
+app.get("/post/getGroupId/:postId", routes.getGroupId)
+app.get("/post/getAdminsList/:groupId", routes.getAdminsList)
+app.get("/post/getFlagValue/:postId", routes.getFlagValue)
+app.post("/post/updateFlagStatus/:postId/:flag", routes.updateFlagStatus)
 
 // postDetails api
 app.get("/postDetails/:postId", routes.getPostDetails)
@@ -117,6 +121,10 @@ app.post("/manageGroupMembers/addAdmin", routes.addAdmin)
 app.post("/manageGroupMembers/removeAdmin", routes.removeAdmin)
 app.post("/manageGroupMembers/inviteUser", routes.inviteUser)
 app.post("/manageGroupMembers/leaveGroup", routes.leaveGroup)
+
+// NewPost api
+app.get("/newPost/:creatorId/:groupId", routes.getNewPostCreatorNameAndGroupName)
+
 
 app.post("/sendfile/:group_id/:timestamp/:sender/:type/:receiver", upload.single('fileUpload'), routes.sendFile);
 app.post("/sendmessage", routes.sendMessage);

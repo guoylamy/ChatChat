@@ -92,8 +92,8 @@ function PostDetails() {
             </div>
             <article class="media">
                    {postContentList.map((postContent) => {
-                       console.log("postContentList has length " + postContentList.length);
-                       console.log(postContentList);
+                    //    console.log("postContentList has length " + postContentList.length);
+                    //    console.log(postContentList);
                         if (postContent.post_type === "string") {
                             return (
                                 <div class="media-content">

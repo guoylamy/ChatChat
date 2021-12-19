@@ -7,11 +7,15 @@ function Post(props) {
     const [userName, setUserName] = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)
     const [postId, setPostId] = useState(props.postId)
     const [userId, setUserId] = useState('')
+    const [groupId, setGroupId] = useState('')
     const [postContent, setPostContent] = useState('')
     const [posterName, setPosterName] = useState('')
     const [postTime, setPostTime] = useState('')
+    const [adminsList, setAdminsList] = useState([])
+    const [flag, setFlag] = useState(false)
     const baseUrl = 'http://localhost:8081/post/'
     useEffect(() => {
+        setAdminsList([])
       axios.get(baseUrl + postId).then(res => {
             if (res.data[0].message_type === "string") {
                 setPostContent(Buffer.from(res.data[0].post_content).toString('utf8'))
@@ -21,7 +25,22 @@ function Post(props) {
         })
         axios.get(baseUrl + 'findUserId/' + userName).then(res => {
             setUserId(res.data[0].user_id)
+        })
+         axios.get(baseUrl + 'getGroupId/' + postId).then(res => {
+           axios.get(baseUrl + 'getAdminsList/' + res.data[0].group_id).then(res1 => {
+                for (var i = 0; i < res1.data.length; i++) {
+                    setAdminsList(old => [...old, res1.data[i].user_id])
+                }
+            })
+        })
+        axios.get(baseUrl + 'getFlagValue/' + postId).then(res => {
             // console.log(res.data)
+            if (res.data[0].flag === 1) {
+                setFlag(true)
+            }
+            else {
+                setFlag(false)
+            }
         })
     }, [])
     function jumpToPostDetailsPage() {
@@ -40,6 +59,12 @@ function Post(props) {
         })
         window.location.reload(false)
     }
+    function handleCheckBoxChange() {
+         axios.post(baseUrl + 'updateFlagStatus/' + postId + '/' + flag).then(res => {
+            
+        })
+        window.location.reload(false)
+    }
     return (
         <div>
             <div class="is-clickable"
@@ -53,8 +78,9 @@ function Post(props) {
                 <br></br>
             </div>
             <div>
-            {userName === posterName ? <button onClick={e => handleDeletePost()}>Delete</button> : ''}
+            {(userName === posterName || adminsList.includes(userId)) ? <button onClick={e => handleDeletePost()}>Delete</button> : ''}
             {userName === posterName ? '' : <button onClick={e => handleHidePost()}>Hide</button>}
+             flag <input type='checkbox' checked={flag} onChange={() => handleCheckBoxChange()}/>
             </div>
         </div>
     )
