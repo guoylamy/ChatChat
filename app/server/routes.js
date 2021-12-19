@@ -761,7 +761,7 @@ const getCreatorName = (req, res) => {
     } else {
       // console.log(rows);
       if (res === '1'){
-        return JSON.stringify(results);
+        return JSON.stringify(rows);
       }
       res.json(rows)
     }
@@ -785,6 +785,9 @@ const getAdminsNames = (req, res) => {
       res.status(404).json({ error: `${err}`});
     } else {
       // console.log(rows);
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
