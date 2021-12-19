@@ -8,12 +8,7 @@ cache:
 branches:
 jobs:
   include:
-    - stage: clinet, server  
-      name: clinet
-      script:
-        - cd app/client
-        - npm install
-        - npm test
+    - stage: server  
     - name: server
       script:
         - cd app/server

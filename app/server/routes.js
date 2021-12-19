@@ -66,8 +66,27 @@ const verifyLogin = (req, res) => {
       return JSON.stringify(rows);
     }
     else {
-        
-        // console.log(typeof res)
+        res.json(rows)
+    };
+  });
+};
+
+const ifUserNameExists = (req, res) => {
+  const userName = req.params.userName
+  
+  const query = `
+    SELECT *
+    FROM user_table
+    WHERE user_name='${userName}'
+  `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else if (res === '1') {
+      
+      return JSON.stringify(rows);
+    }
+    else {
+      // console.log(rows);
         res.json(rows)
     };
   });
@@ -620,6 +639,9 @@ const getPostInfo = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
         
     };
@@ -634,8 +656,10 @@ const deletePost = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
-        
     };
   });
 };
@@ -647,8 +671,10 @@ const getPostUserId = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
-        
     };
   });
 };
@@ -738,6 +764,9 @@ const getPostDetails = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -767,6 +796,9 @@ const getPostDetailsAllCommentsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     
     };
@@ -779,6 +811,9 @@ const getPostDetailsGetUserId = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
         
     };
@@ -798,8 +833,10 @@ const getPostDetailsMakeComment = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
-        
     };
   });
 };
@@ -812,6 +849,9 @@ const getCommentInfo = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -834,6 +874,9 @@ const deleteComment = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -847,6 +890,9 @@ const editComment = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -923,6 +969,9 @@ const sendMessage = (req, res) => {
         console.log(err);
         res.status(404).json({ error: `${err}`});
       } else {
+        if (res==='1'){
+          return JSON.stringify(rows);
+        }
         res.status(200).json(rows);
       }
   });
@@ -935,6 +984,9 @@ const receiveMessage = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
       res.status(200).json(rows);
     }
   });
@@ -953,6 +1005,9 @@ const postMessage = (req, res) => {
         res.status(404).json({ error: `${err}`});
       } else {
         // console.log(rows);
+        if (res==='1'){
+          return JSON.stringify(post_id);
+        }
         res.status(200).json(post_id);
       }
   });
@@ -1221,6 +1276,7 @@ const getNewPostCreatorNameAndGroupName = (req, res) => {
 module.exports = {
     verifyLogin:verifyLogin,
     register:register,
+    ifUserNameExists:ifUserNameExists,
 
     // below is profile api
     getRegsiterDate:getRegsiterDate,
