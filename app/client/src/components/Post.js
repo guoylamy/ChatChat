@@ -21,7 +21,9 @@ function Post(props) {
                 setPostContent(Buffer.from(res.data[0].post_content).toString('utf8'))
             }
             setPosterName(res.data[0].user_name)
-            setPostTime(res.data[0].create_time)
+            const date = new Date(res.data[0].create_time);
+            const month = date.getMonth() < 12 ? date.getMonth() + 1 : 1;
+            setPostTime(date.getFullYear() + "-" + month + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
         })
         axios.get(baseUrl + 'findUserId/' + userName).then(res => {
             setUserId(res.data[0].user_id)
