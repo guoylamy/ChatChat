@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import {useParams} from "react-router-dom"
 import axios from "axios";
 import "./NewPost.css";
@@ -8,7 +8,16 @@ const baseUrl = 'http://localhost:8081';
 function NewPost() {
     const {creator_id, group_id} = useParams(); // creator_id = 5b746bd-cdee-301d-fe5-cfe4064af26f, group_id = 0863ccd-d673-71d1-ddb4-4f1b1f2ad8a
     const [currentMessage, setCurrentMessage] = useState("");
-    // const [messageList, setMessageList] = useState([]);
+    const [userName, setUserName] = useState('')
+    const [groupName, setGroupName] = useState('')
+    const [messageList, setMessageList] = useState([]);
+    useEffect(() => {
+      axios.get(baseUrl +'/newPost/'+ creator_id + "/" + group_id).then(res => {
+            // console.log(res.data[0][0].user_name)
+            setUserName(res.data[0][0].user_name)
+            setGroupName(res.data[1][0].group_name)
+        })
+    }, [])
 
     const sendMessage = async () => {
         if (currentMessage === "") {
@@ -74,6 +83,9 @@ function NewPost() {
             document.getElementById("videoUpload").value = null;
         })
         // setMessageList((list) => [...list, messageData]);
+        await new Promise(r => setTimeout(r, 200));
+        window.location.href =
+        window.location.protocol + "//" + window.location.host + "/groupDetails/" + groupName + '/' + userName
     }
 
     const sendFile = async (fileType, selectedFile, postId) => {

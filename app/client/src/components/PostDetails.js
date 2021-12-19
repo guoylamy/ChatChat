@@ -29,7 +29,8 @@ function PostDetails() {
             // setPostContent(resList);
             setPosterName(res.data[0].user_name)
             const date = new Date(res.data[0].create_time);
-            setPostTime(date.getFullYear() + "-" + date.getMonth() + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
+            const month = date.getMonth() < 12 ? date.getMonth() + 1 : 1;
+            setPostTime(date.getFullYear() + "-" + month + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
         });
       axios.get(baseUrl + 'attachments/' + postId).then(res => {
           for (let i = 0; i < res.data.length; i++) {
@@ -92,8 +93,8 @@ function PostDetails() {
             </div>
             <article class="media">
                    {postContentList.map((postContent) => {
-                       console.log("postContentList has length " + postContentList.length);
-                       console.log(postContentList);
+                    //    console.log("postContentList has length " + postContentList.length);
+                    //    console.log(postContentList);
                         if (postContent.post_type === "string") {
                             return (
                                 <div class="media-content">
