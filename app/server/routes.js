@@ -144,7 +144,9 @@ const acceptInvitation = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -164,7 +166,9 @@ const declineInvitation = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -187,7 +191,9 @@ const getAdminGroupsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -208,7 +214,9 @@ const getPublicGroupsRequestsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -294,7 +302,9 @@ const getNotifications = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -521,6 +531,9 @@ const getGroupDetailsTopics = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1'){
+        return JSON.stringify(res);
+      }
         res.json(rows)
         
     };
@@ -535,6 +548,9 @@ const getGroupDetailsAllPostsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1'){
+        return JSON.stringify(res);
+      }
         res.json(rows)
         
     };
