@@ -899,6 +899,9 @@ const getNormalUsersNames = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -915,7 +918,9 @@ const getGroupDetailsUserId = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -931,7 +936,9 @@ const getGroupDetailsGroupId = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -969,7 +976,9 @@ const addAdmin = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -989,7 +998,9 @@ const removeAdmin = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -1046,14 +1057,13 @@ const leaveGroup = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
 }
-
-
-
 
 // The exported functions, which can be accessed in index.js.
 module.exports = {
