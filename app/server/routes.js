@@ -144,7 +144,9 @@ const acceptInvitation = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -164,7 +166,9 @@ const declineInvitation = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -187,7 +191,9 @@ const getAdminGroupsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -208,7 +214,9 @@ const getPublicGroupsRequestsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -294,7 +302,9 @@ const getNotifications = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
-      
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -336,16 +346,47 @@ const getMyGroups = (req, res) => {
 };
 
 const getPublicGroups = (req, res) => {
-  const userName = req.params.userName
+  const userName = req.params.userName;
+  const orderType = req.params.order;
+  let query;
   // 
-  const query = `SELECT group_name FROM group_table WHERE group_id IN 
-  (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Public';
-    SELECT topics FROM group_topic_table WHERE group_id in 
-    (SELECT group_id FROM group_table WHERE group_id IN 
-  (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Public')`
-    // console.log(userName)
+  if (orderType == "2") { // order by newest message
+    query = `(select g.group_name, t.topics, max(p.create_time) as createTime
+    from group_user_table u inner join group_table g on u.group_id = g.group_id inner join group_topic_table t on g.group_id = t.group_id inner join post_table p on p.group_id = g.group_id
+    where g.group_type = 'Public' and u.user_id IN (SELECT user_id FROM user_table WHERE user_name='${userName}')
+    group by g.group_id, g.group_name, t.topics)
+    UNION
+    (select g.group_name, t.topics, 0 as createTime
+    from group_user_table u inner join group_table g on u.group_id = g.group_id inner join group_topic_table t on g.group_id = t.group_id
+    where g.group_type = 'Public' and u.user_id IN (SELECT user_id FROM user_table WHERE user_name='${userName}')
+    and g.group_id NOT IN (SELECT distinct group_id FROM post_table)
+    group by g.group_id, g.group_name, t.topics)
+    order by createTime desc;`;
+  } else if (orderType === "3") { //Number of Posts
+    query = `(select g.group_name as group_name, t.topics as topics, count(p.post_id) as postNum 
+    from group_user_table u inner join group_table g on u.group_id = g.group_id inner join group_topic_table t on g.group_id = t.group_id inner join post_table p on p.group_id = g.group_id
+    where g.group_type = 'Public' and u.user_id IN (SELECT user_id FROM user_table WHERE user_name='${userName}')
+    group by g.group_id, g.group_name, t.topics)
+    UNION
+    (select g.group_name, t.topics, 0 as postNum
+    from group_user_table u inner join group_table g on u.group_id = g.group_id inner join group_topic_table t on g.group_id = t.group_id
+    where g.group_type = 'Public' and u.user_id IN (SELECT user_id FROM user_table WHERE user_name='${userName}')
+    and g.group_id NOT IN (SELECT distinct group_id FROM post_table)
+    group by g.group_id, g.group_name, t.topics)
+    order by postNum desc;`;
+  } else if (orderType === "4") { // Number of Members
+    query = `select g.group_name as group_name, t.topics as topics
+    from group_user_table u inner join group_table g on u.group_id = g.group_id inner join group_topic_table t on g.group_id = t.group_id
+    where g.group_type = 'Public' and u.user_id IN (SELECT user_id FROM user_table WHERE user_name='${userName}')
+    group by u.group_id, g.group_name, t.topics
+    order by count(u.user_id) desc;`;
+  } else {
+    query = `SELECT g.group_name, t.topics FROM group_table g inner join group_topic_table t on t.group_id=g.group_id
+    WHERE g.group_id IN 
+      (SELECT group_id FROM group_user_table WHERE user_id IN 
+        (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Public';`;
+  }
+
   connection.query(query, [userName, userName], (err, rows, fields) => {
     if (err) console.log(err);
     else if (res === '1') {
@@ -473,6 +514,29 @@ const filterByTopics = (req, res) => {
   
 }
 
+const suggestgroup = (req, res) => {
+  const userName = req.params.userName;
+  const query = ` SELECT group_table.group_name, group_topic_table.topics
+  FROM group_table inner join group_topic_table on group_table.group_id=group_topic_table.group_id
+  WHERE group_table.group_type='Public' and group_table.group_id in 
+  (SELECT group_id FROM group_user_table WHERE user_id NOT IN
+    (SELECT user_id FROM user_table WHERE user_name='${userName}'))
+  ORDER BY group_topic_table.topics desc
+  LIMIT 1
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
+    else {
+        res.json(rows)
+    };
+  });
+
+}
+
 const createGroup = (req, res) => {
   const groupname = req.params.groupname
   const grouptype = req.params.grouptype
@@ -521,6 +585,9 @@ const getGroupDetailsTopics = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1'){
+        return JSON.stringify(res);
+      }
         res.json(rows)
         
     };
@@ -535,6 +602,9 @@ const getGroupDetailsAllPostsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1'){
+        return JSON.stringify(res);
+      }
         res.json(rows)
         
     };
@@ -960,6 +1030,9 @@ const getNormalUsersNames = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -976,7 +1049,9 @@ const getGroupDetailsUserId = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -992,7 +1067,9 @@ const getGroupDetailsGroupId = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -1030,7 +1107,9 @@ const addAdmin = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -1050,7 +1129,9 @@ const removeAdmin = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      
+      if (res === '1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -1107,7 +1188,9 @@ const leaveGroup = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
       res.json(rows)
     }
   });
@@ -1171,6 +1254,7 @@ module.exports = {
     createGroup:createGroup,
     joinPublicGroup:joinPublicGroup,
     filterByTopics:filterByTopics,
+    suggestgroup:suggestgroup,
 
     // below is api for groupDetails page
     getGroupDetailsTopics:getGroupDetailsTopics,
