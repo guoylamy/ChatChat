@@ -597,7 +597,7 @@ const getGroupDetailsTopics = (req, res) => {
 const getGroupDetailsAllPostsIds = (req, res) => {
   const groupName = req.params.groupName
   // find id in group table and 
-  const query= `select post_id from post_table where group_id in 
+  const query= `select post_id, flag, create_time from post_table where group_id in 
   (select group_id from group_table where group_name='${groupName}')`
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
@@ -620,6 +620,9 @@ const getPostInfo = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
         
     };
@@ -629,12 +632,15 @@ const getPostInfo = (req, res) => {
 const deletePost = (req, res) => {
   const postId = req.params.postId
   const query= `
+  delete from comment_table where post_id='${postId}';
   delete from post_table where post_id='${postId}'`
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
-        
     };
   });
 };
@@ -646,8 +652,10 @@ const getPostUserId = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
-        
     };
   });
 };
@@ -668,6 +676,66 @@ const hidePost = (req, res) => {
   });
 };
 
+const getGroupId = (req, res) => {
+  const postId = req.params.postId
+  // find id in group table and 
+  const query= `select group_id from post_table where post_id='${postId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const getAdminsList = (req, res) => {
+  const groupId = req.params.groupId
+  // find id in group table and 
+  const query= `select user_id from group_user_table where group_id='${groupId}' and is_admin=1`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const getFlagValue = (req, res) => {
+  const postId = req.params.postId
+  // find id in group table and 
+  const query= `select flag from post_table where post_id='${postId}'`
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+const updateFlagStatus = (req, res) => {
+  const postId = req.params.postId
+  const flag = req.params.flag
+  // find id in group table and 
+  var query
+  if (flag == 'true') {
+    query= `update post_table set flag=0 where post_id='${postId}'`
+  }
+  else {
+    query= `update post_table set flag=1 where post_id='${postId}'`     
+  }
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else {
+      // console.log(rows)
+        res.json(rows)
+    };
+  });
+};
+
+
 const getPostDetails = (req, res) => {
   const postId = req.params.postId
   // find id in group table and 
@@ -677,6 +745,9 @@ const getPostDetails = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -706,6 +777,9 @@ const getPostDetailsAllCommentsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     
     };
@@ -718,6 +792,9 @@ const getPostDetailsGetUserId = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
         
     };
@@ -737,8 +814,10 @@ const getPostDetailsMakeComment = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
-        
     };
   });
 };
@@ -751,6 +830,9 @@ const getCommentInfo = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -773,6 +855,9 @@ const deleteComment = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -786,6 +871,9 @@ const editComment = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -862,6 +950,9 @@ const sendMessage = (req, res) => {
         console.log(err);
         res.status(404).json({ error: `${err}`});
       } else {
+        if (res==='1'){
+          return JSON.stringify(rows);
+        }
         res.status(200).json(rows);
       }
   });
@@ -874,6 +965,9 @@ const receiveMessage = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
       res.status(200).json(rows);
     }
   });
@@ -892,6 +986,9 @@ const postMessage = (req, res) => {
         res.status(404).json({ error: `${err}`});
       } else {
         // console.log(rows);
+        if (res==='1'){
+          return JSON.stringify(post_id);
+        }
         res.status(200).json(post_id);
       }
   });
@@ -1135,6 +1232,27 @@ const leaveGroup = (req, res) => {
   });
 }
 
+const getNewPostCreatorNameAndGroupName = (req, res) => {
+  const creatorId = req.params.creatorId
+  const groupId = req.params.groupId
+  const query = `
+    select user_name from user_table where user_id = '${creatorId}';
+    select group_name from group_table where group_id = '${groupId}'
+      `;
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      
+      res.json(rows)
+    }
+  });
+}
+
+
+
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
     verifyLogin:verifyLogin,
@@ -1189,6 +1307,10 @@ module.exports = {
     deletePost:deletePost,
     getPostUserId:getPostUserId,
     hidePost:hidePost,
+    getGroupId:getGroupId,
+    getAdminsList:getAdminsList,
+    getFlagValue:getFlagValue,
+    updateFlagStatus:updateFlagStatus,
 
     //below is postDetails api
     getPostDetails:getPostDetails,
@@ -1208,5 +1330,8 @@ module.exports = {
     addAdmin:addAdmin,
     removeAdmin:removeAdmin,
     inviteUser:inviteUser,
-    leaveGroup:leaveGroup
+    leaveGroup:leaveGroup,
+
+    //below is NewPost api
+    getNewPostCreatorNameAndGroupName:getNewPostCreatorNameAndGroupName
 };
