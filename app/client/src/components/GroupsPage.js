@@ -15,18 +15,11 @@ function GroupsPage() {
     const [topics, setTopics] = useState([])
     const [topicToBeAdded, setTopicToBeAdded] = useState('')
     const [filterTopics, setFilterTopics] = useState([])
+    const [suggestGroup, setSuggestGroup] = useState([])
+    const [publicGroupOrder, setPublicGroupOrder] = useState('1');
     const baseUrl = 'http://localhost:8081/grouppage/'
     useEffect(() => {
-      axios.get(baseUrl + 'public/' + userName).then(res => {
-            setPublicGroup([])
-            setPublicGroupTopics([])
-            for (var i = 0; i < res.data[0].length; i++) {
-                setPublicGroup(old => [...old, res.data[0][i].group_name])
-            }
-            for (var i = 0; i < res.data[1].length; i++) {
-                setPublicGroupTopics(old => [...old, res.data[1][i].topics])
-            }         
-        })
+        queryPublicGroups(publicGroupOrder);
         axios.get(baseUrl + 'private/' + userName).then(res => {
             setPrivateGroup([])
             setPrivateGroupTopics([])
@@ -37,12 +30,42 @@ function GroupsPage() {
                 setPrivateGroupTopics(old => [...old, res.data[1][i].topics])
             }
         })
+        axios.get(baseUrl + 'suggestgroup/' + userName).then(res => {
+            setSuggestGroup(res.data);
+        })
     }, [])
+
+    function queryPublicGroups(publicGroupOrder) {
+        axios.get(baseUrl + 'public/' + userName + "/" + publicGroupOrder).then(res => {
+            setPublicGroup([])
+            setPublicGroupTopics([])
+            for (var i = 0; i < res.data.length; i++) {
+                setPublicGroup(old => [...old, res.data[i].group_name])
+            }
+            for (var i = 0; i < res.data.length; i++) {
+                setPublicGroupTopics(old => [...old, res.data[i].topics])
+            }         
+        })
+    }
+
+    function getPublicGroupByOrder(event) {
+        setPublicGroupOrder(event.target.value);
+        queryPublicGroups(event.target.value);
+    }
+
     function getPublicGroups() {
         
         return (
             <div class="box">
                 <h1 className="title is-5"> Public Groups</h1>
+                <div class="select is-info"> 
+                    <select value={publicGroupOrder} onChange={getPublicGroupByOrder}>
+                        <option class="dropdown-item" value="1" disabled>None</option>
+                        <option class="dropdown-item" value="2">Newest Message</option>
+                        <option class="dropdown-item" value="3">Number of Posts</option>
+                        <option class="dropdown-item" value="4">Number of Members</option>
+                    </select>
+                </div>
                 {publicGroup.map((group_name, i) => (
                     <div key={group_name}>
                         <div class="is-clickable"
@@ -183,6 +206,29 @@ function GroupsPage() {
             </div>
         )
     }
+
+    function GroupSuggestion() {
+        return (
+            <div className="box"> 
+                <h1 className="title is-5">Group Suggestion</h1>
+                <div>
+                    {suggestGroup.map((group) => {
+                        return (
+                            <div>
+                                <label class="label"> Group Name </label>
+                                <div>{group.group_name}</div>
+                                <label class="label"> Group Topic </label>
+                                <div>{group.topics}</div>
+                                <br></br>
+                                <button class="button is-info" onClick={joinPublicGroupButton}>Join</button>
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div>
              <NavBar />
@@ -195,6 +241,7 @@ function GroupsPage() {
                             <div class="column">  {filterByGroup()}</div>
                             <div class="column"> {joinPublicGroup()}</div>
                             <div class="column"> {createGroup()}</div>
+                            <div class="column"> {GroupSuggestion()}</div>
                         </div>
                     </div>
                 </div>
