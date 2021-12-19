@@ -13,6 +13,8 @@ function GroupDetails() {
     const [admins, setAdmins] = useState([])
     const [normalUsers, setNormalUsers] = useState([])
     const [hidePostIds, setHidePostIds] = useState([])
+    const [flaggedPostNum, setFlaggedPostNum] = useState(0);
+    const [newestPostTime, setNewestPostTime] = useState('N/A');
     const baseUrl = 'http://localhost:8081/groupDetails/'
     useEffect(() => {
         setCreator([])
@@ -25,9 +27,22 @@ function GroupDetails() {
         })
     // need to get all post_id
       axios.get(baseUrl + 'allpostsids/' + groupName).then(res => {
+          setAllPostsIds([]);
+          let flaggedPost = 0;
+          let pt= 0;
           for (var i = 0; i < res.data.length; i++) {
             setAllPostsIds(old => [...old, res.data[i].post_id])
+            if (res.data[i].flag === 1) {
+                flaggedPost += 1;
+            }
+            if (res.data[i].create_time > pt) {
+                pt = res.data[i].create_time;
+            }
           }
+          setFlaggedPostNum(flaggedPost);
+          const date = new Date(pt);
+          const month = date.getMonth() < 12 ? date.getMonth() + 1 : 1;
+          setNewestPostTime(date.getFullYear() + "-" + month + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
         })
 
     // get creator name
@@ -118,6 +133,18 @@ function GroupDetails() {
             )
         }
     }
+    function groupAnalysis() {
+        return (
+            <div className="box"> 
+                <h1 className="title is-5">Group Analytics</h1>
+                <label class="label"> Number of members: {creator.length + admins.length + normalUsers.length}</label>
+                <label class="label"> Number of posts: {allPostsIds.length}</label>
+                <label class="label"> Number of post hidden: {hidePostIds.length}</label>
+                <label class="label"> Number of post flagged: {flaggedPostNum}</label>
+                <label class="label"> Newest post time: {newestPostTime}</label>
+            </div>
+        )
+    }
     return (
         <div>
             <NavBar />
@@ -135,8 +162,8 @@ function GroupDetails() {
             <div class = "columns is-mobile">
                 {getBoard()}
                 {getMembers()}
-                
             </div>
+            <div class="columns is-mobile"> {groupAnalysis()}</div>
             <a href={window.location.protocol + "//" + window.location.host + "/post/" + userId + '/' + groupId}>Make a post</a>
         </div>  
     )

@@ -597,7 +597,7 @@ const getGroupDetailsTopics = (req, res) => {
 const getGroupDetailsAllPostsIds = (req, res) => {
   const groupName = req.params.groupName
   // find id in group table and 
-  const query= `select post_id from post_table where group_id in 
+  const query= `select post_id, flag, create_time from post_table where group_id in 
   (select group_id from group_table where group_name='${groupName}')`
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);

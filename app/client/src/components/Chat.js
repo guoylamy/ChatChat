@@ -28,12 +28,13 @@ function Chat() {
             let resList = [];
             for (let i = 0; i < res.data.length; i++) {
                 const date = new Date(res.data[i].timestamp);
+                const month = date.getMonth() < 12 ? date.getMonth() + 1 : 1;
                 resList.push({
                     author: res.data[i].sender,
                     message: res.data[i].message,
                     message_type: res.data[i].message_type,
                     mimetype: res.data[i].mimetype,
-                    displayTime: date.getFullYear() + "-" + date.getMonth() + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes(),
+                    displayTime: date.getFullYear() + "-" + month + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes(),
                 })
             }
             setMessageList(resList);
