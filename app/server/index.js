@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send_message", (data) => {
+    console.log(`message in group: ${data}`);
     socket.to(data).emit("receive_message", data);
   })
 

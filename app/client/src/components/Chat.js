@@ -85,7 +85,12 @@ function Chat() {
     }
 
     useEffect(() => {
-        socket.on("receive_message", async (data) => {
+        receiveMessage();
+    }, [])
+    
+    useEffect(() => {
+        socket.on("receive_message", async () => {
+            await new Promise(r => setTimeout(r, 3000));
             await receiveMessage();
         });
     }, [socket]);
