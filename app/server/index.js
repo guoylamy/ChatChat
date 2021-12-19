@@ -72,7 +72,7 @@ app.get("/profile/getavatar/:userName", routes.getAvatar);
 app.delete("/profile/deleteavatar/:userName", routes.deleteAvatar);
 
 // group page api
-app.get("/grouppage/public/:userName", routes.getPublicGroups)
+app.get("/grouppage/public/:userName/:order", routes.getPublicGroups)
 app.get("/grouppage/private/:userName", routes.getPrivateGroups)
 app.delete("/grouppage/public/:userName", routes.deletePublicGroups)
 app.delete("/grouppage/private/:userName", routes.deletePrivateGroups)
@@ -80,6 +80,7 @@ app.post("/grouppage/join/:groupname/:userName", routes.joinPublicGroup)
 app.post("/grouppage/filter/:userName", routes.filterByTopics)
 app.post("/grouppage/:groupname/:grouptype/:userName", routes.createGroup)
 // app.get("/grouppage/filter/:userName", routes)
+app.get("/grouppage/suggestgroup/:userName", routes.suggestgroup);
 
 // group details api
 app.get("/groupDetails/topics/:groupName", routes.getGroupDetailsTopics)
