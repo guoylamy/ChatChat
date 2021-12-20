@@ -130,7 +130,7 @@ function NewPost() {
             <h1 className="chatchat-h1">chatchat!</h1>
             <div className="post-window">
               <div className="post-header">
-                <p>Post to group {group_id}</p>
+                <p>Post to group {groupName}</p>
               </div>
               <div className="post-body">
                 <div className="post-message">
