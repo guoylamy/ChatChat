@@ -556,6 +556,23 @@ const suggestgroup = (req, res) => {
 
 }
 
+const getAllPublicGroups = (req, res) => {
+  const query = `
+  select group_name from group_table where group_type='Public'
+  `;
+
+  connection.query(query, (err, rows, fields) => {
+    if (err) console.log(err);
+    else if (res === '1') {
+      return JSON.stringify(rows);
+    }
+    else {
+        res.json(rows)
+    };
+  });
+
+}
+
 const createGroup = (req, res) => {
   const groupname = req.params.groupname
   const grouptype = req.params.grouptype
@@ -1389,6 +1406,7 @@ module.exports = {
     joinPublicGroup:joinPublicGroup,
     filterByTopics:filterByTopics,
     suggestgroup:suggestgroup,
+    getAllPublicGroups:getAllPublicGroups,
 
     // below is api for groupDetails page
     getGroupDetailsTopics:getGroupDetailsTopics,

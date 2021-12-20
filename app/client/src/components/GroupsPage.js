@@ -17,8 +17,14 @@ function GroupsPage() {
     const [filterTopics, setFilterTopics] = useState([])
     const [suggestGroup, setSuggestGroup] = useState([])
     const [publicGroupOrder, setPublicGroupOrder] = useState('1');
+    const [allPublicGroups, setAllPublicGroups] = useState([])
     const baseUrl = 'http://localhost:8081/grouppage/'
     useEffect(() => {
+        axios.get(baseUrl + 'getAllPublicGroups').then(res => {
+            for (var i = 0; i < res.data.length; i++) {
+                setAllPublicGroups(old => [...old, res.data[i].group_name])
+            }
+        })
         queryPublicGroups(publicGroupOrder);
         axios.get(baseUrl + 'private/' + userName).then(res => {
             setPrivateGroup([])
@@ -57,7 +63,7 @@ function GroupsPage() {
         
         return (
             <div class="box">
-                <h1 className="title is-5"> Public Groups</h1>
+                <h1 className="title is-5"> Your Public Groups</h1>
                 <div class="select is-info"> 
                     <select value={publicGroupOrder} onChange={getPublicGroupByOrder}>
                         <option class="dropdown-item" value="1" disabled>None</option>
@@ -233,7 +239,16 @@ function GroupsPage() {
         <div>
              <NavBar />
             <div class="columns">
-                <div class="column is-one-third">{getPublicGroups()}</div>
+                
+                <div class="column is-one-third">
+                    <h2>All Public Groups</h2>
+                    {allPublicGroups.map(each => (
+                        <div>
+                            {each}
+                            </div>
+                    ))}
+                    {getPublicGroups()}
+                    </div>
                 <div class="column is-one-third"> {getPrivateGroups()}</div>
                 <div class="column is-one-third">
                     <div class="columns">

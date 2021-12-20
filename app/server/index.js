@@ -84,6 +84,7 @@ app.post("/grouppage/filter/:userName", routes.filterByTopics)
 app.post("/grouppage/:groupname/:grouptype/:userName", routes.createGroup)
 // app.get("/grouppage/filter/:userName", routes)
 app.get("/grouppage/suggestgroup/:userName", routes.suggestgroup);
+app.get("/grouppage/getAllPublicGroups", routes.getAllPublicGroups);
 
 // group details api
 app.get("/groupDetails/topics/:groupName", routes.getGroupDetailsTopics)
