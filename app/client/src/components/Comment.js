@@ -18,7 +18,11 @@ function Comment(props) {
     useEffect(() => {
       axios.get(baseUrl + commentId).then(res => {
             setCommentContent(res.data[0].comment_content)
-            setCreateTime(res.data[0].create_time)
+            const date = new Date(Number(res.data[0].create_time));
+            console.log(res.data[0], date)
+            const month = date.getMonth() < 12 ? date.getMonth() + 1 : 1;
+            setCreateTime(date.getFullYear() + "-" + month + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes())
+
             setCreatorId(res.data[0].creator_id)
             setEditComment(res.data[0].comment_content)
             setHashTags(res.data[0].hash_tags)

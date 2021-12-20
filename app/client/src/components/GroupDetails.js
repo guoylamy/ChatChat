@@ -3,7 +3,9 @@ import NavBar from './NavBar';
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Post from './Post'
+import io from "socket.io-client";
 import Chat from "./Chat";
+const socket = io.connect('http://localhost:8081');
 function GroupDetails() {
     const {groupName, userName} = useParams()
     const [userId, setUserId] = useState('')
@@ -20,6 +22,7 @@ function GroupDetails() {
     const [currentHashTag, setCurrentHashTag] = useState('')
     const [postIdsWithHashTags, setPostIdsWithHashTags] = useState([-1])
     const baseUrl = 'http://localhost:8081/groupDetails/'
+    socket.emit("join_room", groupName);
     useEffect(() => {
         setCreator([])
         setAdmins([])
@@ -44,9 +47,11 @@ function GroupDetails() {
             }
           }
           setFlaggedPostNum(flaggedPost);
-          const date = new Date(pt);
-          const month = date.getMonth() < 12 ? date.getMonth() + 1 : 1;
-          setNewestPostTime(date.getFullYear() + "-" + month + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
+          if (pt !== 0) {
+            const date = new Date(pt);
+            const month = date.getMonth() < 12 ? date.getMonth() + 1 : 1;
+            setNewestPostTime(date.getFullYear() + "-" + month + "-" +  date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
+          }
         })
 
     // get creator name
@@ -181,12 +186,21 @@ function GroupDetails() {
                 <div>{hashTags.map((each) => (
                     <div>{each}</div>
                 ))}</div>
-                <input type="text" value={currentHashTag} onChange={e => setCurrentHashTag(e.target.value)}></input>
+                <div>{"     "}</div><input type="text" value={currentHashTag} onChange={e => setCurrentHashTag(e.target.value)}></input>
                 <button onClick={handleAddTag}>Add Tag</button>
                 <button onClick={handleHashTagsSubmit}>Submit</button>
             </div>
         )
     }
+    useEffect(() => {
+        console.log("receive socket message");
+        socket.on("receive_message", async () => {
+            await new Promise(r => setTimeout(r, 300));
+            window.location.href =
+            window.location.protocol + "//" + window.location.host + "/groupDetails/" + groupName + '/' + userName;
+        });
+      }, [socket]);
+
     return (
         <div>
             <NavBar />
@@ -200,7 +214,8 @@ function GroupDetails() {
                 <div class="column is-one-third is-pulled-right"> {manageGroup()}</div>
                 
             </div>
-            <div class="columns is-mobile"> {getHashTags()}</div>
+            
+            <div class="columns is-mobile px-6">{getHashTags()}</div>
             <div class = "columns is-mobile">
                 {getBoard()}
                 {getMembers()}

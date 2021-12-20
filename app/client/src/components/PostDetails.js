@@ -78,7 +78,7 @@ function PostDetails() {
     }
 
     function handleMakeComment() {
-        axios.post(baseUrl + 'makeComment', {hashTags: hashTagsToBeAdded, commentId:uuid(), commentContent:comment, creatTime:new Date(), creatorId: userId, postId:postId}).then(res => {
+        axios.post(baseUrl + 'makeComment', {hashTags: hashTagsToBeAdded, commentId:uuid(), commentContent:comment, creatTime:Date.now(), creatorId: userId, postId:postId}).then(res => {
             // console.log(res.data)
     })
     window.location.reload(false)

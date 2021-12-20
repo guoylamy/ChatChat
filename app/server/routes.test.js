@@ -185,8 +185,44 @@ test('getPublicGroups works', async () => {
 });
 // sendFile
 // sendMessage
+test('sendMessage', async () =>{
+  db = await connect(config);
+  // await dbLib.register({ params: testPlayer },  '1');
+  // await dbLib.register({ params: testPlayer2 },  '1');
+  // await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  const group_id_new = group_id[0].group_id;
+  const time = Date.now();
+  await dbLib.sendMessage({ body: { sender: 'RoutesTestUser', receiver:'RoutesTestUser2', group_id: group_id_new, timestamp: time, message:'try' } },  '1');
+  const message = await knex.select('group_id').from('user_chat_table').where('sender', '=', 'RoutesTestUser');
+  expect(message).not.toBeNull();
+});
 // receiveMessage
+test('receiveMessage', async () =>{
+  db = await connect(config);
+  // await dbLib.register({ params: testPlayer },  '1');
+  // await dbLib.register({ params: testPlayer2 },  '1');
+  // await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  const group_id_new = group_id[0].group_id;
+  // await dbLib.sendMessage({ body: { sender: 'RoutesTestUser', receiver:'RoutesTestUser2', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
+  await dbLib.receiveMessage({ params: {group_id: group_id_new} }, '1');
+  const message = await knex.select('group_id').from('user_chat_table').where('sender', '=', 'RoutesTestUser');
+  expect(message).not.toBeNull();
+});
 // postMessage
+test('postMessage works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  // const user_id = await knex.select('user_id').from('user_table').where('user_name', '=', 'RoutesTestUser');
+  const group_id_new = group_id[0].group_id;
+  await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
+  const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
+  expect(message).not.toBeNull();
+});
+
 // postFile
 // getPrivateGroups
 test('getPrivateGroups works', async () => {
@@ -204,7 +240,7 @@ test('createGroup', async () => {
   await dbLib.register({ params: testPlayer },  '1');
   await dbLib.createGroup({ params: {groupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
   const check_group_created = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
-  expect(check_group_created).not.toBeNull();;
+  expect(check_group_created).not.toBeNull();
 });
 
 // joinPublicGroup
@@ -233,6 +269,15 @@ test('filterByTopics works', async () => {
   // console.log('get_group_name', get_group_name);
   // console.log('received', received);
   expect(get_group_name).not.toBeNull();
+});
+
+//suggestgroup
+test('suggestgroup works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.suggestgroup({ params: {userName:'RoutesTestUser'} }, '1');
+  const check_group_suggest = await knex.select('group_id').from('group_table').where('group_name', '!=', 'testCreate');
+  expect(check_group_suggest).not.toBeNull();
 });
 
 
@@ -310,23 +355,136 @@ test('getGroupDetailsGroupId works',async () => {
 
 
 // below is post api
-// getPostInfo:getPostInfo
-// deletePost:deletePost
-// getPostUserId:getPostUserId
-// hidePost:hidePost
+// getPostInfo
+test('getPostInfo works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  const group_id_new = group_id[0].group_id;
+  await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
+  const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
+  await dbLib.getPostInfo({ params:{postId: message[0].post_id} }, '1');
+  expect(message).not.toBeNull();
+});
+
+// deletePost
+test('deletePost works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  const group_id_new = group_id[0].group_id;
+  await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
+  const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
+  await dbLib.deletePost({ params:{postId: message[0].post_id} }, '1');
+  expect(message).not.toBeNull();
+});
+
+// getPostUserId
+test('getPostUserId works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.getPostUserId({ params:{userName: 'RoutesTestUser'} }, '1');
+  const newPlayer = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser');
+  expect(newPlayer).not.toBeNull();
+});
+// hidePost
 
 //below is postDetails api
 // getPostDetails
+test('getPostUserId works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  const group_id_new = group_id[0].group_id;
+  await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
+  const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
+  await dbLib.getPostDetails({ params:{postId: message[0].post_id} }, '1');
+  expect(message).not.toBeNull();
+});
 // getPostDetailsAllCommentsIds
+test('getPostDetailsAllCommentsIds works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  const group_id_new = group_id[0].group_id;
+  await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
+  const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
+  await dbLib.getPostDetailsAllCommentsIds({ params:{postId: message[0].post_id} }, '1');
+  expect(message).not.toBeNull();
+});
+
 // getPostDetailsGetUserId
+test('getPostDetailsGetUserId works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.getPostDetailsGetUserId({ params:{userName: 'RoutesTestUser'} }, '1');
+  const newPlayer = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser');
+  expect(newPlayer).not.toBeNull();
+});
 // getPostDetailsMakeComment
+test('getPostDetailsMakeComment works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  const group_id_new = group_id[0].group_id;
+  await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
+  const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
+  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id} }, '1');
+  expect(message).not.toBeNull();
+});
 // getPostAttachmentDetails
 
 // below is comment api
 // getCommentInfo
+test('getCommentInfo works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  const group_id_new = group_id[0].group_id;
+  await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
+  const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
+  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id} }, '1');
+  const commentID = await knex.select('comment_id').from('comment_table').where('comment_content', '=', 'test');
+  await dbLib.getCommentInfo({ params: {commentId: commentID[0].comment_id} },  '1');
+  expect(message).not.toBeNull();
+});
+
 // getCommentCreatorName
 // deleteComment
+test('deleteComment works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  const group_id_new = group_id[0].group_id;
+  await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
+  const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
+  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id} }, '1');
+  const commentID = await knex.select('comment_id').from('comment_table').where('comment_content', '=', 'test');
+  await dbLib.deleteComment({ params: {commentId: commentID[0].comment_id} },  '1');
+  expect(message).not.toBeNull();
+});
+
 // editComment
+test('editComment works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.createGroup({ params: {groupgroupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+  const group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+  const group_id_new = group_id[0].group_id;
+  await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
+  const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
+  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id} }, '1');
+  const commentID = await knex.select('comment_id').from('comment_table').where('comment_content', '=', 'test');
+  await dbLib.editComment({ body: {commentId: commentID[0].comment_id, commentContent:'new'} },  '1');
+  expect(message).not.toBeNull();
+});
 
 // manageGroupMembers api
 test('addAdmin works', async () => {

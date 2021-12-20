@@ -77,7 +77,7 @@ function Profile() {
 
     function deleteAvatar() {
       axios.delete(baseUrl + "deleteavatar/" + userName).then(res => {
-        console.log(res);
+        // console.log(res);
       }).catch(err => {
         console.log(`delete error: ${err}`);
       })
@@ -93,8 +93,12 @@ function Profile() {
 
     // need to implement, it will delete the account from user_table
     function handleDeleteAccount() {
+      axios.delete(baseUrl + 'deleteAccount/' + userName).then(res => {
+          
+        })
       window.location.href =
-        baseUrl + userName
+        window.location.protocol + "//" + window.location.host 
+        
     }
 
     function handleAcceptInvitation(groupId) {

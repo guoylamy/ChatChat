@@ -2,8 +2,10 @@ import React, {useState, useEffect} from "react"
 import {useParams} from "react-router-dom"
 import axios from "axios";
 import "./NewPost.css";
+import io from "socket.io-client";
 // https://github.com/machadop1407/react-socketio-chat-app/blob/main/client/src/App.css
 const baseUrl = 'http://localhost:8081';
+const socket = io.connect('http://localhost:8081');
 
 function NewPost() {
     const {creator_id, group_id} = useParams(); // creator_id = 5b746bd-cdee-301d-fe5-cfe4064af26f, group_id = 0863ccd-d673-71d1-ddb4-4f1b1f2ad8a
@@ -11,6 +13,9 @@ function NewPost() {
     const [userName, setUserName] = useState('')
     const [groupName, setGroupName] = useState('')
     const [messageList, setMessageList] = useState([]);
+    const [hashtagToAdd, setHashtagToAdd] = useState('');
+    const [hashTags, setHashTags] = useState([]);
+    socket.emit("join_room", groupName);
     useEffect(() => {
       axios.get(baseUrl +'/newPost/'+ creator_id + "/" + group_id).then(res => {
             // console.log(res.data[0][0].user_name)
@@ -29,7 +34,9 @@ function NewPost() {
             timestamp: Date.now(),
             sender: creator_id,
             message: currentMessage,
+            hashtag: hashTags.join(',')
         };
+        
         axios.post(baseUrl + `/postmessage`, messageData)
         .then(async (res) => {
             console.log(res);
@@ -75,6 +82,10 @@ function NewPost() {
             document.getElementById("imageUpload").value = null;
             document.getElementById("audioUpload").value = null;
             document.getElementById("videoUpload").value = null;
+            await new Promise(r => setTimeout(r, 200));
+            await socket.emit("send_message", groupName);
+            window.location.href =
+            window.location.protocol + "//" + window.location.host + "/groupDetails/" + groupName + '/' + userName;
         }).catch(err => {
             document.getElementById("post-result").innerHTML = `error: ${err}`;
             setCurrentMessage("");
@@ -83,9 +94,6 @@ function NewPost() {
             document.getElementById("videoUpload").value = null;
         })
         // setMessageList((list) => [...list, messageData]);
-        await new Promise(r => setTimeout(r, 200));
-        window.location.href =
-        window.location.protocol + "//" + window.location.host + "/groupDetails/" + groupName + '/' + userName
     }
 
     const sendFile = async (fileType, selectedFile, postId) => {
@@ -108,6 +116,13 @@ function NewPost() {
             return false;
         })
         return true;
+    }
+
+    function addHashtag() {
+        if (hashtagToAdd !== '') {
+            setHashTags(old => [...old, hashtagToAdd]);
+            setHashtagToAdd('');
+        }
     }
 
     return (
@@ -140,6 +155,14 @@ function NewPost() {
                 <div className="post-attachment">
                     <label htmlFor="videoUpload">Add Video</label>
                     <input type="file" name="fileUpload" id="videoUpload" accept="video/*" multiple/>
+                </div>
+                <div>
+                    <label class="label">Hashtags </label>
+                    <div>{hashTags.map((each) => (
+                        <div>{each}</div>
+                    ))}</div>
+                  <input type="text" value={hashtagToAdd} onChange={e => setHashtagToAdd(e.target.value)}></input>
+                  <button onClick={addHashtag}>Add hashtag</button>
                 </div>
                 <button onClick={async() => {
                     await sendMessage();

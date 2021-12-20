@@ -5,8 +5,4 @@ module.exports = {
   user : "admin",
   password: "cis557team12",
   database: "cis557"
-  // host: "localhost",
-  // user: "root",
-  // password: "yycc19970927",
-  // database: "cis557"
 };

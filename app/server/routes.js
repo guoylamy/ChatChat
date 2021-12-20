@@ -639,6 +639,9 @@ const getPostInfo = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
         
     };
@@ -653,8 +656,10 @@ const deletePost = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
-        
     };
   });
 };
@@ -666,8 +671,10 @@ const getPostUserId = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
-        
     };
   });
 };
@@ -757,6 +764,9 @@ const getPostDetails = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -815,6 +825,9 @@ const getPostDetailsAllCommentsIds = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     
     };
@@ -827,6 +840,9 @@ const getPostDetailsGetUserId = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
         
     };
@@ -847,8 +863,10 @@ const getPostDetailsMakeComment = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
-        
     };
   });
 };
@@ -861,6 +879,9 @@ const getCommentInfo = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -883,6 +904,9 @@ const deleteComment = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -896,6 +920,9 @@ const editComment = (req, res) => {
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
     else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
         res.json(rows)
     };
   });
@@ -948,6 +975,21 @@ const deleteAvatar = (req, res) => {
   });
 }
 
+const deleteAccount = (req, res) => {
+  const userName = req.params.userName
+  const query = `delete from user_table where user_name='${userName}'`;
+  connection.query(query, [req.params.userName], (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+}
+
+
 const sendFile = (req, res) => {
   if (!req.params.group_id || !req.params.timestamp || !req.params.sender || !req.params.receiver || !req.params.type || req.file === undefined) {
     res.status(404).json({ error: 'missing groupid or timestamp or sender or message' });
@@ -976,6 +1018,9 @@ const sendMessage = (req, res) => {
         console.log(err);
         res.status(404).json({ error: `${err}`});
       } else {
+        if (res==='1'){
+          return JSON.stringify(rows);
+        }
         res.status(200).json(rows);
       }
   });
@@ -988,6 +1033,9 @@ const receiveMessage = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
+      if (res==='1'){
+        return JSON.stringify(rows);
+      }
       res.status(200).json(rows);
     }
   });
@@ -999,13 +1047,16 @@ const postMessage = (req, res) => {
     return;
   }
   const post_id = uuid();
-  const query = 'INSERT INTO post_table (post_id, creator_id, group_id, create_time, post_content, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  connection.query(query, [post_id, req.body.sender, req.body.group_id, req.body.timestamp, Buffer.from(req.body.message, "binary"), "string", "text/plain"], (err, rows, fields) => {
+  const query = 'INSERT INTO post_table (post_id, creator_id, group_id, create_time, post_content, message_type, mimetype, hash_tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  connection.query(query, [post_id, req.body.sender, req.body.group_id, req.body.timestamp, Buffer.from(req.body.message, "binary"), "string", "text/plain", req.body.hashtag], (err, rows, fields) => {
       if (err) {
         console.log(err);
         res.status(404).json({ error: `${err}`});
       } else {
         // console.log(rows);
+        if (res==='1'){
+          return JSON.stringify(post_id);
+        }
         res.status(200).json(post_id);
       }
   });
@@ -1321,6 +1372,7 @@ module.exports = {
     uploadAvatar:uploadAvatar,
     getAvatar:getAvatar,
     deleteAvatar:deleteAvatar,
+    deleteAccount:deleteAccount,
 
     // below is api for group page
     getMyGroups:getMyGroups,
