@@ -81,13 +81,14 @@ function Chat() {
             console.log(`error: ${err}`);
         })
         await socket.emit("send_message", group_id);
+        await new Promise(r => setTimeout(r, 3000));
         await receiveMessage();
     }
 
     useEffect(() => {
         receiveMessage();
     }, [])
-    
+
     useEffect(() => {
         socket.on("receive_message", async () => {
             await new Promise(r => setTimeout(r, 3000));
@@ -183,7 +184,7 @@ function Chat() {
                 </ScrollToBottom>
             </div>
             <div className="chat-footer">
-                <div>
+                <div className="chat-footer">
                     <label htmlFor="imageUpload">Send Image</label>
                     <input type="file" name="fileUpload" id="imageUpload" accept="image/*" />
                     <button id="imageSendBtn" onClick={async () => {
@@ -191,7 +192,7 @@ function Chat() {
                         document.getElementById("imageUpload").value = null;
                     }}> Send Image</button>
                 </div>
-                <div>
+                <div className="chat-footer">
                     <label htmlFor="audioUpload">Send Audio</label>
                     <input type="file" name="fileUpload" id="audioUpload" accept="audio/*" />
                     <button id="audioSendBtn" onClick={async () => {
@@ -199,7 +200,7 @@ function Chat() {
                         document.getElementById("audioUpload").value = null;
                     }}> Send Audio</button>
                 </div>
-                <div>
+                <div className="chat-footer">
                     <label htmlFor="videoUpload">Send Video</label>
                     <input type="file" name="fileUpload" id="videoUpload" accept="video/*" />
                     <button id="videoSendBtn" onClick={async () => {
@@ -207,14 +208,16 @@ function Chat() {
                         document.getElementById("videoUpload").value = null;
                     }}> Send Video</button>
                 </div>
+            </div>
+            <div className="chat-footer">
                 <input 
-                  type="text"
-                  value={currentMessage}
-                  placehoder="Type here..."
-                  onChange={(event) => {
+                type="text"
+                value={currentMessage}
+                placehoder="Type here..."
+                onChange={(event) => {
                     setCurrentMessage(event.target.value);
-                  }}
-                  onKeyPress={(event) => {event.key === "Enter" && sendMessage();}}
+                }}
+                onKeyPress={(event) => {event.key === "Enter" && sendMessage();}}
                 />
                 <button onClick={sendMessage}>&#9658;</button>
                 <button onClick={receiveMessage}>&#11118;</button>

@@ -164,14 +164,14 @@ function NewPost() {
                   <input type="text" value={hashtagToAdd} onChange={e => setHashtagToAdd(e.target.value)}></input>
                   <button onClick={addHashtag}>Add hashtag</button>
                 </div>
-                <button onClick={async() => {
-                    await sendMessage();
-                }}>&#9658;</button>
                 {/* <button id="videoSendBtn" onClick={async () => {
                         await sendFile("video", document.getElementById("videoUpload").files[0]); 
                         document.getElementById("videoUpload").value = null;
                     }}> Send Video</button> */}
               </div>
+              <button onClick={async() => {
+                    await sendMessage();
+                }}>Send</button>
               <p id="post-result">{" "}</p>
             </div>
         </div>
