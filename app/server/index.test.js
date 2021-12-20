@@ -53,5 +53,7 @@ describe(' API tests', () => {
   };
 
   test('register', () => request(webapp).get('/register/IndexTestUser/test').send('userName=IndexTestUser&password=test').expect(200));
+  test('login', () => request(webapp).get('/login/IndexTestUser/test').send('userName=IndexTestUser&password=test').expect(200));
+  test('login if UserName Exists', () => request(webapp).get('/login/IndexTestUser').send('userName=IndexTestUser').expect(200));
 
 });

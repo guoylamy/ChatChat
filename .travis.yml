@@ -1,16 +1,31 @@
-language: node_js
-node_js:
-  - "14"
-cache:
-  directories:
-    - node_modules
-# blocklist
-branches:
-jobs:
-  include:
-    - stage: server  
-    - name: server
-      script:
-        - cd app/server
-        - npm install
-        - npm test
+# language: node_js
+# node_js:
+#   - "14"
+# cache:
+#   directories:
+#     - node_modules
+# # blocklist
+# branches:
+# jobs:
+#   include:
+#     - stage: server  
+#     - name: server
+#       script:
+#         - cd app/server
+#         - npm install
+#         - npm test
+{
+  "language": "node_js",
+  "os": [
+    "linux"
+  ],
+  "dist": "xenial",
+  "node_js": [
+    "14"
+  ],
+  "script": [
+    "cd app/server",
+    "npm install",
+    "npm test"
+  ]
+}
