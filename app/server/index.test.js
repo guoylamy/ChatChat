@@ -1,4 +1,10 @@
-var config = require("./db-config");
+var config = {
+  host: "database-557project.cxzfj2bee5gh.us-east-2.rds.amazonaws.com",
+  port: "3306",
+  user: "admin",
+  password: "cis557team12",
+  database: "cis557",
+};
 const knex = require('knex')({
   client: 'mysql',
   connection: {
