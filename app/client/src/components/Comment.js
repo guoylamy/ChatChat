@@ -11,7 +11,9 @@ function Comment(props) {
     const [creatorId, setCreatorId] = useState('')
     const [creatorName, setCreatorName] = useState('')
     const [editComment, setEditComment] = useState('')
+    const [hashTags, setHashTags] = useState('')
     const [flag, setFlag] = useState(false)
+  
     const baseUrl = 'http://localhost:8081/comment/'
     useEffect(() => {
       axios.get(baseUrl + commentId).then(res => {
@@ -19,6 +21,7 @@ function Comment(props) {
             setCreateTime(res.data[0].create_time)
             setCreatorId(res.data[0].creator_id)
             setEditComment(res.data[0].comment_content)
+            setHashTags(res.data[0].hash_tags)
             axios.get(baseUrl + 'getCreatorName/' + res.data[0].creator_id).then(res1 => {
                 // console.log(res1.data)
                 setCreatorName(res1.data[0].user_name)
@@ -42,6 +45,7 @@ function Comment(props) {
             })
             window.location.reload(false)
     }
+
     return (
         <div>
             content: {commentContent}
@@ -49,6 +53,8 @@ function Comment(props) {
             create time: {createTime}
              <br></br>
             commented by: {creatorName}
+            <br></br>
+            hash tags: {hashTags}
             <br></br>
             {userName === creatorName ? <button onClick={e => handleEditComment()}>Edit</button> : ''}
             {userName === creatorName ? <button onClick={e => handleDeleteComment()}>Delete</button> : ''}

@@ -15,6 +15,11 @@ function PostDetails() {
     const [postTime, setPostTime] = useState('')
     const [allCommentsIds, setAllCommentsIds] = useState([])
     const [comment, setComment] = useState('')
+     const [hashTags, setHashTags] = useState([])
+     const [hashTagsToBeAdded, setHashTagsToBeAdded] = useState([])
+    const [currentHashTag, setCurrentHashTag] = useState('')
+    const [currentHashTagToBeAdded, setCurrentHashTagToBeAdded] = useState('')
+    const [commentIdsWithHashTags, setCommentIdsWithHashTags] = useState([-1])
     const baseUrl = 'http://localhost:8081/postDetails/'
     useEffect(() => {
       let resList = [];
@@ -24,8 +29,8 @@ function PostDetails() {
                 post_type: res.data[0].message_type,
                 mimetype: res.data[0].mimetype,
             });
-            console.log("text res");
-            console.log(resList);
+            // console.log("text res");
+            // console.log(resList);
             // setPostContent(resList);
             setPosterName(res.data[0].user_name)
             const date = new Date(res.data[0].create_time);
@@ -42,7 +47,7 @@ function PostDetails() {
             console.log("attach res");
             console.log(resList);
           }; 
-          console.log("resList");
+        //   console.log("resList");
           setPostContent(resList);
         });
       axios.get(baseUrl + 'allCommentsIds/' + postId).then(res => {
@@ -61,17 +66,20 @@ function PostDetails() {
         return (
             <div class="rows">
                 {allCommentsIds.map((id, i) => (
+                    commentIdsWithHashTags.length === 1 && commentIdsWithHashTags[0] === -1 ? 
                     <div class="box" key={id}>
                         <Comment commentId={id}/>
-                    </div>
+                    </div> : (commentIdsWithHashTags.includes(id) ? <div class="box" key={id}>
+                        <Comment commentId={id}/>
+                    </div> : '')
                 ))}
             </div>
         )
     }
 
     function handleMakeComment() {
-        axios.post(baseUrl + 'makeComment', {commentId:uuid(), commentContent:comment, creatTime:new Date(), creatorId: userId, postId:postId}).then(res => {
-            console.log(res.data)
+        axios.post(baseUrl + 'makeComment', {hashTags: hashTagsToBeAdded, commentId:uuid(), commentContent:comment, creatTime:new Date(), creatorId: userId, postId:postId}).then(res => {
+            // console.log(res.data)
     })
     window.location.reload(false)
     }
@@ -82,6 +90,53 @@ function PostDetails() {
                 <input type="text" name="commentBox" placeholder="input your comment" onChange={e => setComment(e.target.value)} value={comment}></input>
                 <button onClick={handleMakeComment}>Make a comment</button>
                 
+            </div>
+        )
+    }
+      function handleAddTag() {
+        if (currentHashTag !== '') {
+            setHashTags(old => [...old, currentHashTag])
+            setCurrentHashTag('')
+        }
+    }
+    function handleHashTagsSubmit() {
+        setCommentIdsWithHashTags([])
+        axios.post(baseUrl + 'getCommentsIdsByHashTags', {hashTags:hashTags, postId:postId}).then(res => {
+            for (var i = 0; i < res.data.length; i++) {
+                console.log(res.data[i])
+                setCommentIdsWithHashTags(old => [...old, res.data[i]])
+            }
+        })
+    }
+    function getHashTags() {
+        return (
+            <div>
+                 <h1>Filter By HashTag</h1>
+                <div>{hashTags.map((each) => (
+                    <div>{each}</div>
+                ))}</div>
+                <input type="text" value={currentHashTag} onChange={e => setCurrentHashTag(e.target.value)}></input>
+                <button onClick={handleAddTag}>Add Tag</button>
+                <button onClick={handleHashTagsSubmit}>Submit</button>
+            </div>
+        )
+    }
+
+    function handleAddHashTagToBeAdded() {
+        if (currentHashTagToBeAdded !== '') {
+            setHashTagsToBeAdded(old => [...old, currentHashTagToBeAdded])
+            setCurrentHashTagToBeAdded('')
+        }
+    }
+    
+    function addHashTags() {
+        return (
+            <div>
+                <div>{hashTagsToBeAdded.map((each) => (
+                    <div>{each}</div>
+                ))}</div>
+                <input type="text" value={currentHashTagToBeAdded} onChange={e => setCurrentHashTagToBeAdded(e.target.value)}></input>
+                <button onClick={handleAddHashTagToBeAdded}>Add Tag</button>
             </div>
         )
     }
@@ -147,6 +202,8 @@ function PostDetails() {
                 </div>
             </div>
             {makeComment()}
+            {addHashTags()}
+            {getHashTags()}
         </div>
     )
 }

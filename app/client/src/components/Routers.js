@@ -24,7 +24,7 @@ function Routers() {
       </Router>
     )
   }
-  console.log(sessionObject)
+  // console.log(sessionObject)
   var expirationDate = sessionObject.expiresAt
 
   if (Date.parse(currentDate) < Date.parse(expirationDate)) {

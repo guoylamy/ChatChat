@@ -777,6 +777,35 @@ const getPostAttachmentDetails = (req, res) => {
   });
 };
 
+const getCommentsIdsByHashTags = (req, res) => {
+  const hashTags = req.body.hashTags
+  const postId = req.body.postId
+  const query = `
+  select comment_id, hash_tags from comment_table where post_id='${postId}'
+  `;
+  var result = []
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      
+      // loop through hashTags, to see if hash_tags from rows contain one of hashhTags
+      for (var i = 0; i < hashTags.length; i++) {
+        for (var j = 0 ; j < rows.length; j++) {
+          // console.log(rows[j].hash_tags, hashTags[i])
+          if (rows[j].hash_tags.includes(hashTags[i])) {
+            result.push(rows[j].comment_id)
+          }
+        }
+      }
+      console.log(result)
+      res.json(result)
+    }
+  });
+};
+
+
 const getPostDetailsAllCommentsIds = (req, res) => {
   const postId = req.params.postId
   // find id in group table and 
@@ -810,9 +839,10 @@ const getPostDetailsMakeComment = (req, res) => {
   const creatTime = req.body.creatTime
   const creatorId = req.body.creatorId
   const postId = req.body.postId
-  const query= `insert into comment_table (comment_id, comment_content, create_time, creator_id, post_id)
+  const hashTags = req.body.hashTags
+  const query= `insert into comment_table (comment_id, comment_content, create_time, creator_id, post_id, hash_tags)
   values
-  ('${commentId}', '${commentContent}', '${creatTime}', '${creatorId}', '${postId}')
+  ('${commentId}', '${commentContent}', '${creatTime}', '${creatorId}', '${postId}', '${hashTags}')
   `
   connection.query(query, (err, rows, fields) => {
     if (err) console.log(err);
@@ -870,6 +900,10 @@ const editComment = (req, res) => {
     };
   });
 };
+
+
+
+
 
 const uploadAvatar = (req, res) => {
   if (!req.file) {
@@ -1105,8 +1139,36 @@ const getHidePostIds = (req, res) => {
       console.log(err);
       res.status(404).json({ error: `${err}`});
     } else {
-      console.log(rows)
+      // console.log(rows)
       res.json(rows)
+    }
+  });
+}
+
+const getPostsIdsByHashTags = (req, res) => {
+  const hashTags = req.body.hashTags
+  const groupId = req.body.groupId
+  const query = `
+  select post_id, hash_tags from post_table where group_id='${groupId}'
+  `;
+  var result = []
+  connection.query(query, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+      res.status(404).json({ error: `${err}`});
+    } else {
+      
+      // loop through hashTags, to see if hash_tags from rows contain one of hashhTags
+      for (var i = 0; i < hashTags.length; i++) {
+        for (var j = 0 ; j < rows.length; j++) {
+          // console.log(rows[j].hash_tags, hashTags[i])
+          if (rows[j].hash_tags.includes(hashTags[i])) {
+            result.push(rows[j].post_id)
+          }
+        }
+      }
+      // console.log(result)
+      res.json(result)
     }
   });
 }
@@ -1285,6 +1347,7 @@ module.exports = {
     getGroupDetailsUserId:getGroupDetailsUserId,
     getGroupDetailsGroupId:getGroupDetailsGroupId,
     getHidePostIds:getHidePostIds,
+    getPostsIdsByHashTags:getPostsIdsByHashTags,
 
     //below is post api
     getPostInfo:getPostInfo,
@@ -1302,13 +1365,13 @@ module.exports = {
     getPostDetailsGetUserId:getPostDetailsGetUserId,
     getPostDetailsMakeComment:getPostDetailsMakeComment,
     getPostAttachmentDetails:getPostAttachmentDetails,
-    
+    getCommentsIdsByHashTags:getCommentsIdsByHashTags,
 
     // below is comment api
     getCommentInfo:getCommentInfo,
     getCommentCreatorName:getCommentCreatorName,
     deleteComment:deleteComment,
-    editComment:editComment,
+    editComment:editComment,    
 
     // below is manageGroupMembers api
     addAdmin:addAdmin,

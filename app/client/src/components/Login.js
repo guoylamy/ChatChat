@@ -8,7 +8,33 @@ function Login() {
   const [password, setPassword] = useState("")
   const baseUrl = 'http://localhost:8081/login/'
   function checkIfAcountExists() {
-    
+    // add expiresAt, if the userName is in forbidden, but the expirestime has passed, 
+     console.log(sessionStorage)
+    if (sessionStorage.getItem('attempt') != null && JSON.parse(sessionStorage.getItem('attempt')).forbiddenUserNames.includes(userName)) {
+      var currentDate = new Date()
+      var attempt = JSON.parse(sessionStorage.getItem('attempt'))
+      var index
+      for (var i = 0; i < attempt.userName.length; i++) {
+        if (userName === attempt.userName[i]) {
+          index = i
+          break
+        }
+      }
+      console.log(index, Date.parse(currentDate), Date.parse(attempt.expiresAt[index]))
+      if (Date.parse(currentDate) < Date.parse(attempt.expiresAt[index])) {
+        alert("You have tried 3 times. To protect your account, you can't login in 3 minutes.")
+        return
+      }
+      else {
+        // should remove it from forbidden, and set attempt as 0, expireAt time should be current time plus 3 mins
+        const pos = attempt.forbiddenUserNames.indexOf(userName)
+        if (pos > -1) {
+          attempt.forbiddenUserNames.splice(pos, 1)
+        }
+        attempt.attemptTimes[index] = 0
+        sessionStorage.setItem('attempt', JSON.stringify(attempt))
+      }
+    }
     axios.get(baseUrl + userName + '/' + password).then(res => {
       if (res.data.length === 1) {
         var oldDateObj = new Date();
@@ -23,17 +49,59 @@ function Login() {
         window.location.href =
         window.location.protocol + "//" + window.location.host + "/groupsPage/" + userName;
       }
-
+      else {
+        axios.get(baseUrl + userName).then(res => {
+       if (res.data.length === 1) {
+         var attempt = JSON.parse(sessionStorage.getItem('attempt'))
+         if (attempt == null) {
+          var attempt = {
+            forbiddenUserNames:[],
+            userName:[userName],
+            attemptTimes:[1],
+            expiresAt:[-1]
+          }
+          sessionStorage.setItem('attempt', JSON.stringify(attempt))
+         }
+         // if sessionStorage contains attempt
+         else {
+        
+           if (attempt.userName.includes(userName)) {
+            for (var i = 0; i < attempt.userName.length; i++) {
+              if (userName === attempt.userName[i]) {
+                if (attempt.attemptTimes[i] === 3) {
+                  attempt.forbiddenUserNames.push(userName)
+                  var tmpObj = new Date()
+                  tmpObj.setTime(tmpObj.getTime() + (3 * 60 * 1000));
+                  attempt.expiresAt[i] = tmpObj
+                  alert("You have tried 3 times. To protect your account, you can't login in 3 minutes.")
+                  sessionStorage.setItem('attempt', JSON.stringify(attempt))
+                  return 
+                }
+                else {
+                  // console.log('sdafasfd')
+                    attempt.attemptTimes[i] = attempt.attemptTimes[i] + 1
+                    sessionStorage.setItem('attempt', JSON.stringify(attempt))
+                }
+              }
+            }
+           }
+           else {
+            attempt.userName.push(userName)
+            attempt.attemptTimes.push(1)
+            attempt.expiresAt.push(-1)
+            sessionStorage.setItem('attempt', JSON.stringify(attempt))
+           }
+          }
+          alert("Password is not right! You only have 3 chances to try! Be careful!")
+        }
+        else {
+          alert("Username doesn't exist!")
+        }
+    })
+      }
     })
 
-    // axios.get(baseUrl + userName).then(res => {
-    //    if (res.data.length === 1) {
-    //       alert("Password is not right! You only have 3 chances to try! Be careful!")
-    //     }
-    //     else {
-    //       alert("Username doesn't exist!")
-    //     }
-    // })
+    
   }
   function handleUsername(event) {
     setUsername(event.target.value); 

@@ -92,6 +92,7 @@ app.get("/groupDetails/getNormalUsersNames/:groupName", routes.getNormalUsersNam
 app.get("/groupDetails/getUserId/:userName", routes.getGroupDetailsUserId)
 app.get("/groupDetails/getGroupId/:groupName", routes.getGroupDetailsGroupId)
 app.get("/groupDetails/getHidePostIds/:userName", routes.getHidePostIds)
+app.post("/groupDetails/getPostsIdsByHashTags", routes.getPostsIdsByHashTags)
 
 // post api
 app.get("/post/:postId", routes.getPostInfo)
@@ -108,15 +109,14 @@ app.get("/postDetails/:postId", routes.getPostDetails)
 app.get("/postDetails/allCommentsIds/:postId", routes.getPostDetailsAllCommentsIds)
 app.get("/postDetails/getUserId/:userName", routes.getPostDetailsGetUserId)
 app.post("/postDetails/makeComment", routes.getPostDetailsMakeComment)
-
 app.get("/postDetails/attachments/:postId", routes.getPostAttachmentDetails);
+app.post("/postDetails/getCommentsIdsByHashTags", routes.getCommentsIdsByHashTags);
 
 // comment api
 app.get("/comment/:commentId", routes.getCommentInfo)
 app.get("/comment/getCreatorName/:creatorId", routes.getCommentCreatorName)
 app.delete("/comment/deleteComment/:commentId", routes.deleteComment)
 app.post("/comment/editComment", routes.editComment)
-
 
 // manageGroupMembers api
 app.post("/manageGroupMembers/addAdmin", routes.addAdmin)

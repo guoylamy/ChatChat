@@ -16,6 +16,9 @@ function GroupDetails() {
     const [hidePostIds, setHidePostIds] = useState([])
     const [flaggedPostNum, setFlaggedPostNum] = useState(0);
     const [newestPostTime, setNewestPostTime] = useState('N/A');
+    const [hashTags, setHashTags] = useState([])
+    const [currentHashTag, setCurrentHashTag] = useState('')
+    const [postIdsWithHashTags, setPostIdsWithHashTags] = useState([-1])
     const baseUrl = 'http://localhost:8081/groupDetails/'
     useEffect(() => {
         setCreator([])
@@ -95,10 +98,14 @@ function GroupDetails() {
             <div class = "column is-half">
                 <div class="is-size-4"> Board </div>
                 {allPostsIds.map((id, i) => 
-                    hidePostIds.includes(id) ? ('') : (<div class="box" key={id}>
+                    hidePostIds.includes(id) ? ('') : (
+                    (postIdsWithHashTags.length === 1 && postIdsWithHashTags[0] === -1) ? 
+                    <div class="box" key={id}>
                         <Post postId={id}/>
-                    </div>)
-                    
+                    </div> : (postIdsWithHashTags.includes(id) ? <div class="box" key={id}>
+                        <Post postId={id}/>
+                    </div> : '')
+                    )
                 )}
             </div>
         )
@@ -152,6 +159,34 @@ function GroupDetails() {
             </div>
         )
     }
+    function handleAddTag() {
+        if (currentHashTag !== '') {
+            setHashTags(old => [...old, currentHashTag])
+            setCurrentHashTag('')
+        }
+    }
+    function handleHashTagsSubmit() {
+        setPostIdsWithHashTags([])
+        axios.post(baseUrl + 'getPostsIdsByHashTags', {hashTags:hashTags, groupId:groupId}).then(res => {
+            for (var i = 0; i < res.data.length; i++) {
+                console.log(res.data[i])
+                setPostIdsWithHashTags(old => [...old, res.data[i]])
+            }
+        })
+    }
+    function getHashTags() {
+        return (
+            <div>
+                 <h1>Filter By HashTag</h1>
+                <div>{hashTags.map((each) => (
+                    <div>{each}</div>
+                ))}</div>
+                <input type="text" value={currentHashTag} onChange={e => setCurrentHashTag(e.target.value)}></input>
+                <button onClick={handleAddTag}>Add Tag</button>
+                <button onClick={handleHashTagsSubmit}>Submit</button>
+            </div>
+        )
+    }
     return (
         <div>
             <NavBar />
@@ -165,12 +200,13 @@ function GroupDetails() {
                 <div class="column is-one-third is-pulled-right"> {manageGroup()}</div>
                 
             </div>
-
+            <div class="columns is-mobile"> {getHashTags()}</div>
             <div class = "columns is-mobile">
                 {getBoard()}
                 {getMembers()}
             </div>
             <div class="columns is-mobile"> {groupAnalysis()}</div>
+            
             <a href={window.location.protocol + "//" + window.location.host + "/post/" + userId + '/' + groupId}>Make a post</a>
         </div>  
     )
