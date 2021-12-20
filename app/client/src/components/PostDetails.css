@@ -1,0 +1,24 @@
+.media-container {
+    width: 50%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    float:left;
+    display:inline;
+}
+
+.message-content {
+    width: auto;
+    height: auto;
+    min-height: 50px;
+    max-width: 300px;
+    border-radius: 5px;
+    color: black;
+    display: flex;
+    align-items: center;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: auto;
+    padding-left: auto;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}

@@ -154,6 +154,16 @@
     outline: none;
     font-family: "Open Sans", sans-serif;
 }
+
+.chat-window .chat-footer label {
+    height: 100%;
+    flex: 45%;
+    border: 0;
+    padding: 0 0.7em;
+    font-size: 1em;
+    outline: none;
+    font-family: "Open Sans", sans-serif;
+}
   
 .chat-window .chat-footer button {
     border: 1 px;
