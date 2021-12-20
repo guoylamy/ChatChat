@@ -946,8 +946,8 @@ const postMessage = (req, res) => {
     return;
   }
   const post_id = uuid();
-  const query = 'INSERT INTO post_table (post_id, creator_id, group_id, create_time, post_content, message_type, mimetype) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  connection.query(query, [post_id, req.body.sender, req.body.group_id, req.body.timestamp, Buffer.from(req.body.message, "binary"), "string", "text/plain"], (err, rows, fields) => {
+  const query = 'INSERT INTO post_table (post_id, creator_id, group_id, create_time, post_content, message_type, mimetype, hash_tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  connection.query(query, [post_id, req.body.sender, req.body.group_id, req.body.timestamp, Buffer.from(req.body.message, "binary"), "string", "text/plain", req.body.hashtag], (err, rows, fields) => {
       if (err) {
         console.log(err);
         res.status(404).json({ error: `${err}`});
