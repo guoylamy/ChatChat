@@ -3,6 +3,7 @@ import NavBar from './NavBar';
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Comment from './Comment'
+import './PostDetails.css';
 var uuid = require("react-uuid");
 
 function PostDetails() {
@@ -146,46 +147,38 @@ function PostDetails() {
             <div class="row px-6">
                 <div class="has-text-weight-bold has-text-left has-text-info"> View Post </div>
             </div>
-            <article class="media">
+            <div className="media-container">
                    {postContentList.map((postContent) => {
                     //    console.log("postContentList has length " + postContentList.length);
                     //    console.log(postContentList);
                         if (postContent.post_type === "string") {
                             return (
-                                <div class="media-content">
                                     <div className="message-content">
                                     <p>{Buffer.from(postContent.post_content).toString('utf8')}</p>
                                     </div>
-                                </div>
                             );
                         } else if (postContent.post_type === "image") {
                             const img = `data:${postContent.mimetype};base64,` + Buffer.from(postContent.post_content).toString('base64');
                             return (
-                                <div class="media-content">
                                     <div className="message-content">
                                         <img src={img} alt="cannot load" width="200px" height="200px"/>
                                     </div>
-                                </div>
                             );
                         } else if (postContent.post_type === "audio") {
                             const audio = `data:${postContent.mimetype};base64,` + Buffer.from(postContent.post_content).toString('base64');
                             return (
-                                <div class="media-content">
                                     <div className="message-content">
                                         <audio controls src={audio} />
                                     </div>
-                                </div>
                             );
                         } else {
                             const video = `data:${postContent.mimetype};base64,` + Buffer.from(postContent.post_content).toString('base64');
                             return (
-                                <div class="media-content">
                                     <div className="message-content">
                                         <video width="400" height="300" controls>
                                             <source src={video} type={postContent.mimetype} />
                                         </video>
-                                    </div>                                
-                                </div>
+                                    </div>
                             );
                         }
                     })}
@@ -193,9 +186,10 @@ function PostDetails() {
                         <p id="time">post time:{postTime}</p>
                         <p id="author">posted by: {posterName}</p>
                     </div>
-            </article>
-            <div>
+            </div>
+            <div className="media-container">
                 <div class="is-size-4 has-text-info">comments:</div>
+                {makeComment()}
                 <br></br>
                 <div class="columns is-half is-centered">
                     {getAllComments()}

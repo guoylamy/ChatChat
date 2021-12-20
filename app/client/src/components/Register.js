@@ -45,7 +45,7 @@ function Register() {
             <div class="field">
               <label class="label">Username</label>
               <div class="control">
-                <input
+                <input id="registerInput"
                     type="text"
                     name="username"
                     placeholder="Please enter a valid username"
@@ -56,10 +56,10 @@ function Register() {
             <div class="field">
               <label class="label">Password</label>
               <div class="control">
-                <input type="text" name="password" placeholder="********" onChange={handlePassword}></input>
+                <input id='pwdInput' type="text" name="password" placeholder="********" onChange={handlePassword}></input>
               </div>
             </div>
-            <input class="button is-primary" type="button" onClick={handleSubmit} value="Create Account"></input>
+            <input id="createButton" class="button is-primary" type="button" onClick={handleSubmit} value="Create Account"></input>
           </div>
         </div>
       </div>

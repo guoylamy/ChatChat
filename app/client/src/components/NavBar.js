@@ -12,7 +12,7 @@ function NavBar() {
 
     return (
       <div>
-        <nav class="navbar" role="navigation" aria-label="main navigation">
+        <nav id="navbar" role="navigation" aria-label="main navigation">
             <div class="navbar-brand">
                 <a class="navbar-item">
                     <img src="/images/logo-square.jpeg"/>

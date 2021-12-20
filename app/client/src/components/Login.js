@@ -122,13 +122,13 @@ function Login() {
             <div class="field">
               <label class="label">Username</label>
               <div class="control">
-                <input type="text" name="userName" placeholder="e.g. user123" onChange={handleUsername} value={userName}></input>
+                <input id='NameInput' type="text" name="userName" placeholder="e.g. user123" onChange={handleUsername} value={userName}></input>
               </div>
             </div>
             <div class="field">
               <label class="label">Password</label>
               <div class="control">
-                <input type="text" name="password" placeholder="********" onChange={handlePassword} value={password}></input>
+                <input type="text" id='pwdInput' name="password" placeholder="********" onChange={handlePassword} value={password}></input>
               </div>
             </div>
             <div>
@@ -145,7 +145,7 @@ function Login() {
       </div>
       <div className="login-redirect">
         Not a member? {" "}
-        <a
+        <a id = 'registerButton'
           href={
             window.location.protocol + "//" + window.location.host + "/register"
           }

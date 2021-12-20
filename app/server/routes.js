@@ -537,8 +537,8 @@ const suggestgroup = (req, res) => {
   const userName = req.params.userName;
   const query = ` SELECT group_table.group_name, group_topic_table.topics
   FROM group_table inner join group_topic_table on group_table.group_id=group_topic_table.group_id
-  WHERE group_table.group_type='Public' and group_table.group_id in 
-  (SELECT group_id FROM group_user_table WHERE user_id NOT IN
+  WHERE group_table.group_type='Public' and group_table.group_id not in 
+  (SELECT group_id FROM group_user_table WHERE user_id IN
     (SELECT user_id FROM user_table WHERE user_name='${userName}'))
   ORDER BY group_topic_table.topics desc
   LIMIT 1

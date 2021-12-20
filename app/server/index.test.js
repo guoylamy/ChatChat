@@ -1,4 +1,10 @@
-var config = require("./db-config");
+var config = {
+  host: "database-557project.cxzfj2bee5gh.us-east-2.rds.amazonaws.com",
+  port: "3306",
+  user: "admin",
+  password: "cis557team12",
+  database: "cis557",
+};
 const knex = require('knex')({
   client: 'mysql',
   connection: {
@@ -53,5 +59,7 @@ describe(' API tests', () => {
   };
 
   test('register', () => request(webapp).get('/register/IndexTestUser/test').send('userName=IndexTestUser&password=test').expect(200));
+  test('login', () => request(webapp).get('/login/IndexTestUser/test').send('userName=IndexTestUser&password=test').expect(200));
+  test('login if UserName Exists', () => request(webapp).get('/login/IndexTestUser').send('userName=IndexTestUser').expect(200));
 
 });
