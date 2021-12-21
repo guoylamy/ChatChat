@@ -161,13 +161,14 @@ function Profile() {
     function getInvitations() {
       return (
         <div>
+          <h1>Notifications</h1>
           {invitedGroupsIds.length === 0 ? "":"Here are some group invitations for you"}
             
             {invitedGroupsIds.map((id, i) => (
                     <div key={id}>
                         Group {id[1]} invites you to join
-                        <button onClick={e => handleAcceptInvitation(id[0])}>Accept</button>
-                        <button onClick={e => handleDeclineInvitation(id[0])}>Decline</button>
+                        <button class="button is-small" onClick={e => handleAcceptInvitation(id[0])}>Accept</button>
+                        <button class="button is-small" onClick={e => handleDeclineInvitation(id[0])}>Decline</button>
                     </div>
                 ))}
           
@@ -175,22 +176,21 @@ function Profile() {
           {adminGroupsIds.map((id, i) => (
                     <div key={id}>
                         User {id[3]} wants to join private group {id[1]}
-                        <button onClick={e => handleApproveRequest(id[0], id[2])}>Approve</button>
-                        <button onClick={e => handleDeclineRequest(id[0], id[2])}>Decline</button>
+                        <button class="button is-small" onClick={e => handleApproveRequest(id[0], id[2])}>Approve</button>
+                        <button class="button is-small" onClick={e => handleDeclineRequest(id[0], id[2])}>Decline</button>
                     </div>
                 ))}
           {publicGroupsRequestsIds.map((id, i) => (
                     <div key={id}>
                         User {id[3]} wants to join public group {id[1]}
-                        <button onClick={e => handleApprovePublicRequest(id[0], id[2])}>Approve</button>
-                        <button onClick={e => handleDeclinePublicRequest(id[0], id[2])}>Decline</button>
+                        <button class="button is-small" onClick={e => handleApprovePublicRequest(id[0], id[2])}>Approve</button>
+                        <button class="button is-small" onClick={e => handleDeclinePublicRequest(id[0], id[2])}>Decline</button>
                     </div>
                 ))}
-            <h1>Notifications</h1>
             {notifications.map((id, i) => (
                     <div key={id}>
                         Your request to join group {id[1]} has been {id[2] === 1 ? "approved" : "declined"}
-                        <button onClick={e => handleNotification(id[0], id[3])}>Got it</button>
+                        <button class="button is-small" onClick={e => handleNotification(id[0], id[3])}>Got it</button>
                     </div>
                 ))}
           </div>
@@ -200,27 +200,43 @@ function Profile() {
       <div>
         <NavBar />
         <div>
-          Name: {userName}
-          Regsiter Date: {registerDate}
-          <div>
-            <label htmlFor="imageUpload">Upload you avatar</label>
-            <input type="file" name="fileUpload" id="imageUpload" accept="image/*" onChange={async (event) => {
-              await handleUploadAvatar(event.target.files[0]);
-              event.target.value = null;
-            }} />
-            <button onClick={deleteAvatar}>Delete your avatar</button>
+          <div class="columns">
+            <div class="column">
+              Name: {userName}
+            </div>
+            <div class="column">
+              Regsiter Date: {registerDate}
+            </div>
           </div>
-          <div>
+          <div class="columns">
+            <div class="column">
               <img id="avatar" src="/images/avatar.png" alt="Avatar" ></img>
               {getAvatar()}
+            </div>
+            <div class="column">
+              <div class="rows">
+                <div class="row">
+                  <label htmlFor="imageUpload">Upload you avatar</label>
+                  <input type="file" name="fileUpload" id="imageUpload" accept="image/*" onChange={async (event) => {
+                    await handleUploadAvatar(event.target.files[0]);
+                    event.target.value = null;
+                  }} />
+                </div>
+                <br></br>
+                <div class="row">
+                  <button class="button is-small" onClick={deleteAvatar}>Delete your avatar</button>
+                </div>
+              </div>
+            </div>
           </div>
+
           {getInvitations()}
           <div>
             If you want to reset your password:
             {/* <input type="text" name="oldPassword" placeholder="input your old password" onChange={e => setOldPassword(e.target.value)} value={oldPassword}></input> */}
             <input type="text" name="newPassword" placeholder="input your new password" onChange={e => setNewPassword(e.target.value)} value={newPassword}></input>
-            <button onClick={handleChangePassword}>Confirm change password</button>
-            <button onClick={handleDeleteAccount}>Delete your account</button>
+            <button class="button is-small" onClick={handleChangePassword}>Confirm change password</button>
+            <button class="button is-small is-warning px-4" onClick={handleDeleteAccount}>Delete your account</button>
           </div>
         </div>
       </div>
