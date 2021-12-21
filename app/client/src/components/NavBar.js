@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 // import { useParams } from "react-router-dom";
 
 // const getProfileInfoLab = require('../getProfileInfo');
@@ -14,25 +14,25 @@ function NavBar() {
       <div>
         <nav id="navbar" role="navigation" aria-label="main navigation">
             <div class="navbar-brand">
-                <a class="navbar-item">
-                    <img src="/images/logo-square.jpeg"/>
+                <a class="navbar-item" href={profileUrl}>
+                    <img src="/images/logo-square.jpeg" alt="cannot load"/>
                 </a>
             </div>
 
             <div class="navbar-start">
-                <a class="navbar-item">
+                <a class="navbar-item" href={profileUrl}>
                     ChatChat!
                 </a>
             </div>
 
             <div class="navbar-end">
-                <a class="navbar-item">
+                <a class="navbar-item" href={profileUrl}>
                   {userName}
                 </a>
             </div>
 
             <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link">
+                <a class="navbar-link" href={profileUrl}>
                   More
                 </a>
                 <div class="navbar-dropdown">

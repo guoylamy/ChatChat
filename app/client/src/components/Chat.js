@@ -90,14 +90,14 @@ function Chat() {
 
     useEffect(() => {
         receiveMessage();
-    }, [])
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         socket.on("receive_message", async () => {
             await new Promise(r => setTimeout(r, 3000));
             await receiveMessage();
         });
-    }, [socket]);
+    }, [socket]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <div>
@@ -135,7 +135,7 @@ function Chat() {
                                 >
                                 <div>
                                 <div className="message-content">
-                                    <img src={img} />
+                                    <img src={img} alt="cannot load"/>
                                 </div>
                                 <div className="message-meta">
                                     <p id="time">{messageContent.displayTime}</p>

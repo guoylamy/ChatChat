@@ -14,7 +14,6 @@ function NewPost() {
     const [currentMessage, setCurrentMessage] = useState("");
     const [userName, setUserName] = useState('')
     const [groupName, setGroupName] = useState('')
-    const [messageList, setMessageList] = useState([]);
     const [hashtagToAdd, setHashtagToAdd] = useState('');
     const [hashTags, setHashTags] = useState([]);
     socket.emit("join_room", groupName);
@@ -24,6 +23,7 @@ function NewPost() {
             setUserName(res.data[0][0].user_name)
             setGroupName(res.data[1][0].group_name)
         })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const sendMessage = async () => {

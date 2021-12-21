@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import GroupsPage from './GroupsPage';
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import axios from 'axios';
 
 function Login() {
@@ -58,7 +56,7 @@ function Login() {
        if (res.data.length === 1) {
          var attempt = JSON.parse(sessionStorage.getItem('attempt'))
          if (attempt == null) {
-          var attempt = {
+          attempt = {
             forbiddenUserNames:[],
             userName:[userName],
             attemptTimes:[1],
