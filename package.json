@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "jest": {
+    "testPathIgnorePatterns": [
+      "./app/client/cypress"
+    ]
+  },
   "scripts": {
     "start": "node index.js",
     "test": "jest --coverage --forceExit"
