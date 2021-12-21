@@ -10,7 +10,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "jest --coverage --forceExit"
+    "test": "jest --coverage --forceExit",
+    "build": "npm install && cd app/client && npm install && npm run build"
   },
   "author": "Gregory Kofman <kofmangregory@gmail.com>",
   "license": "MIT",

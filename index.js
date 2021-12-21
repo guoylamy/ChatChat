@@ -18,7 +18,7 @@ app.use(cors({ credentials: true, origin: "http://localhost:" + port }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, './client/build')));
+app.use(express.static(path.join(__dirname, './app/client/build')));
 // /usr/local/mysql/bin/mysql -u admin -h database-557project.cxzfj2bee5gh.us-east-2.rds.amazonaws.com cis557 -p
 
 const server = http.createServer(app);
@@ -139,7 +139,7 @@ app.get("/receivemessage/:group_id", routes.receiveMessage);
 app.post("/postmessage", routes.postMessage);
 app.post("/postfile/:post_id/:type", upload.single('fileUpload'), routes.postFile);
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, './client/build/index.html'));
+  res.sendFile(path.join(__dirname, './app/client/build/index.html'));
 });
 // Default response for any other request
 app.use((req, res) => {
