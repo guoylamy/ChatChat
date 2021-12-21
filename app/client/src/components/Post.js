@@ -10,6 +10,7 @@ function Post(props) {
     const [postTime, setPostTime] = useState('')
     const [adminsList, setAdminsList] = useState([])
     const [flag, setFlag] = useState(false)
+    const [flaggedId, setFlaggedId] = useState('')
     const [hashTags, setHashTags] = useState('')
     const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? 'http://localhost:8081'
@@ -42,6 +43,7 @@ function Post(props) {
             // console.log(res.data)
             if (res.data[0].flag === 1) {
                 setFlag(true)
+                setFlaggedId(res.data[0].flaggedId);
             }
             else {
                 setFlag(false)
@@ -66,10 +68,22 @@ function Post(props) {
         window.location.reload(false)
     }
     function handleCheckBoxChange() {
-         axios.post(baseUrl + 'updateFlagStatus/' + postId + '/' + flag).then(res => {
-            
-        })
+        axios.post(baseUrl + 'updateFlagStatus/' + postId + '/' + flag + '/' + userName).then(res => {})
         window.location.reload(false)
+    }
+    function getFlaggedBy() {
+        console.log(flag);
+        console.log(adminsList);
+        console.log(userId);
+        if (adminsList.includes(userId) && flag){
+            return (
+                <div>Flagged By {flaggedId}</div>
+            )
+        } else {
+            return (
+                <div>{' '}</div>
+            )
+        }
     }
     return (
         <div>
@@ -88,7 +102,7 @@ function Post(props) {
             <div>
             {(userName === posterName || adminsList.includes(userId)) ? <button onClick={e => handleDeletePost()}>Delete</button> : ''}
             {userName === posterName ? '' : <button onClick={e => handleHidePost()}>Hide</button>}
-             flag <input type='checkbox' checked={flag} onChange={() => handleCheckBoxChange()}/>
+             flag <input id="flagBox" type='checkbox' checked={flag} onChange={() => handleCheckBoxChange()} disabled={flag}/> {getFlaggedBy()}
             </div>
         </div>
     )
