@@ -12,8 +12,11 @@ function ManageGroupMembers() {
     const [adminToBeRemoved, setAdminToBeRemoved] = useState('')
     const [userToBeInvited, setUserToBeInvited] = useState('')
     const [userName, setUsername] = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)
-    const previousUrl = 'http://localhost:8081/groupDetails/'
-    const baseUrl = 'http://localhost:8081/manageGroupMembers/'
+    const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+        ? 'http://localhost:8081'
+        : '';
+    const previousUrl = `${domain}/groupDetails/`
+    const baseUrl = `${domain}/manageGroupMembers/`
     useEffect(() => {
     // get creator name
     setCreator([])

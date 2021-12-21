@@ -21,7 +21,10 @@ function PostDetails() {
     const [currentHashTag, setCurrentHashTag] = useState('')
     const [currentHashTagToBeAdded, setCurrentHashTagToBeAdded] = useState('')
     const [commentIdsWithHashTags, setCommentIdsWithHashTags] = useState([-1])
-    const baseUrl = 'http://localhost:8081/postDetails/'
+    const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+        ? 'http://localhost:8081'
+        : '';
+    const baseUrl = `${domain}/postDetails/`;
     useEffect(() => {
       let resList = [];
       axios.get(baseUrl + postId).then(res => {

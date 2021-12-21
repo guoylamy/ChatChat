@@ -17,8 +17,11 @@ function GroupsPage() {
     const [filterTopics, setFilterTopics] = useState([])
     const [suggestGroup, setSuggestGroup] = useState([])
     const [publicGroupOrder, setPublicGroupOrder] = useState('1');
-    const [allPublicGroups, setAllPublicGroups] = useState([])
-    const baseUrl = 'http://localhost:8081/grouppage/'
+    const [allPublicGroups, setAllPublicGroups] = useState([]);
+    const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+        ? 'http://localhost:8081'
+        : '';
+    const baseUrl = `${domain}/grouppage/`;
     useEffect(() => {
         axios.get(baseUrl + 'getAllPublicGroups').then(res => {
             for (var i = 0; i < res.data.length; i++) {

@@ -5,7 +5,10 @@ import { useParams } from "react-router-dom";
 import Post from './Post'
 import io from "socket.io-client";
 import Chat from "./Chat";
-const socket = io.connect('http://localhost:8081');
+const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+  ? 'http://localhost:8081'
+  : '';
+const socket = io.connect(domain);
 function GroupDetails() {
     const {groupName, userName} = useParams()
     const [userId, setUserId] = useState('')
@@ -21,7 +24,7 @@ function GroupDetails() {
     const [hashTags, setHashTags] = useState([])
     const [currentHashTag, setCurrentHashTag] = useState('')
     const [postIdsWithHashTags, setPostIdsWithHashTags] = useState([-1])
-    const baseUrl = 'http://localhost:8081/groupDetails/'
+    const baseUrl = `${domain}/groupDetails/`;
     socket.emit("join_room", groupName);
     useEffect(() => {
         setCreator([])

@@ -13,8 +13,8 @@ const upload = multer({
     fileSize: 4 * 1024 * 1024,  
   },
 });
-
-app.use(cors({ credentials: true, origin: "http://localhost:8081" }));
+const port = process.env.PORT || 8081;
+app.use(cors({ credentials: true, origin: "http://localhost:" + port }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, './app/client/build')));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:8081",
+    origin: "http://localhost:" + port,
     method: ["GET", "POST"],
   }
 });
@@ -145,8 +145,8 @@ app.get('*', (req, res) => {
 app.use((req, res) => {
   res.status(404);
 });
-server.listen(8081, () => {
-  console.log(`Server listening on PORT 8081`);
+server.listen(port, () => {
+  console.log(`Server listening on PORT ${port}`);
 });
 
 module.exports = app;

@@ -13,8 +13,10 @@ function Profile() {
   const [adminGroupsIds, setAdminGroupsIds] = useState([])
   const [publicGroupsRequestsIds, setPublicGroupsRequestsIds] = useState([])
   const [notifications, setNotifications] = useState([])
-  
-  const baseUrl = 'http://localhost:8081/profile/'
+  const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+  ? 'http://localhost:8081'
+  : '';
+  const baseUrl = `${domain}/profile/`;
   useEffect(() => {
     axios.get(baseUrl + 'getRegsiterDate/' + userName).then(res => {
           setRegisterDate((res.data[0].register_date).slice(0, 10))

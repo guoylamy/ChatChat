@@ -5,7 +5,10 @@ import ScrollToBottom from "react-scroll-to-bottom";
 import axios from "axios";
 import "./Chat.css";
 // https://github.com/machadop1407/react-socketio-chat-app/blob/main/client/src/App.css
-const baseUrl = 'http://localhost:8081';
+const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+  ? 'http://localhost:8081'
+  : '';
+const baseUrl = domain;
 const socket = io.connect(baseUrl);
 
 function Chat() {

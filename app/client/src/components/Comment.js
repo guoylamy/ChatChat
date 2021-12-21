@@ -13,8 +13,10 @@ function Comment(props) {
     const [editComment, setEditComment] = useState('')
     const [hashTags, setHashTags] = useState('')
     const [flag, setFlag] = useState(false)
-  
-    const baseUrl = 'http://localhost:8081/comment/'
+    const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8081'
+    : '';
+    const baseUrl = `${domain}/comment/`;
     useEffect(() => {
       axios.get(baseUrl + commentId).then(res => {
             setCommentContent(res.data[0].comment_content)

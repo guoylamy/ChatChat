@@ -14,7 +14,10 @@ function Post(props) {
     const [adminsList, setAdminsList] = useState([])
     const [flag, setFlag] = useState(false)
     const [hashTags, setHashTags] = useState('')
-    const baseUrl = 'http://localhost:8081/post/'
+    const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+        ? 'http://localhost:8081'
+        : '';
+    const baseUrl = `${domain}/post/`;
     useEffect(() => {
         setAdminsList([])
       axios.get(baseUrl + postId).then(res => {

@@ -3,7 +3,10 @@ import React, { useState } from "react";
 function Register() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const baseUrl = 'http://localhost:8081/register/'
+  const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+  ? 'http://localhost:8081'
+  : '';
+  const baseUrl = `${domain}/register/`;
   function handleSubmit() {
     // detect if username is valid
     if (/^[a-zA-Z0-9]+$/.test(username) === false) {
