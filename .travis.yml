@@ -17,7 +17,11 @@ jobs:
     #   script:
     #     - npm install
     #     - npm run lint
-    - stage: Test, Build
+    - stage: Lint, Test, Build
+      name: Lint
+      script:
+        - npm install
+        - npm run lint
     - name: Test
       script:
         - npm install

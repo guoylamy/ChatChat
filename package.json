@@ -11,7 +11,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "jest --coverage --forceExit",
-    "build": "npm install && cd app/client && npm install && npm run build"
+    "build": "npm install && cd app/client && npm install && npm run build",
+    "lint": "eslint app/client/src/ --ext .js,.ts,.jsx,.tsx --ignore-pattern *.test.js"
   },
   "author": "",
   "license": "MIT",
@@ -30,5 +31,13 @@
     "superset": "^2.0.1",
     "supertest": "^6.1.6",
     "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.5.0",
+    "eslint-config-airbnb": "^19.0.2",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.27.1",
+    "eslint-plugin-react-hooks": "^4.3.0"
   }
 }
