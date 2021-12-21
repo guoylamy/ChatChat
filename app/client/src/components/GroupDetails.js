@@ -4,7 +4,6 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Post from './Post'
 import io from "socket.io-client";
-import Chat from "./Chat";
 const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
   ? 'http://localhost:8081'
   : '';
@@ -41,6 +40,7 @@ function GroupDetails() {
           let flaggedPost = 0;
           let pt= 0;
           for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
             setAllPostsIds(old => [...old, res.data[i].post_id])
             if (res.data[i].flag === 1) {
                 flaggedPost += 1;
@@ -67,6 +67,7 @@ function GroupDetails() {
     axios.get(baseUrl + 'getAdminsNames/' + groupName).then(res => {
         //   console.log(res.data)
           for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
             setAdmins(old => [...old, res.data[i].user_name])
           }
         })
@@ -74,6 +75,7 @@ function GroupDetails() {
     axios.get(baseUrl + 'getNormalUsersNames/' + groupName).then(res => {
         //   console.log(res.data)
           for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
             setNormalUsers(old => [...old, res.data[i].user_name])
           }
         })
@@ -85,6 +87,7 @@ function GroupDetails() {
     // get hide post id
     axios.get(baseUrl + 'getHidePostIds/' + userName).then(res => {
         for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
             setHidePostIds(old => [...old, res.data[i].post_id])
           }
     })
@@ -93,6 +96,7 @@ function GroupDetails() {
         // console.log(res.data)
         setGroupId(res.data[0].group_id)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     function getTopics() {
         return (
@@ -178,6 +182,7 @@ function GroupDetails() {
         axios.post(baseUrl + 'getPostsIdsByHashTags', {hashTags:hashTags, groupId:groupId}).then(res => {
             for (var i = 0; i < res.data.length; i++) {
                 console.log(res.data[i])
+                // eslint-disable-next-line no-loop-func
                 setPostIdsWithHashTags(old => [...old, res.data[i]])
             }
         })
@@ -202,6 +207,7 @@ function GroupDetails() {
             window.location.href =
             window.location.protocol + "//" + window.location.host + "/groupDetails/" + groupName + '/' + userName;
         });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [socket]);
 
     return (

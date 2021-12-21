@@ -1,13 +1,10 @@
 import React, {useState, useEffect} from "react"
-import NavBar from './NavBar';
 import axios from "axios";
-import { useParams } from "react-router-dom";
 
 function Post(props) {
-    const [userName, setUserName] = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)
-    const [postId, setPostId] = useState(props.postId)
+    const userName = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)[0]
+    const postId = useState(props.postId)[0]
     const [userId, setUserId] = useState('')
-    const [groupId, setGroupId] = useState('')
     const [postContent, setPostContent] = useState('')
     const [posterName, setPosterName] = useState('')
     const [postTime, setPostTime] = useState('')
@@ -36,6 +33,7 @@ function Post(props) {
          axios.get(baseUrl + 'getGroupId/' + postId).then(res => {
            axios.get(baseUrl + 'getAdminsList/' + res.data[0].group_id).then(res1 => {
                 for (var i = 0; i < res1.data.length; i++) {
+                    // eslint-disable-next-line no-loop-func
                     setAdminsList(old => [...old, res1.data[i].user_id])
                 }
             })
@@ -49,6 +47,7 @@ function Post(props) {
                 setFlag(false)
             }
         })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     function jumpToPostDetailsPage() {
         window.location.href =

@@ -2,7 +2,6 @@ import React, {useState, useEffect} from "react"
 import NavBar from './NavBar';
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import Post from './Post'
 function ManageGroupMembers() {
     const {groupName} = useParams()
     const [creator, setCreator] = useState([])
@@ -11,7 +10,7 @@ function ManageGroupMembers() {
     const [adminToBeAdded, setAdminToBeAdded] = useState('')
     const [adminToBeRemoved, setAdminToBeRemoved] = useState('')
     const [userToBeInvited, setUserToBeInvited] = useState('')
-    const [userName, setUsername] = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)
+    const userName = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)[0]
     const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? 'http://localhost:8081'
         : '';
@@ -29,6 +28,7 @@ function ManageGroupMembers() {
     // get all admins of this group except for creator
     axios.get(previousUrl + 'getAdminsNames/' + groupName).then(res => {
           for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
             setAdmins(old => [...old, res.data[i].user_name])
           }
         })
@@ -36,9 +36,11 @@ function ManageGroupMembers() {
     axios.get(previousUrl + 'getNormalUsersNames/' + groupName).then(res => {
         //   console.log(res.data)
           for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
             setNormalUsers(old => [...old, res.data[i].user_name])
           }
         })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     function getAllMembers() {

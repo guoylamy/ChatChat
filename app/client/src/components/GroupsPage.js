@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react"
 import NavBar from './NavBar'
 import axios from "axios";
-import { Link, useParams, Redirect  } from "react-router-dom";
+import { useParams  } from "react-router-dom";
 function GroupsPage() {
     const {userName} = useParams()
     const [joinGroupName, setJoinGroupName] = useState('')
@@ -25,6 +25,7 @@ function GroupsPage() {
     useEffect(() => {
         axios.get(baseUrl + 'getAllPublicGroups').then(res => {
             for (var i = 0; i < res.data.length; i++) {
+                // eslint-disable-next-line no-loop-func
                 setAllPublicGroups(old => [...old, res.data[i].group_name])
             }
         })
@@ -32,26 +33,33 @@ function GroupsPage() {
         axios.get(baseUrl + 'private/' + userName).then(res => {
             setPrivateGroup([])
             setPrivateGroupTopics([])
-            for (var i = 0; i < res.data[0].length; i++) {
+            let i;
+            for (i = 0; i < res.data[0].length; i++) {
+                // eslint-disable-next-line no-loop-func
                 setPrivateGroup(old => [...old, res.data[0][i].group_name])
             }
-            for (var i = 0; i < res.data[1].length; i++) {
+            for (i = 0; i < res.data[1].length; i++) {
+                // eslint-disable-next-line no-loop-func
                 setPrivateGroupTopics(old => [...old, res.data[1][i].topics])
             }
         })
         axios.get(baseUrl + 'suggestgroup/' + userName).then(res => {
             setSuggestGroup(res.data);
         })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     function queryPublicGroups(publicGroupOrder) {
         axios.get(baseUrl + 'public/' + userName + "/" + publicGroupOrder).then(res => {
             setPublicGroup([])
             setPublicGroupTopics([])
-            for (var i = 0; i < res.data.length; i++) {
+            let i;
+            for (i = 0; i < res.data.length; i++) {
+                // eslint-disable-next-line no-loop-func
                 setPublicGroup(old => [...old, res.data[i].group_name])
             }
-            for (var i = 0; i < res.data.length; i++) {
+            for (i = 0; i < res.data.length; i++) {
+                // eslint-disable-next-line no-loop-func
                 setPublicGroupTopics(old => [...old, res.data[i].topics])
             }         
         })
@@ -187,10 +195,13 @@ function GroupsPage() {
             if (res.data !== 'empty') {
                 setPublicGroup([])
                 setPublicGroupTopics([])
-                for (var i = 0; i < res.data[0].length; i++) {
+                let i;
+                for (i = 0; i < res.data[0].length; i++) {
+                    // eslint-disable-next-line no-loop-func
                     setPublicGroup(old => [...old, res.data[0][i]])
                 }
-                for (var i = 0; i < res.data[1].length; i++) {
+                for (i = 0; i < res.data[1].length; i++) {
+                    // eslint-disable-next-line no-loop-func
                     setPublicGroupTopics(old => [...old, res.data[1][i]])
                 }  
             }

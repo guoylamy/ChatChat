@@ -7,7 +7,7 @@ import './PostDetails.css';
 var uuid = require("react-uuid");
 
 function PostDetails() {
-    const [userName, setUserName] = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)
+    const userName = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)[0]
     const {postId} = useParams()
     const [userId, setUserId] = useState('')
     // const [postContent, setPostContent] = useState([])
@@ -57,6 +57,7 @@ function PostDetails() {
       axios.get(baseUrl + 'allCommentsIds/' + postId).then(res => {
             // console.log(res.data)
             for (var i = 0; i < res.data.length; i++) {
+                // eslint-disable-next-line no-loop-func
                 setAllCommentsIds(old => [...old, res.data[i].comment_id])
             }
         })
@@ -64,6 +65,7 @@ function PostDetails() {
         // console.log(res.data)
         setUserId(res.data[0].user_id)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     function getAllComments() {
@@ -108,6 +110,7 @@ function PostDetails() {
         axios.post(baseUrl + 'getCommentsIdsByHashTags', {hashTags:hashTags, postId:postId}).then(res => {
             for (var i = 0; i < res.data.length; i++) {
                 console.log(res.data[i])
+                // eslint-disable-next-line no-loop-func
                 setCommentIdsWithHashTags(old => [...old, res.data[i]])
             }
         })

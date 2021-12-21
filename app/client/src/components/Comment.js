@@ -1,14 +1,12 @@
 import React, {useState, useEffect} from "react"
-import NavBar from './NavBar';
 import axios from "axios";
-import { useParams } from "react-router-dom";
 
 function Comment(props) {
-    const [userName, setUserName] = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)
-    const [commentId, SetCommentId] = useState(props.commentId)
+    const userName = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)[0];
+    const commentId = useState(props.commentId)[0];
     const [commentContent, setCommentContent] = useState('')
     const [createTime, setCreateTime] = useState('')
-    const [creatorId, setCreatorId] = useState('')
+    const setCreatorId = useState('')[1]
     const [creatorName, setCreatorName] = useState('')
     const [editComment, setEditComment] = useState('')
     const [hashTags, setHashTags] = useState('')
@@ -33,7 +31,7 @@ function Comment(props) {
                 setCreatorName(res1.data[0].user_name)
             })
         })
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
     function handleEditComment() {
         setFlag(true)
     }

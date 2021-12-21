@@ -1,12 +1,10 @@
-import { useParams } from "react-router-dom";
 import React, {useState, useEffect} from "react"
 import NavBar from './NavBar';
 import axios from "axios";
-import Post from './Post';
 import './Profile.css';
 
 function Profile() {
-  const [userName, setUserName] = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)
+  const userName = useState(JSON.parse(sessionStorage.getItem('sessionObject')).userName)[0]
   const [registerDate, setRegisterDate] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [invitedGroupsIds, setInvitedGroupsIds] = useState([])
@@ -25,6 +23,7 @@ function Profile() {
           // console.log(res.data)
           setInvitedGroupsIds([])
           for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
             setInvitedGroupsIds(old => [...old, [res.data[i].group_id, res.data[i].group_name]])
           }
         })
@@ -32,6 +31,7 @@ function Profile() {
           // console.log(res.data)
           setAdminGroupsIds([])
           for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
             setAdminGroupsIds(old => [...old, [res.data[i].group_id, res.data[i].group_name, res.data[i].user_to_be_invited, res.data[i].user_name]])
           }
         })
@@ -39,16 +39,19 @@ function Profile() {
           // console.log(res.data)
           setPublicGroupsRequestsIds([])
           for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
             setPublicGroupsRequestsIds(old => [...old, [res.data[i].group_id, res.data[i].group_name, res.data[i].user_id, res.data[i].user_name]])
           }
         })
         axios.get(baseUrl + 'getNotifications/' + userName).then(res => {
           setNotifications([])
           for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
             setNotifications(old => [...old, [res.data[i].group_id, res.data[i].group_name, res.data[i].notified, res.data[i].user_id]])
           }
           
         })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     
     function handleUploadAvatar(selectedFile) {
