@@ -1,6 +1,6 @@
 describe('Tests the register players page', () => {
   it('Enter Username and passwords successfully', () => {
-    cy.visit('http://localhost:3000/');
+    cy.visit('http://localhost:8081/');
     cy.get('#registerButton').should('exist');
     const randomUserName = (Math.random() + 1).toString(36).substring(7);
     cy.get('#registerButton').click();
