@@ -335,6 +335,21 @@ const getNotifications = (req, res) => {
   });
 };
 
+const getFlaggedNotifications = (req, res) => {
+  const { userName } = req.params;
+  const query = `select post_id from post_table where flaggedId = '${userName}'`;
+  connection.query(query, (err, rows, _fields) => {
+    if (err) {
+      // console.log(err);
+    } else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
+      res.json(rows);
+    }
+  });
+};
+
 const resolveNotification = (req, res) => {
   const { userId } = req.params;
   const { groupId } = req.params;
@@ -745,7 +760,7 @@ const getAdminsList = (req, res) => {
 const getFlagValue = (req, res) => {
   const { postId } = req.params;
   // find id in group table and
-  const query = `select flag from post_table where post_id='${postId}'`;
+  const query = `select flag, flaggedId from post_table where post_id='${postId}'`;
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -759,12 +774,13 @@ const getFlagValue = (req, res) => {
 const updateFlagStatus = (req, res) => {
   const { postId } = req.params;
   const { flag } = req.params;
+  const flaggedId = req.params.userId;
   // find id in group table and
   let query;
   if (flag === 'true') {
     query = `update post_table set flag=0 where post_id='${postId}'`;
   } else {
-    query = `update post_table set flag=1 where post_id='${postId}'`;
+    query = `update post_table set flag=1, flaggedId='${flaggedId}' where post_id='${postId}'`;
   }
   connection.query(query, (err, rows, _fields) => {
     if (err) {
@@ -1384,6 +1400,7 @@ module.exports = {
   approvePublicRequest,
   declinePublicRequest,
   getNotifications,
+  getFlaggedNotifications,
   resolveNotification,
   uploadAvatar,
   getAvatar,

@@ -11,6 +11,7 @@ function Profile() {
   const [adminGroupsIds, setAdminGroupsIds] = useState([])
   const [publicGroupsRequestsIds, setPublicGroupsRequestsIds] = useState([])
   const [notifications, setNotifications] = useState([])
+  const [flagNotifications, setFlagNotifications] = useState([])
   const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
   ? 'http://localhost:8081'
   : '';
@@ -50,6 +51,13 @@ function Profile() {
             setNotifications(old => [...old, [res.data[i].group_id, res.data[i].group_name, res.data[i].notified, res.data[i].user_id]])
           }
           
+        })
+        axios.get(baseUrl + 'getFlaggedNotifications/' + userName).then(res => {
+          setFlagNotifications([])
+          for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
+            setFlagNotifications(old => [...old, res.data[i].post_id]);
+          }
         })
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -193,6 +201,10 @@ function Profile() {
                         <button onClick={e => handleNotification(id[0], id[3])}>Got it</button>
                     </div>
                 ))}
+                
+            {flagNotifications.map((postId) => (
+              <div><a href={window.location.protocol + "//" + window.location.host + "/PostDetails/" + postId}>Post</a> flagged by you has not beed deleted</div>
+            ))}
           </div>
       )
     }
