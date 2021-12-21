@@ -6,7 +6,7 @@ function Register() {
   const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
   ? 'http://localhost:8081'
   : '';
-  const baseUrl = `${domain}/register/`;
+  const baseUrl = `${domain}/api/register/`;
   function handleSubmit() {
     // detect if username is valid
     if (/^[a-zA-Z0-9]+$/.test(username) === false) {

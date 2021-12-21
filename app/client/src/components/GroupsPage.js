@@ -21,7 +21,7 @@ function GroupsPage() {
     const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? 'http://localhost:8081'
         : '';
-    const baseUrl = `${domain}/grouppage/`;
+    const baseUrl = `${domain}/api/grouppage/`;
     useEffect(() => {
         axios.get(baseUrl + 'getAllPublicGroups').then(res => {
             for (var i = 0; i < res.data.length; i++) {

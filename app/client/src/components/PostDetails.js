@@ -24,7 +24,7 @@ function PostDetails() {
     const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? 'http://localhost:8081'
         : '';
-    const baseUrl = `${domain}/postDetails/`;
+    const baseUrl = `${domain}/api/postDetails/`;
     useEffect(() => {
       let resList = [];
       axios.get(baseUrl + postId).then(res => {

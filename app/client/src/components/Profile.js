@@ -14,7 +14,7 @@ function Profile() {
   const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
   ? 'http://localhost:8081'
   : '';
-  const baseUrl = `${domain}/profile/`;
+  const baseUrl = `${domain}/api/profile/`;
   useEffect(() => {
     axios.get(baseUrl + 'getRegsiterDate/' + userName).then(res => {
           setRegisterDate((res.data[0].register_date).slice(0, 10))

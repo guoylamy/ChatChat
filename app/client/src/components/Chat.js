@@ -8,8 +8,8 @@ import "./Chat.css";
 const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
   ? 'http://localhost:8081'
   : '';
-const baseUrl = domain;
-const socket = io.connect(baseUrl);
+const baseUrl = domain + "/api";
+const socket = io.connect(domain);
 
 function Chat() {
     const {userName, friendName} = useParams();

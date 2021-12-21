@@ -14,7 +14,7 @@ function Comment(props) {
     const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
     ? 'http://localhost:8081'
     : '';
-    const baseUrl = `${domain}/comment/`;
+    const baseUrl = `${domain}/api/comment/`;
     useEffect(() => {
       axios.get(baseUrl + commentId).then(res => {
             setCommentContent(res.data[0].comment_content)
@@ -31,7 +31,8 @@ function Comment(props) {
                 setCreatorName(res1.data[0].user_name)
             })
         })
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []) 
     function handleEditComment() {
         setFlag(true)
     }

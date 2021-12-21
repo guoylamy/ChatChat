@@ -634,7 +634,8 @@ const getGroupDetailsAllPostsIds = (req, res) => {
   const { groupName } = req.params;
   // find id in group table and
   const query = `select post_id, flag, create_time from post_table where group_id in 
-  (select group_id from group_table where group_name='${groupName}')`;
+  (select group_id from group_table where group_name='${groupName}')
+  order by create_time desc`;
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -841,7 +842,8 @@ const getPostDetailsAllCommentsIds = (req, res) => {
   // find id in group table and
   const query = `select comment_table.* from comment_table 
   join post_table on comment_table.post_id=post_table.post_id 
-  where post_table.post_id='${postId}'`;
+  where post_table.post_id='${postId}'
+  order by create_time desc`;
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
