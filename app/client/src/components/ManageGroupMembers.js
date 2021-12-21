@@ -14,8 +14,8 @@ function ManageGroupMembers() {
     const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? 'http://localhost:8081'
         : '';
-    const previousUrl = `${domain}/groupDetails/`
-    const baseUrl = `${domain}/manageGroupMembers/`
+    const previousUrl = `${domain}/api/groupDetails/`
+    const baseUrl = `${domain}/api/manageGroupMembers/`
     useEffect(() => {
     // get creator name
     setCreator([])

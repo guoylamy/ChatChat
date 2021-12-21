@@ -7,7 +7,7 @@ function Login() {
   const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
     ? 'http://localhost:8081'
     : '';
-  const baseUrl = `${domain}/login/`;
+  const baseUrl = `${domain}/api/login/`;
   function checkIfAcountExists() {
     // add expiresAt, if the userName is in forbidden, but the expirestime has passed, 
      console.log(sessionStorage)

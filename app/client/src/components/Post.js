@@ -14,7 +14,7 @@ function Post(props) {
     const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
         ? 'http://localhost:8081'
         : '';
-    const baseUrl = `${domain}/post/`;
+    const baseUrl = `${domain}/api/post/`;
     useEffect(() => {
         setAdminsList([])
       axios.get(baseUrl + postId).then(res => {

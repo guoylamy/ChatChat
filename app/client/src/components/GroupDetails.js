@@ -23,7 +23,7 @@ function GroupDetails() {
     const [hashTags, setHashTags] = useState([])
     const [currentHashTag, setCurrentHashTag] = useState('')
     const [postIdsWithHashTags, setPostIdsWithHashTags] = useState([-1])
-    const baseUrl = `${domain}/groupDetails/`;
+    const baseUrl = `${domain}/api/groupDetails/`;
     socket.emit("join_room", groupName);
     useEffect(() => {
         setCreator([])
