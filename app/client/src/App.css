@@ -1,0 +1,71 @@
+@import 'bulma/css/bulma.css';
+
+.App {
+  text-align: center;
+  justify-content: center;
+}
+
+body {
+  text-align: center;
+}
+
+.chatchat-h1{
+  color: white;
+  background-color: black;
+  font-family: verdana;
+  font-size: 300%;
+  align-items: center;
+}
+
+.login-h2{
+  font-size: 30px;
+}
+.login-div{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  height: 200px;
+  width: 200px;
+  outline: 2px solid black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.page-title{
+  font-size: 30px;
+}
+
+.page-content{
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+} 
+
+ul{
+  list-style-type: none; 
+  text-align: left;
+}
+
+dl{
+  display: grid;
+  grid-template-columns: max-content auto;
+  text-align: left;
+}
+
+dt{
+  grid-column-start: 1;
+  font-weight: bold;
+}
+
+dd{
+  grid-column-start: 2;
+}
+
+.UserinfoBox{
+  outline: 1px solid black;
+  outline-offset: 10px;
+  outline-style: dotted;
+}

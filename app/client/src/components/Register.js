@@ -1,52 +1,70 @@
+import axios from "axios";
 import React, { useState } from "react";
 function Register() {
-  const [allValues, setAllValues] = useState({
-    username: "",
-    password: "",
-  });
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+  ? 'http://localhost:8081'
+  : '';
+  const baseUrl = `${domain}/api/register/`;
   function handleSubmit() {
     // detect if username is valid
-    if (/^[a-zA-Z0-9]+$/.test(allValues.username) === false) {
+    if (/^[a-zA-Z0-9]+$/.test(username) === false) {
       alert("User name is not alphanumeric");
     }
     // detect if password is valid
-    else if (/^[a-zA-Z0-9]+$/.test(allValues.password) === false) {
+    else if (/^[a-zA-Z0-9]+$/.test(password) === false) {
       alert("Password is not alphanumeric");
     }
     // pass it to the backend
     else {
-      window.location.href =
-        window.location.protocol + "//" + window.location.host + "/profile";
+      axios.get(baseUrl + username + '/' + password).then(res => {
+        console.log(res.data)
+        if (res.data.length === 1) {
+          alert("Username already exists!");
+        }
+        else {
+          window.location.href =
+        window.location.protocol + "//" + window.location.host;
+        }
+      })
+      
     }
   }
   function handleUsername(event) {
-    setAllValues({
-      username: event.target.value,
-    });
+    setUsername(event.target.value)
   }
   function handlePassword(event) {
-    setAllValues({
-      password: event.target.value,
-    });
+    setPassword(event.target.value)
   }
   return (
     <div>
-      <h1>register</h1>
-      <div>
-        <div>
-          username{" "}
-          <input
-            type="text"
-            name="username"
-            placeholder="Please enter a valid username"
-            onChange={handleUsername}
-          ></input>
+      <h1 className="chatchat-h1">chatchat!</h1>
+      <br></br>
+      <h2 className="title is-3">Register</h2>
+      <div className="columns is-centered">
+        <div class="column is-one-quarter">
+          <div className="box">
+            <div class="field">
+              <label class="label">Username</label>
+              <div class="control">
+                <input id="registerInput"
+                    type="text"
+                    name="username"
+                    placeholder="Please enter a valid username"
+                    onChange={handleUsername}
+                  ></input>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Password</label>
+              <div class="control">
+                <input id='pwdInput' type="text" name="password" placeholder="********" onChange={handlePassword}></input>
+              </div>
+            </div>
+            <input id="createButton" class="button is-primary" type="button" onClick={handleSubmit} value="Create Account"></input>
+          </div>
         </div>
-        <div>
-          password{" "}
-          <input type="text" name="password" onChange={handlePassword}></input>
-        </div>
-        <input type="button" onClick={handleSubmit} value="submit"></input>
       </div>
     </div>
   );

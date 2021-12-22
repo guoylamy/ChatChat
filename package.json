@@ -1,0 +1,43 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "jest": {
+    "testPathIgnorePatterns": [
+      "./app/client/cypress"
+    ]
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest --coverage --forceExit",
+    "build": "npm install && cd app/client && npm install && npm run build",
+    "lint": "eslint app/client/src/ --ext .js,.ts,.jsx,.tsx --ignore-pattern *.test.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "multer": "^1.4.3",
+    "mysql": "^2.17.1",
+    "react-uuid": "^1.0.2",
+    "socket.io": "^4.4.0",
+    "knex": "^0.95.14",
+    "mysql2": "^2.3.3",
+    "path": "^0.12.7",
+    "react-scripts": "^4.0.3",
+    "superset": "^2.0.1",
+    "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.26.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "supertest": "^6.1.6"
+  }
+}
