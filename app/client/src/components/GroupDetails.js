@@ -160,12 +160,18 @@ function GroupDetails() {
         }
     }
     function groupAnalysis() {
+        let hidePostNum = 0;
+        for (let i = 0; i < hidePostIds.length; i++) {
+            if (allPostsIds.includes(hidePostIds[i])) {
+                hidePostNum += 1;
+            }
+        }
         return (
             <div className="box"> 
                 <h1 className="title is-5">Group Analytics</h1>
                 <label class="label"> Number of members: {creator.length + admins.length + normalUsers.length}</label>
                 <label class="label"> Number of posts: {allPostsIds.length}</label>
-                <label class="label"> Number of post hidden: {hidePostIds.length}</label>
+                <label class="label"> Number of post hidden: {hidePostNum} </label>
                 <label class="label"> Number of post flagged: {flaggedPostNum}</label>
                 <label class="label"> Newest post time: {newestPostTime}</label>
             </div>
