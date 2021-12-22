@@ -172,6 +172,7 @@ const acceptInvitation = (req, res) => {
   const { userName } = req.params;
   const { groupId } = req.params;
   // update accept_or_decline as 1, inviter_get_notified as 1
+  // fixed at Dec 22th 3pm, add delete
   let query = `
   delete from invite where user_to_be_invited in (select user_id from user_table where user_name='${userName}')
   and inviter_get_notified=1 and accept_or_decline=2 and group_id='${groupId}';
