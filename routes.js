@@ -2,6 +2,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-unused-vars */
 const mysql = require('mysql');
+const md5 = require('md5');
 const uuid = require('react-uuid');
 const config = require('./db-config');
 // const { user } = require('./db-config');
@@ -25,6 +26,7 @@ connection.connect();
 const register = (req, res) => {
   const { userName } = req.params;
   const { password } = req.params;
+  const hashedPassword = md5(password);
   const userId = uuid();
   let ifUserExists = `
     SELECT * FROM ?? WHERE ??=?
@@ -36,7 +38,7 @@ const register = (req, res) => {
       // console.log(err);
     } else if (rows.length === 0) {
       let query = 'INSERT INTO ?? (??, ??, ??, ??) VALUES (?, ?, ?, CURDATE())';
-      const inserts2 = ['user_table', 'user_id', 'user_name', 'password', 'register_date', userId, userName, password];
+      const inserts2 = ['user_table', 'user_id', 'user_name', 'password', 'register_date', userId, userName, hashedPassword];
       query = mysql.format(query, inserts2);
       connection.query(query, (err, rows, _fields) => {
         if (err) {
@@ -60,12 +62,13 @@ const register = (req, res) => {
 const verifyLogin = (req, res) => {
   const { userName } = req.params;
   const { password } = req.params;
+  const hashedPassword = md5(password);
   let query = `
     SELECT *
     FROM ??
     WHERE ??=? AND password=?
   `;
-  const inserts = ['user_table', 'user_name', userName, password];
+  const inserts = ['user_table', 'user_name', userName, hashedPassword];
   query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
@@ -124,10 +127,11 @@ const getRegsiterDate = (req, res) => {
 const changePassword = (req, res) => {
   const { userName } = req.params;
   const { password } = req.params;
+  const hashedPassword = md5(password);
   let query = `
     update ?? set ??=? where ??=?
   `;
-  const inserts = ['user_table', 'password', password, 'user_name', userName];
+  const inserts = ['user_table', 'password', hashedPassword, 'user_name', userName];
   query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
