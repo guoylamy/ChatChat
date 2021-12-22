@@ -1,4 +1,5 @@
 var config = require("./db-config");
+const mysql = require("mysql2")
 const knex = require('knex')({
   client: 'mysql',
   connection: {
@@ -25,7 +26,7 @@ const connect = async (credentials) => {
       database: credentials.database,
     });
       // Connected to db
-    console.log(`Connected to database: ${connection.connection.config.database}`);
+    console.log(`Connected to database: ${connection.config.database}`);
     return connection;
   } catch (err) {
     console.log(err.message);
