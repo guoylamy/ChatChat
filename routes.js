@@ -1003,7 +1003,10 @@ const getPostDetailsMakeComment = (req, res) => {
   const { creatTime } = req.body;
   const { creatorId } = req.body;
   const { postId } = req.body;
-  const { hashTags } = req.body;
+  let { hashTags } = req.body;
+  if (hashTags.length === 0) {
+    hashTags = '';
+  }
   let query = `insert into comment_table (comment_id, comment_content, create_time, creator_id, post_id, hash_tags)
   values
   (?, ?, ?, ?, ?, ?)

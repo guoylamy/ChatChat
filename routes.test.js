@@ -435,7 +435,7 @@ test('getPostDetailsMakeComment works', async () => {
   const group_id_new = group_id[0].group_id;
   await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
   const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
-  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id} }, '1');
+  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id, hashTags: ''} }, '1');
   expect(message).not.toBeNull();
 });
 // getPostAttachmentDetails
@@ -450,7 +450,7 @@ test('getCommentInfo works', async () => {
   const group_id_new = group_id[0].group_id;
   await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
   const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
-  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id} }, '1');
+  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id, hashTags: ''} }, '1');
   const commentID = await knex.select('comment_id').from('comment_table').where('comment_content', '=', 'test');
   await dbLib.getCommentInfo({ params: {commentId: commentID[0].comment_id} },  '1');
   expect(message).not.toBeNull();
@@ -466,7 +466,7 @@ test('deleteComment works', async () => {
   const group_id_new = group_id[0].group_id;
   await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
   const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
-  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id} }, '1');
+  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id, hashTags: ''} }, '1');
   const commentID = await knex.select('comment_id').from('comment_table').where('comment_content', '=', 'test');
   await dbLib.deleteComment({ params: {commentId: commentID[0].comment_id} },  '1');
   expect(message).not.toBeNull();
@@ -481,7 +481,7 @@ test('editComment works', async () => {
   const group_id_new = group_id[0].group_id;
   await dbLib.postMessage({ body: { sender: 'RoutesTestUser', group_id: group_id_new, timestamp:'1639934942947', message:'try' } },  '1');
   const message = await knex.select('post_id').from('post_table').where('create_time', '=', '1639934942947');
-  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id} }, '1');
+  await dbLib.getPostDetailsMakeComment({ body:{ commentId: Math.random(), commentContent:'test', creatTime: Date.now(), creatorId: Date.now(), postId: message[0].post_id, hashTags: ''} }, '1');
   const commentID = await knex.select('comment_id').from('comment_table').where('comment_content', '=', 'test');
   await dbLib.editComment({ body: {commentId: commentID[0].comment_id, commentContent:'new'} },  '1');
   expect(message).not.toBeNull();
