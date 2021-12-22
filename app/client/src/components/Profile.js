@@ -12,6 +12,7 @@ function Profile() {
   const [publicGroupsRequestsIds, setPublicGroupsRequestsIds] = useState([])
   const [notifications, setNotifications] = useState([])
   const [flagNotifications, setFlagNotifications] = useState([])
+  const [generalNotifications, setGeneralNotifications] = useState([]);
   const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
   ? 'http://localhost:8081'
   : '';
@@ -25,7 +26,7 @@ function Profile() {
           setInvitedGroupsIds([])
           for (var i = 0; i < res.data.length; i++) {
             // eslint-disable-next-line no-loop-func
-            setInvitedGroupsIds(old => [...old, [res.data[i].group_id, res.data[i].group_name]])
+            setInvitedGroupsIds(old => [...old, [res.data[i].group_id, res.data[i].group_name, res.data[i].user_name]])
           }
         })
       axios.get(baseUrl + 'getAdminGroupsIds/' + userName).then(res => {
@@ -57,6 +58,14 @@ function Profile() {
           for (var i = 0; i < res.data.length; i++) {
             // eslint-disable-next-line no-loop-func
             setFlagNotifications(old => [...old, res.data[i].post_id]);
+          }
+        })
+        
+        axios.get(`${domain}/api/getGeneralNotifications/` + userName).then(res => {
+          setGeneralNotifications([])
+          for (var i = 0; i < res.data.length; i++) {
+            // eslint-disable-next-line no-loop-func
+            setGeneralNotifications(old => [...old, res.data[i].message]);
           }
         })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -122,11 +131,14 @@ function Profile() {
         window.location.reload(false);
     }
 
-    function handleDeclineInvitation(groupId) {
-      axios.post(baseUrl + 'declineInvitation/' + userName + '/' + groupId).then(res => {
-          
-        })
-        window.location.reload(false);
+    function handleDeclineInvitation(groupId, groupName, inviterName) {
+      axios.post(baseUrl + 'declineInvitation/' + userName + '/' + groupId).then(res => {});
+      const messageData = {
+        message: `${userName} declined your invitation to join in group ${groupName}`,
+        time: Date.now()
+      }
+      axios.post(`${domain}/api/postGeneralNotification/` + inviterName, messageData).then(res => {});
+      window.location.reload(false);
     }
 
     function handleApproveRequest(groupId, userId) {
@@ -176,7 +188,7 @@ function Profile() {
                     <div key={id}>
                         Group {id[1]} invites you to join
                         <button class="button is-small" onClick={e => handleAcceptInvitation(id[0])}>Accept</button>
-                        <button class="button is-small" onClick={e => handleDeclineInvitation(id[0])}>Decline</button>
+                        <button class="button is-small" onClick={e => handleDeclineInvitation(id[0], id[1], id[2])}>Decline</button>
                     </div>
                 ))}
           
@@ -204,6 +216,9 @@ function Profile() {
                 
             {flagNotifications.map((postId) => (
               <div><a href={window.location.protocol + "//" + window.location.host + "/PostDetails/" + postId}>Post</a> flagged by you has not beed deleted</div>
+            ))}
+            {generalNotifications.map((message) => (
+              <div>{message}</div>
             ))}
           </div>
       )
