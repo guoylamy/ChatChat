@@ -69,7 +69,7 @@ function NewPost() {
             const videoList =  document.getElementById("videoUpload").files;
             console.log("videoList");
             console.log(videoList);
-            for (let i = 0; i < audioList.length; i++) {
+            for (let i = 0; i < videoList.length; i++) {
                 tmpSuccess = await sendFile("video", videoList[i], postId);
                 console.log(tmpSuccess);
                 if (!tmpSuccess) {
