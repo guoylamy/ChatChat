@@ -144,15 +144,14 @@ const changePassword = (req, res) => {
 const getGroupsInvitations = (req, res) => {
   const { userName } = req.params;
   // 1. get user id, 2. get group_id from invite table
-  let query = `
-  select ??, ?? from ?? where ?? in 
-  (select ?? from ?? where ?? in 
-    (select ?? from ?? where ??=?) and ??=0)
+  const query = `
+  select g.group_id, group_name, u.user_name
+  from group_table g inner join invite i on g.group_id = i.group_id inner join user_table u on i.inviter = u.user_id
+  where i.user_to_be_invited in (select user_id from user_table where user_name=?) 
+  and accept_or_decline=0;
   `;
-  const inserts = ['group_id', 'group_name', 'group_table', 'group_id', 'group_id', 'invite',
-    'user_to_be_invited', 'user_id', 'user_table', 'user_name', userName, 'accept_or_decline'];
-  query = mysql.format(query, inserts);
-  connection.query(query, (err, rows, _fields) => {
+
+  connection.query(query, [userName], (err, rows, _fields) => {
     if (err) {
       // console.log(err);
     } else {
@@ -348,6 +347,53 @@ const getNotifications = (req, res) => {
   const inserts = [userName];
   query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
+    if (err) {
+      // console.log(err);
+    } else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
+      res.json(rows);
+    }
+  });
+};
+
+const getFlaggedNotifications = (req, res) => {
+  const { userName } = req.params;
+  const query = `select post_id from post_table where flaggedId = '${userName}'`;
+  connection.query(query, (err, rows, _fields) => {
+    if (err) {
+      // console.log(err);
+    } else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
+      res.json(rows);
+    }
+  });
+};
+
+const postGeneralNotification = (req, res) => {
+  const { userName } = req.params;
+  const nid = uuid();
+  const query = 'insert into general_notification (nid, user_name, message, create_time) values (?, ?, ?, ?)';
+  // eslint-disable-next-line max-len
+  connection.query(query, [nid, userName, req.body.message, req.body.time], (err, rows, _fields) => {
+    if (err) {
+      // console.log(err);
+    } else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
+      res.json(rows);
+    }
+  });
+};
+
+const getGeneralNotifications = (req, res) => {
+  const { userName } = req.params;
+  const query = 'select message from general_notification where user_name=? order by create_time desc';
+  connection.query(query, [userName], (err, rows, _fields) => {
     if (err) {
       // console.log(err);
     } else {
@@ -801,8 +847,8 @@ const getFlagValue = (req, res) => {
   const { postId } = req.params;
   // find id in group table and
   let query = `
-  select ?? from ?? where ??=?`;
-  const inserts = ['flag', 'post_table', 'post_id', postId];
+  select flag, flaggedId from post_table where post_id=?`;
+  const inserts = [postId];
   query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
@@ -817,16 +863,19 @@ const getFlagValue = (req, res) => {
 const updateFlagStatus = (req, res) => {
   const { postId } = req.params;
   const { flag } = req.params;
+  const flaggedId = req.params.userId;
   // find id in group table and
   let query;
+  let inserts;
   if (flag === 'true') {
     query = `
     update ?? set ??=0 where ??=?`;
+    inserts = ['post_table', 'flag', 'post_id', postId];
   } else {
     query = `
-    update ?? set ??=1 where ??=?`;
+    update post_table set flag=1, flaggedId=? where post_id=?`;
+    inserts = [flaggedId, postId];
   }
-  const inserts = ['post_table', 'flag', 'post_id', postId];
   query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
@@ -1505,11 +1554,15 @@ module.exports = {
   approvePublicRequest,
   declinePublicRequest,
   getNotifications,
+  getFlaggedNotifications,
   resolveNotification,
   uploadAvatar,
   getAvatar,
   deleteAvatar,
   deleteAccount,
+  // general notification
+  getGeneralNotifications,
+  postGeneralNotification,
 
   // below is api for group page
   getMyGroups,

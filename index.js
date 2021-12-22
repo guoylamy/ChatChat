@@ -70,11 +70,15 @@ app.post('/api/profile/declineRequest/:userId/:groupId', routes.declineRequest);
 app.post('/api/profile/approvePublicRequest/:userId/:groupId', routes.approvePublicRequest);
 app.post('/api/profile/declinePublicRequest/:userId/:groupId', routes.declinePublicRequest);
 app.get('/api/profile/getNotifications/:userName', routes.getNotifications);
+app.get('/api/profile/getFlaggedNotifications/:userName', routes.getFlaggedNotifications);
 app.delete('/api/profile/resolveNotification/:userId/:groupId', routes.resolveNotification);
 app.post('/api/profile/uploadavatar/:userName', upload.single('fileUpload'), routes.uploadAvatar);
 app.get('/api/profile/getavatar/:userName', routes.getAvatar);
 app.delete('/api/profile/deleteavatar/:userName', routes.deleteAvatar);
 app.delete('/api/profile/deleteAccount/:userName', routes.deleteAccount);
+// general notification
+app.get('/api/getGeneralNotifications/:userName', routes.getGeneralNotifications);
+app.post('/api/postGeneralNotification/:userName', routes.postGeneralNotification);
 
 // group page api
 app.get('/api/grouppage/public/:userName/:order', routes.getPublicGroups);
@@ -107,7 +111,7 @@ app.post('/api/post/hidePost', routes.hidePost);
 app.get('/api/post/getGroupId/:postId', routes.getGroupId);
 app.get('/api/post/getAdminsList/:groupId', routes.getAdminsList);
 app.get('/api/post/getFlagValue/:postId', routes.getFlagValue);
-app.post('/api/post/updateFlagStatus/:postId/:flag', routes.updateFlagStatus);
+app.post('/api/post/updateFlagStatus/:postId/:flag/:userId', routes.updateFlagStatus);
 
 // postDetails api
 app.get('/api/postDetails/:postId', routes.getPostDetails);

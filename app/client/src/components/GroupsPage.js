@@ -255,14 +255,16 @@ function GroupsPage() {
             <div class="columns">
                 
                 <div class="column is-one-third">
-                    <h2>All Public Groups</h2>
-                    {allPublicGroups.map(each => (
-                        <div>
-                            {each}
+                    <div class="box"> 
+                        <h1 className="title is-5">All Public Groups</h1>
+                        {allPublicGroups.map(each => (
+                            <div>
+                                {each}
                             </div>
-                    ))}
-                    {getPublicGroups()}
+                        ))}
                     </div>
+                    {getPublicGroups()}
+                </div>
                 <div class="column is-one-third"> {getPrivateGroups()}</div>
                 <div class="column is-one-third">
                     <div class="columns">

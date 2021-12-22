@@ -195,14 +195,13 @@ function PostDetails() {
             </div>
             <div className="media-container">
                 <div class="is-size-4 has-text-info">comments:</div>
+                {addHashTags()}
                 {makeComment()}
                 <br></br>
                 <div class="columns is-half is-centered">
                     {getAllComments()}
                 </div>
             </div>
-            {makeComment()}
-            {addHashTags()}
             {getHashTags()}
         </div>
     )

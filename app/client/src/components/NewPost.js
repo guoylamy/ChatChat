@@ -3,6 +3,7 @@ import {useParams} from "react-router-dom"
 import axios from "axios";
 import "./NewPost.css";
 import io from "socket.io-client";
+import NavBar from "./NavBar";
 // https://github.com/machadop1407/react-socketio-chat-app/blob/main/client/src/App.css
 const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
   ? 'http://localhost:8081'
@@ -130,7 +131,7 @@ function NewPost() {
 
     return (
         <div>
-            <h1 className="chatchat-h1">chatchat!</h1>
+            <NavBar />
             <div className="post-window">
               <div className="post-header">
                 <p>Post to group {groupName}</p>

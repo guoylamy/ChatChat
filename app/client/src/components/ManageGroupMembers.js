@@ -70,6 +70,11 @@ function ManageGroupMembers() {
                 console.log(res.data)
                 
             })
+            const messageData = {
+                message: `You are promoted to admin status in group ${groupName}`,
+                time: Date.now()
+            }
+            axios.post(`${domain}/api/postGeneralNotification/` + adminToBeAdded, messageData).then(res => {});
             window.location.reload(false);
         }
         else {
@@ -89,6 +94,11 @@ function ManageGroupMembers() {
                 // console.log(res.data)
                 
             })
+            const messageData = {
+                message: `Your admin status in group ${groupName} was revoked`,
+                time: Date.now()
+            }
+            axios.post(`${domain}/api/postGeneralNotification/` + adminToBeRemoved, messageData).then(res => {});
             window.location.reload(false);
         }
         else {
@@ -106,10 +116,16 @@ function ManageGroupMembers() {
 
     // three conditions
     function leaveGroup() {
-        axios.post(baseUrl + 'leaveGroup', {groupName:groupName, userName:userName}).then(res => {
-                
-            })
-            window.location.href =
+        axios.post(baseUrl + 'leaveGroup', {groupName:groupName, userName:userName}).then(res => {})
+        const messageData = {
+            message: `User ${userName} left group ${groupName}`,
+            time: Date.now()
+        }
+        axios.post(`${domain}/api/postGeneralNotification/` + creator[0], messageData).then(res => {});
+        for (let i = 0; i < admins.length; i++) {
+            axios.post(`${domain}/api/postGeneralNotification/` + admins[i], messageData).then(res => {});
+        }
+        window.location.href =
         window.location.protocol + "//" + window.location.host + '/groupsPage/' + userName
     }
 

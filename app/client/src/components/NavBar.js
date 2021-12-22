@@ -12,7 +12,7 @@ function NavBar() {
 
     return (
       <div>
-        <nav id="navbar" role="navigation" aria-label="main navigation">
+        <nav class="navbar" id="navbar" role="navigation" aria-label="main navigation">
             <div class="navbar-brand">
                 <a class="navbar-item" href={profileUrl}>
                     <img src="/images/logo-square.jpeg" alt="cannot load"/>
@@ -29,7 +29,7 @@ function NavBar() {
                 <a class="navbar-item" href={profileUrl}>
                   {userName}
                 </a>
-            </div>
+            
 
             <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link" href={profileUrl}>
@@ -46,6 +46,7 @@ function NavBar() {
                         Log Out
                     </a>
                 </div>
+        </div>
         </div>
 
         </nav>
