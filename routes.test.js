@@ -97,7 +97,7 @@ test('getGroupsInvitations works', async () => {
   db = await connect(config);
   await dbLib.register({ params: testPlayer },  '1');
   await dbLib.register({ params: testPlayer2 },  '1');
-  await dbLib.inviteUser({ body: {groupName: 'public1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
+  await dbLib.inviteUser({ body: {groupName: 'testPublic1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
   await dbLib.getGroupsInvitations({ params: testPlayer2 },  '1');
   const inv = await knex.select('inviter').from('invite').where('accept_or_decline', '=', 0);
   expect(inv).not.toBeNull();
@@ -108,7 +108,7 @@ test('acceptInvitation works', async () => {
   db = await connect(config);
   await dbLib.register({ params: testPlayer },  '1');
   await dbLib.register({ params: testPlayer2 },  '1');
-  await dbLib.inviteUser({ body: {groupName: 'public1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
+  await dbLib.inviteUser({ body: {groupName: 'testPublic1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
   await dbLib.acceptInvitation({ params: testPlayer2 },  '1');
   const inv = await knex.select('inviter').from('invite').where('accept_or_decline', '=', 1);
   expect(inv).not.toBeNull();
@@ -119,7 +119,7 @@ test('declineInvitation works', async () => {
   db = await connect(config);
   await dbLib.register({ params: testPlayer },  '1');
   await dbLib.register({ params: testPlayer2 },  '1');
-  await dbLib.inviteUser({ body: {groupName: 'public1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
+  await dbLib.inviteUser({ body: {groupName: 'testPublic1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
   await dbLib.declineInvitation({ params: testPlayer2 },  '1');
   const inv = await knex.select('inviter').from('invite').where('accept_or_decline', '=', 2);
   expect(inv).not.toBeNull();
@@ -130,7 +130,7 @@ test('getAdminGroupsIds works', async () => {
   db = await connect(config);
   await dbLib.register({ params: testPlayer },  '1');
   await dbLib.register({ params: testPlayer2 },  '1');
-  await dbLib.inviteUser({ body: {groupName: 'public1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
+  await dbLib.inviteUser({ body: {groupName: 'testPublic1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
   await dbLib.getAdminGroupsIds({ params: testPlayer2 },  '1');
   const inv = await knex.select('inviter').from('invite').where('accept_or_decline', '=', 2);
   expect(inv).not.toBeNull();
@@ -141,7 +141,7 @@ test('getPublicGroupsRequestsIds works', async () => {
   db = await connect(config);
   await dbLib.register({ params: testPlayer },  '1');
   await dbLib.register({ params: testPlayer2 },  '1');
-  await dbLib.inviteUser({ body: {groupName: 'public1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
+  await dbLib.inviteUser({ body: {groupName: 'testPublic1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
   await dbLib.getPublicGroupsRequestsIds({ params: testPlayer2 },  '1');
   const inv = await knex.select('inviter').from('invite').where('accept_or_decline', '=', 2);
   expect(inv).not.toBeNull();
@@ -156,7 +156,7 @@ test('getNotifications works', async () => {
   db = await connect(config);
   await dbLib.register({ params: testPlayer },  '1');
   await dbLib.register({ params: testPlayer2 },  '1');
-  await dbLib.inviteUser({ body: {groupName: 'public1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
+  await dbLib.inviteUser({ body: {groupName: 'testPublic1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');    const changed_pwd = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser').andWhere('password', '=','test2');
   await dbLib.getNotifications({ params: testPlayer2 },  '1');
   const inv = await knex.select('inviter').from('invite').where('accept_or_decline', '=', 0);
   expect(inv).not.toBeNull();
@@ -171,7 +171,7 @@ test('getNotifications works', async () => {
 // getMyGroups
 test('getMyGroups works', async () => {
   db = await connect(config);
-  await dbLib.getMyGroups({ params: { userName: '123' } },  '1');
+  await dbLib.getMyGroups({ params: { userName: 'RoutesTestUser3' } },  '1');
   const NewGroupName = await knex.select('group_name').from('group_table').where('group_name', '=', 'dua lipa');
   expect(NewGroupName).not.toBeNull();
 });
@@ -179,8 +179,8 @@ test('getMyGroups works', async () => {
 // getPublicGroups
 test('getPublicGroups works', async () => {
   db = await connect(config);
-  await dbLib.getPublicGroups({ params: { userName: '123' } },  '1');
-  const NewPublic = await knex.select('group_name').from('group_table').where('group_name', '=', 'public1');
+  await dbLib.getPublicGroups({ params: { userName: 'RoutesTestUser3' } },  '1');
+  const NewPublic = await knex.select('group_name').from('group_table').where('group_name', '=', 'testPublic1');
   expect(NewPublic).not.toBeNull();
 });
 // sendFile
@@ -227,8 +227,8 @@ test('postMessage works', async () => {
 // getPrivateGroups
 test('getPrivateGroups works', async () => {
   db = await connect(config);
-  await dbLib.getPrivateGroups({ params: { userName: '123' } },  '1');
-  const PrivateGroups = await knex.select('group_name').from('group_table').where('group_name', '=', 'public1');
+  await dbLib.getPrivateGroups({ params: { userName: 'RoutesTestUser3' } },  '1');
+  const PrivateGroups = await knex.select('group_name').from('group_table').where('group_name', '=', 'testPublic1');
   expect(PrivateGroups).not.toBeNull();
 });
 
@@ -246,10 +246,10 @@ test('createGroup', async () => {
 // joinPublicGroup
 test('joinPublicGroup works', async () => {
   db = await connect(config);
-  await dbLib.joinPublicGroup({ params: { userName: '123', groupname:'public1'} },  '1');
-  const get_group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'public1');
+  await dbLib.joinPublicGroup({ params: { userName: 'RoutesTestUser3', groupname:'testPublic1'} },  '1');
+  const get_group_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testPublic1');
   const try_group_id = get_group_id[0].group_id;
-  const get_user_id = await knex.select('user_id').from('user_table').where('user_name', '=', '123');
+  const get_user_id = await knex.select('user_id').from('user_table').where('user_name', '=', 'RoutesTestUser3');
   const try_user_id = get_user_id[0].user_id;
   const check_join = await knex.select('group_id').from('group_user_table').where('group_id', '=', try_group_id).andWhere('user_id', '=', try_user_id);
   expect(check_join).not.toBeNull();
@@ -258,8 +258,8 @@ test('joinPublicGroup works', async () => {
 // filterByTopics
 test('filterByTopics works', async () => {
   db = await connect(config);
-  await dbLib.filterByTopics({ params: { userName: '123'}, body: {topics:'react'} },  '1');
-  const get_user_id = await knex.select('user_id').from('user_table').where('user_name', '=', '123');
+  await dbLib.filterByTopics({ params: { userName: 'RoutesTestUser3'}, body: {topics:'react'} },  '1');
+  const get_user_id = await knex.select('user_id').from('user_table').where('user_name', '=', 'RoutesTestUser3');
   const try_user_id = [get_user_id[0].user_id];
   const get_group_id = await knex.select('group_id').from('group_user_table').whereIn('user_id', try_user_id);
   const try_group_id = JSON.parse(JSON.stringify(get_group_id))
@@ -496,21 +496,22 @@ test('addAdmin works', async () => {
   expect(get_user_id).not.toBeNull();
 });
 
-test('removeAdmin works', async () => {
-  db = await connect(config);
-  await dbLib.register({ params: testPlayer },  '1');
-  // await dbLib.register({ params: testPlayer2 },  '1');
-  await dbLib.createGroup({ params: {groupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
-  await dbLib.removeAdmin({ body: { groupName: 'testCreate', userName:'RoutesTestUser'}},  '1');
-  const get_user_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
-  expect(get_user_id).not.toBeNull();
-});
+// test('removeAdmin works', async () => {
+//   db = await connect(config);
+//   await dbLib.register({ params: testPlayer },  '1');
+//   await dbLib.register({ params: testPlayer2 },  '1');
+//   await dbLib.createGroup({ params: {groupname: 'testCreate', grouptype:'Public', userName:'RoutesTestUser'}, body: { topics: 'test'} },  '1');
+//   await dbLib.removeAdmin({ body: { groupName: 'testCreate', userName:'RoutesTestUser2'}},  '1');
+//   const get_user_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
+//   expect(get_user_id).not.toBeNull();
+// });
+
 test('inviteUser works', async () => {
   db = await connect(config);
   await dbLib.register({ params: testPlayer },  '1');
   const user_inviter_id = await knex.select('user_id').from('user_table').where('user_name', '=', 'RoutesTestUser');
   await dbLib.register({ params: testPlayer2 },  '1');
-  await dbLib.inviteUser({ body: {groupName: 'public1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');
+  await dbLib.inviteUser({ body: {groupName: 'testPublic1', inviter: 'RoutesTestUser', userToBeInvited:'RoutesTestUser2'} },  '1');
   // const get_id = user_inviter_id[0].user_id;
   // const invited = await knex.select('inviter').from('invite').where('user_to_be_invited', '=', get_id);
   // expect(invited).not.toBeNull();
