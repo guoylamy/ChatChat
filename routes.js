@@ -525,29 +525,29 @@ const getPrivateGroups = (req, res) => {
   });
 };
 
-const deletePublicGroups = (_req, res) => {
-  const query = '';
-  // console.log(userName)
-  connection.query(query, (err, rows, _fields) => {
-    if (err) {
-      // console.log(err);
-    } else {
-      res.json(rows);
-    }
-  });
-};
+// const deletePublicGroups = (_req, res) => {
+//   const query = '';
+//   // console.log(userName)
+//   connection.query(query, (err, rows, _fields) => {
+//     if (err) {
+//       // console.log(err);
+//     } else {
+//       res.json(rows);
+//     }
+//   });
+// };
 
-const deletePrivateGroups = (_req, res) => {
-  const query = '';
-  // console.log(userName)
-  connection.query(query, (err, rows, _fields) => {
-    if (err) {
-      // console.log(err);
-    } else {
-      res.json(rows);
-    }
-  });
-};
+// const deletePrivateGroups = (_req, res) => {
+//   const query = '';
+//   // console.log(userName)
+//   connection.query(query, (err, rows, _fields) => {
+//     if (err) {
+//       // console.log(err);
+//     } else {
+//       res.json(rows);
+//     }
+//   });
+// };
 
 const joinPublicGroup = (req, res) => {
   const groupName = req.params.groupname;
@@ -1003,7 +1003,10 @@ const getPostDetailsMakeComment = (req, res) => {
   const { creatTime } = req.body;
   const { creatorId } = req.body;
   const { postId } = req.body;
-  const { hashTags } = req.body;
+  let { hashTags } = req.body;
+  if (hashTags.length === 0) {
+    hashTags = '';
+  }
   let query = `insert into comment_table (comment_id, comment_content, create_time, creator_id, post_id, hash_tags)
   values
   (?, ?, ?, ?, ?, ?)
@@ -1144,6 +1147,40 @@ const deleteAccount = (req, res) => {
   let query = `
   delete from ?? where ??=?`;
   const inserts = ['user_table', 'user_name', userName];
+  query = mysql.format(query, inserts);
+  connection.query(query, [req.params.userName], (err, rows, _fields) => {
+    if (err) {
+      // console.log(err);
+      res.status(404).json({ error: `${err}` });
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+};
+
+const deleteAccountRelatedPost = (req, res) => {
+  const { userName } = req.params;
+  let query = `
+  delete from post_table where creator_id in (select user_id as creator_id from user_table where user_name = ?);`;
+  const inserts = [userName];
+  query = mysql.format(query, inserts);
+  connection.query(query, [req.params.userName], (err, rows, _fields) => {
+    if (err) {
+      // console.log(err);
+      res.status(404).json({ error: `${err}` });
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+};
+
+const deleteAccountRelatedComment = (req, res) => {
+  const { userName } = req.params;
+  let query = `
+  delete from comment_table where creator_id in (select user_id as creator_id from user_table where user_name = ?);`;
+  const inserts = [userName];
   query = mysql.format(query, inserts);
   connection.query(query, [req.params.userName], (err, rows, _fields) => {
     if (err) {
@@ -1577,8 +1614,8 @@ module.exports = {
   postMessage,
   postFile,
   getPrivateGroups,
-  deletePublicGroups,
-  deletePrivateGroups,
+  // deletePublicGroups,
+  // deletePrivateGroups,
   createGroup,
   joinPublicGroup,
   filterByTopics,
@@ -1628,4 +1665,6 @@ module.exports = {
 
   // below is NewPost api
   getNewPostCreatorNameAndGroupName,
+  deleteAccountRelatedPost,
+  deleteAccountRelatedComment,
 };

@@ -115,9 +115,9 @@ function Profile() {
 
     // need to implement, it will delete the account from user_table
     function handleDeleteAccount() {
-      axios.delete(baseUrl + 'deleteAccount/' + userName).then(res => {
-          
-        })
+      axios.delete(baseUrl + 'deleteAccountRelatedPost/' + userName).then(res => {})
+      axios.delete(baseUrl + 'deleteAccountRelatedComment/' + userName).then(res => {})
+      axios.delete(baseUrl + 'deleteAccount/' + userName).then(res => {})
       window.location.href =
         window.location.protocol + "//" + window.location.host 
         
