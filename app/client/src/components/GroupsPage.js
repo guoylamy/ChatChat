@@ -239,8 +239,6 @@ function GroupsPage() {
                                 <div>{group.group_name}</div>
                                 <label class="label"> Group Topic </label>
                                 <div>{group.topics}</div>
-                                <br></br>
-                                <button class="button is-info" onClick={joinPublicGroupButton}>Join</button>
                             </div>
                         )
                     })}
