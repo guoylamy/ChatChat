@@ -4,7 +4,6 @@ import axios from "axios";
 import "./NewPost.css";
 import io from "socket.io-client";
 import NavBar from "./NavBar";
-// https://github.com/machadop1407/react-socketio-chat-app/blob/main/client/src/App.css
 const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
   ? 'http://localhost:8081'
   : '';
@@ -12,7 +11,7 @@ const baseUrl = domain + "/api"
 const socket = io.connect(domain);
 
 function NewPost() {
-    const {creator_id, group_id} = useParams(); // creator_id = 5b746bd-cdee-301d-fe5-cfe4064af26f, group_id = 0863ccd-d673-71d1-ddb4-4f1b1f2ad8a
+    const {creator_id, group_id} = useParams();
     const [currentMessage, setCurrentMessage] = useState("");
     const [userName, setUserName] = useState('')
     const [groupName, setGroupName] = useState('')
