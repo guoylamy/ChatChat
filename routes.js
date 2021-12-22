@@ -1156,6 +1156,40 @@ const deleteAccount = (req, res) => {
   });
 };
 
+const deleteAccountRelatedPost = (req, res) => {
+  const { userName } = req.params;
+  let query = `
+  delete from post_table where creator_id in (select user_id as creator_id from user_table where user_name = ?);`;
+  const inserts = [userName];
+  query = mysql.format(query, inserts);
+  connection.query(query, [req.params.userName], (err, rows, _fields) => {
+    if (err) {
+      // console.log(err);
+      res.status(404).json({ error: `${err}` });
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+};
+
+const deleteAccountRelatedComment = (req, res) => {
+  const { userName } = req.params;
+  let query = `
+  delete from comment_table where creator_id in (select user_id as creator_id from user_table where user_name = ?);`;
+  const inserts = [userName];
+  query = mysql.format(query, inserts);
+  connection.query(query, [req.params.userName], (err, rows, _fields) => {
+    if (err) {
+      // console.log(err);
+      res.status(404).json({ error: `${err}` });
+    } else {
+      // console.log(rows);
+      res.status(200).json(rows);
+    }
+  });
+};
+
 const sendFile = (req, res) => {
   if (!req.params.group_id || !req.params.timestamp || !req.params.sender
     || !req.params.receiver || !req.params.type || req.file === undefined) {
@@ -1628,4 +1662,6 @@ module.exports = {
 
   // below is NewPost api
   getNewPostCreatorNameAndGroupName,
+  deleteAccountRelatedPost,
+  deleteAccountRelatedComment,
 };
