@@ -76,6 +76,8 @@ app.post('/api/profile/uploadavatar/:userName', upload.single('fileUpload'), rou
 app.get('/api/profile/getavatar/:userName', routes.getAvatar);
 app.delete('/api/profile/deleteavatar/:userName', routes.deleteAvatar);
 app.delete('/api/profile/deleteAccount/:userName', routes.deleteAccount);
+app.delete('/api/profile/deleteAccountRelatedPost/:userName', routes.deleteAccountRelatedPost);
+app.delete('/api/profile/deleteAccountRelatedComment/:userName', routes.deleteAccountRelatedComment);
 // general notification
 app.get('/api/getGeneralNotifications/:userName', routes.getGeneralNotifications);
 app.post('/api/postGeneralNotification/:userName', routes.postGeneralNotification);
@@ -83,8 +85,8 @@ app.post('/api/postGeneralNotification/:userName', routes.postGeneralNotificatio
 // group page api
 app.get('/api/grouppage/public/:userName/:order', routes.getPublicGroups);
 app.get('/api/grouppage/private/:userName', routes.getPrivateGroups);
-app.delete('/api/grouppage/public/:userName', routes.deletePublicGroups);
-app.delete('/api/grouppage/private/:userName', routes.deletePrivateGroups);
+// app.delete('/api/grouppage/public/:userName', routes.deletePublicGroups);
+// app.delete('/api/grouppage/private/:userName', routes.deletePrivateGroups);
 app.post('/api/grouppage/join/:groupname/:userName', routes.joinPublicGroup);
 app.post('/api/grouppage/filter/:userName', routes.filterByTopics);
 app.post('/api/grouppage/:groupname/:grouptype/:userName', routes.createGroup);
