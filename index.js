@@ -83,8 +83,8 @@ app.post('/api/postGeneralNotification/:userName', routes.postGeneralNotificatio
 // group page api
 app.get('/api/grouppage/public/:userName/:order', routes.getPublicGroups);
 app.get('/api/grouppage/private/:userName', routes.getPrivateGroups);
-app.delete('/api/grouppage/public/:userName', routes.deletePublicGroups);
-app.delete('/api/grouppage/private/:userName', routes.deletePrivateGroups);
+// app.delete('/api/grouppage/public/:userName', routes.deletePublicGroups);
+// app.delete('/api/grouppage/private/:userName', routes.deletePrivateGroups);
 app.post('/api/grouppage/join/:groupname/:userName', routes.joinPublicGroup);
 app.post('/api/grouppage/filter/:userName', routes.filterByTopics);
 app.post('/api/grouppage/:groupname/:grouptype/:userName', routes.createGroup);

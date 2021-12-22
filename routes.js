@@ -525,29 +525,29 @@ const getPrivateGroups = (req, res) => {
   });
 };
 
-const deletePublicGroups = (_req, res) => {
-  const query = '';
-  // console.log(userName)
-  connection.query(query, (err, rows, _fields) => {
-    if (err) {
-      // console.log(err);
-    } else {
-      res.json(rows);
-    }
-  });
-};
+// const deletePublicGroups = (_req, res) => {
+//   const query = '';
+//   // console.log(userName)
+//   connection.query(query, (err, rows, _fields) => {
+//     if (err) {
+//       // console.log(err);
+//     } else {
+//       res.json(rows);
+//     }
+//   });
+// };
 
-const deletePrivateGroups = (_req, res) => {
-  const query = '';
-  // console.log(userName)
-  connection.query(query, (err, rows, _fields) => {
-    if (err) {
-      // console.log(err);
-    } else {
-      res.json(rows);
-    }
-  });
-};
+// const deletePrivateGroups = (_req, res) => {
+//   const query = '';
+//   // console.log(userName)
+//   connection.query(query, (err, rows, _fields) => {
+//     if (err) {
+//       // console.log(err);
+//     } else {
+//       res.json(rows);
+//     }
+//   });
+// };
 
 const joinPublicGroup = (req, res) => {
   const groupName = req.params.groupname;
@@ -1577,8 +1577,8 @@ module.exports = {
   postMessage,
   postFile,
   getPrivateGroups,
-  deletePublicGroups,
-  deletePrivateGroups,
+  // deletePublicGroups,
+  // deletePrivateGroups,
   createGroup,
   joinPublicGroup,
   filterByTopics,

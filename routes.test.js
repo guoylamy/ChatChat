@@ -62,6 +62,7 @@ describe('Unit tests (backend)', () => {
     db = await connect(config);
     await dbLib.register({ params: testPlayer },  '1');
     const newPlayer = await knex.select('user_name').from('user_table').where('user_name', '=', 'RoutesTestUser');
+    // console.log(newPlayer);
     expect(newPlayer[0].user_name).toBe('RoutesTestUser');
   });
 
@@ -525,6 +526,23 @@ test('leaveGroup works', async () => {
   await dbLib.leaveGroup({ body: { groupName: 'testCreate', userName:'RoutesTestUser'}},  '1');
   const get_user_id = await knex.select('group_id').from('group_table').where('group_name', '=', 'testCreate');
   expect(get_user_id).not.toBeNull();
+});
+
+test('postGeneralNotification works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.postGeneralNotification({ params: {userName:'RoutesTestUser'}, body: { message: 'test message', time: Date.now()} },  '1');
+  const get_post = await knex.select('message').from('general_notification').where('user_name', '=', 'RoutesTestUser');
+  expect(get_post).not.toBeNull();
+});
+
+test('getGeneralNotifications works', async () => {
+  db = await connect(config);
+  await dbLib.register({ params: testPlayer },  '1');
+  await dbLib.postGeneralNotification({ params: {userName:'RoutesTestUser'}, body: { message: 'test message', time: Date.now()} },  '1');
+  await dbLib.getGeneralNotifications({ params: {userName:'RoutesTestUser'} },'1');
+  const get_post = await knex.select('message').from('general_notification').where('user_name', '=', 'RoutesTestUser');
+  expect(get_post).not.toBeNull();
 });
 
 });
