@@ -56,9 +56,20 @@ function Post(props) {
         window.location.protocol + "//" + window.location.host + "/PostDetails/" + postId
     }
     function handleDeletePost() {
-         axios.delete(baseUrl + 'deletePost/' + postId).then(res => {
-            
-        })
+        let messageData;
+        if (flag) {
+            messageData = {
+                message: `The post (posted by ${posterName} at ${postTime}) flagged by you has been deleted`,
+                time: Date.now()
+            }
+            axios.post(`${domain}/api/postGeneralNotification/` + flaggedId, messageData).then(res => {});
+        }
+        messageData = {
+            message: `The post posted by you at ${postTime} was deleted`,
+            time: Date.now()
+        }
+        axios.post(`${domain}/api/postGeneralNotification/` + posterName, messageData).then(res => {});
+        axios.delete(baseUrl + 'deletePost/' + postId).then(res => {});
         window.location.reload(false)
     }
     function handleHidePost() {

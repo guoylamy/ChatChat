@@ -76,6 +76,9 @@ app.post('/api/profile/uploadavatar/:userName', upload.single('fileUpload'), rou
 app.get('/api/profile/getavatar/:userName', routes.getAvatar);
 app.delete('/api/profile/deleteavatar/:userName', routes.deleteAvatar);
 app.delete('/api/profile/deleteAccount/:userName', routes.deleteAccount);
+// general notification
+app.get('/api/getGeneralNotifications/:userName', routes.getGeneralNotifications);
+app.post('/api/postGeneralNotification/:userName', routes.postGeneralNotification);
 
 // group page api
 app.get('/api/grouppage/public/:userName/:order', routes.getPublicGroups);

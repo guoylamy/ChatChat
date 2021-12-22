@@ -4,6 +4,7 @@ import io from "socket.io-client";
 import ScrollToBottom from "react-scroll-to-bottom";
 import axios from "axios";
 import "./Chat.css";
+import NavBar from './NavBar';
 // https://github.com/machadop1407/react-socketio-chat-app/blob/main/client/src/App.css
 const domain = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
   ? 'http://localhost:8081'
@@ -101,7 +102,7 @@ function Chat() {
 
     return (
         <div>
-            <h1 className="chatchat-h1">chatchat!</h1>
+            <NavBar />
             <div className="chat-window">
             <div className="chat-header">
                 <p>Chat with {friendName}</p>

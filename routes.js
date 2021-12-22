@@ -135,12 +135,13 @@ const getGroupsInvitations = (req, res) => {
   const { userName } = req.params;
   // 1. get user id, 2. get group_id from invite table
   const query = `
-  select group_id, group_name from group_table where group_id in 
-  (select group_id from invite where user_to_be_invited in 
-    (select user_id from user_table where user_name='${userName}') and accept_or_decline=0)
+  select g.group_id, group_name, u.user_name
+  from group_table g inner join invite i on g.group_id = i.group_id inner join user_table u on i.inviter = u.user_id
+  where i.user_to_be_invited in (select user_id from user_table where user_name=?) 
+  and accept_or_decline=0;
   `;
 
-  connection.query(query, (err, rows, _fields) => {
+  connection.query(query, [userName], (err, rows, _fields) => {
     if (err) {
       // console.log(err);
     } else {
@@ -339,6 +340,38 @@ const getFlaggedNotifications = (req, res) => {
   const { userName } = req.params;
   const query = `select post_id from post_table where flaggedId = '${userName}'`;
   connection.query(query, (err, rows, _fields) => {
+    if (err) {
+      // console.log(err);
+    } else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
+      res.json(rows);
+    }
+  });
+};
+
+const postGeneralNotification = (req, res) => {
+  const { userName } = req.params;
+  const nid = uuid();
+  const query = 'insert into general_notification (nid, user_name, message, create_time) values (?, ?, ?, ?)';
+  // eslint-disable-next-line max-len
+  connection.query(query, [nid, userName, req.body.message, req.body.time], (err, rows, _fields) => {
+    if (err) {
+      // console.log(err);
+    } else {
+      if (res === '1') {
+        return JSON.stringify(rows);
+      }
+      res.json(rows);
+    }
+  });
+};
+
+const getGeneralNotifications = (req, res) => {
+  const { userName } = req.params;
+  const query = 'select message from general_notification where user_name=? order by create_time desc';
+  connection.query(query, [userName], (err, rows, _fields) => {
     if (err) {
       // console.log(err);
     } else {
@@ -1406,6 +1439,9 @@ module.exports = {
   getAvatar,
   deleteAvatar,
   deleteAccount,
+  // general notification
+  getGeneralNotifications,
+  postGeneralNotification,
 
   // below is api for group page
   getMyGroups,
