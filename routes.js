@@ -26,14 +26,18 @@ const register = (req, res) => {
   const { userName } = req.params;
   const { password } = req.params;
   const userId = uuid();
-  const ifUserExists = `
-    SELECT * FROM user_table WHERE user_name='${userName}'
+  let ifUserExists = `
+    SELECT * FROM ?? WHERE ??=?
   `;
+  const inserts = ['user_table', 'user_name', userName];
+  ifUserExists = mysql.format(ifUserExists, inserts);
   connection.query(ifUserExists, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
     } else if (rows.length === 0) {
-      const query = `INSERT INTO user_table (user_id, user_name, password, register_date) VALUES ('${userId}', '${userName}', ('${password}'), CURDATE())`;
+      let query = 'INSERT INTO ?? (??, ??, ??, ??) VALUES (?, ?, ?, CURDATE())';
+      const inserts2 = ['user_table', 'user_id', 'user_name', 'password', 'register_date', userId, userName, password];
+      query = mysql.format(query, inserts2);
       connection.query(query, (err, rows, _fields) => {
         if (err) {
           // console.log(err);
@@ -56,11 +60,13 @@ const register = (req, res) => {
 const verifyLogin = (req, res) => {
   const { userName } = req.params;
   const { password } = req.params;
-  const query = `
+  let query = `
     SELECT *
-    FROM user_table
-    WHERE user_name='${userName}' AND password='${password}'
+    FROM ??
+    WHERE ??=? AND password=?
   `;
+  const inserts = ['user_table', 'user_name', userName, password];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -76,11 +82,13 @@ const verifyLogin = (req, res) => {
 const ifUserNameExists = (req, res) => {
   const { userName } = req.params;
 
-  const query = `
+  let query = `
     SELECT *
-    FROM user_table
-    WHERE user_name='${userName}'
+    FROM ??
+    WHERE ??=?
   `;
+  const inserts = ['user_table', 'user_name', userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -95,12 +103,13 @@ const ifUserNameExists = (req, res) => {
 
 const getRegsiterDate = (req, res) => {
   const { userName } = req.params;
-  const query = `
-    SELECT register_date
-    FROM user_table
-    WHERE user_name='${userName}'
+  let query = `
+    SELECT ??
+    FROM ??
+    WHERE ??=?
   `;
-
+  const inserts = ['register_date', 'user_table', 'user_name', userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -115,10 +124,11 @@ const getRegsiterDate = (req, res) => {
 const changePassword = (req, res) => {
   const { userName } = req.params;
   const { password } = req.params;
-  const query = `
-    update user_table set password='${password}' where user_name='${userName}'
+  let query = `
+    update ?? set ??=? where ??=?
   `;
-
+  const inserts = ['user_table', 'password', password, 'user_name', userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -134,12 +144,14 @@ const changePassword = (req, res) => {
 const getGroupsInvitations = (req, res) => {
   const { userName } = req.params;
   // 1. get user id, 2. get group_id from invite table
-  const query = `
-  select group_id, group_name from group_table where group_id in 
-  (select group_id from invite where user_to_be_invited in 
-    (select user_id from user_table where user_name='${userName}') and accept_or_decline=0)
+  let query = `
+  select ??, ?? from ?? where ?? in 
+  (select ?? from ?? where ?? in 
+    (select ?? from ?? where ??=?) and ??=0)
   `;
-
+  const inserts = ['group_id', 'group_name', 'group_table', 'group_id', 'group_id', 'invite',
+    'user_to_be_invited', 'user_id', 'user_table', 'user_name', userName, 'accept_or_decline'];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -157,11 +169,13 @@ const acceptInvitation = (req, res) => {
   const { userName } = req.params;
   const { groupId } = req.params;
   // update accept_or_decline as 1, inviter_get_notified as 1
-  const query = `
-  update invite set accept_or_decline=1, inviter_get_notified=1 where user_to_be_invited in 
-    (select user_id from user_table where user_name='${userName}') and group_id='${groupId}';
+  let query = `
+  update ?? set ??=1, ??=1 where ?? in 
+    (select ?? from ?? where ??=?) and ??=?;
   `;
-
+  const inserts = ['invite', 'accept_or_decline', 'inviter_get_notified', 'user_to_be_invited',
+    'user_id', 'user_table', 'user_name', userName, 'group_id', groupId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -179,11 +193,13 @@ const declineInvitation = (req, res) => {
   const { groupId } = req.params;
   // update accept_or_decline as 2, inviter_get_notified as 1
   // update group_user_table
-  const query = `
-  update invite set accept_or_decline=2, inviter_get_notified=1 where user_to_be_invited in 
-    (select user_id from user_table where user_name='${userName}') and group_id='${groupId}'
+  let query = `
+  update ?? set ??=2, ??=1 where ?? in 
+    (select ?? from ?? where ??=?) and ??=?
   `;
-
+  const inserts = ['invite', 'accept_or_decline', 'inviter_get_notified', 'user_to_be_invited',
+    'user_id', 'user_table', 'user_name', userName, 'group_id', groupId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -224,16 +240,17 @@ const getAdminGroupsIds = (req, res) => {
 
 const getPublicGroupsRequestsIds = (req, res) => {
   const { userName } = req.params;
-  const query = `
+  let query = `
   select tmp2.user_id, tmp2.user_name, tmp2.group_id, group_table.group_name from
     (select user_table.user_id, user_table.user_name, tmp.group_id from
     (select user_id, group_id from join_public_table where group_id in 
     (select group_id from group_user_table where user_id in 
-    (select user_id from user_table where user_name='${userName}') and is_admin=1) and notified=0) tmp
+    (select user_id from user_table where user_name=?) and is_admin=1) and notified=0) tmp
     join user_table on tmp.user_id=user_table.user_id) tmp2
     join group_table on group_table.group_id=tmp2.group_id
   `;
-
+  const inserts = [userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -251,11 +268,13 @@ const approveRequest = (req, res) => {
   const { groupId } = req.params;
   // 1. get groups where user is admin,
   // 2. get user_to_be_invited from the invite according to group_id and inviter_get_notified
-  const query = `
-    insert into group_user_table (group_id, user_id, is_admin) values('${groupId}', '${userId}', 0);
-    delete from invite where user_to_be_invited='${userId}' and group_id='${groupId}'
+  let query = `
+    insert into ?? (??, ??, ??) values(?, ?, 0);
+    delete from ?? where ??=? and ??=?
   `;
-
+  const inserts = ['group_user_table', 'group_id', 'user_id', 'is_admin', groupId, userId,
+    'invite', 'user_to_be_invited', userId, 'group_id', groupId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -268,10 +287,11 @@ const approveRequest = (req, res) => {
 const declineRequest = (req, res) => {
   const { userId } = req.params;
   const { groupId } = req.params;
-  const query = `
-    delete from invite where user_to_be_invited='${userId}' and group_id='${groupId}'
+  let query = `
+    delete from ?? where ??=? and ??=?
   `;
-
+  const inserts = ['invite', 'user_to_be_invited', userId, 'group_id', groupId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -284,11 +304,13 @@ const declineRequest = (req, res) => {
 const approvePublicRequest = (req, res) => {
   const { userId } = req.params;
   const { groupId } = req.params;
-  const query = `
-    insert into group_user_table (group_id, user_id, is_admin) values('${groupId}', '${userId}', 0);
-    update join_public_table set notified=1 where (user_id='${userId}' and group_id='${groupId}')
+  let query = `
+    insert into ?? (??, ??, ??) values(?, ?, 0);
+    update ?? set ??=1 where (??=? and ??=?)
   `;
-
+  const inserts = ['group_user_table', 'group_id', 'user_id', 'is_admin', groupId, userId,
+    'join_public_table', 'notified', 'user_id', userId, 'group_id', groupId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -301,10 +323,11 @@ const approvePublicRequest = (req, res) => {
 const declinePublicRequest = (req, res) => {
   const { userId } = req.params;
   const { groupId } = req.params;
-  const query = `
-    update join_public_table set notified=2 where (user_id='${userId}' and group_id='${groupId}')
+  let query = `
+    update ?? set ??=2 where (??=? and ??=?)
   `;
-
+  const inserts = ['join_public_table', 'notified', 'user_id', userId, 'group_id', groupId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -316,13 +339,14 @@ const declinePublicRequest = (req, res) => {
 
 const getNotifications = (req, res) => {
   const { userName } = req.params;
-  const query = `
+  let query = `
   select tmp.group_id, group_table.group_name, tmp.notified , tmp.user_id from group_table join
  (select group_id, notified, user_id from join_public_table where user_id in 
-    (select user_id from user_table where user_name='${userName}')) tmp
+    (select user_id from user_table where user_name=?)) tmp
   on tmp.group_id=group_table.group_id
   `;
-
+  const inserts = [userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -338,10 +362,11 @@ const getNotifications = (req, res) => {
 const resolveNotification = (req, res) => {
   const { userId } = req.params;
   const { groupId } = req.params;
-  const query = `
-  delete from join_public_table where user_id='${userId}' and group_id='${groupId}'
+  let query = `
+  delete from ?? where ??=? and ??=?
   `;
-
+  const inserts = ['join_public_table', 'user_id', userId, 'group_id', groupId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -354,11 +379,13 @@ const resolveNotification = (req, res) => {
 const getMyGroups = (req, res) => {
   const { userName } = req.params;
   // get user_id by user_table
-  const query = ` SELECT group_name FROM group_table WHERE group_id in 
-  (SELECT group_id FROM group_user_table WHERE user_id IN
-    (SELECT user_id FROM user_table WHERE user_name='${userName}))'
+  let query = ` SELECT ?? FROM ?? WHERE ?? in 
+  (SELECT ?? FROM ?? WHERE ?? IN
+    (SELECT ?? FROM ?? WHERE ??=?))
   `;
-
+  const inserts = ['group_name', 'group_table', 'group_id', 'group_id',
+    'group_user_table', 'user_id', 'user_id', 'user_table', 'user_name', userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -426,15 +453,17 @@ const getPublicGroups = (req, res) => {
 const getPrivateGroups = (req, res) => {
   const { userName } = req.params;
   //
-  const query = `SELECT group_name FROM group_table WHERE group_id IN 
+  let query = `SELECT group_name FROM group_table WHERE group_id IN 
   (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Private';
+    (SELECT user_id FROM user_table WHERE user_name=?)) AND group_type='Private';
     SELECT topics FROM group_topic_table WHERE group_id in 
     (SELECT group_id FROM group_table WHERE group_id IN 
   (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Private')
+    (SELECT user_id FROM user_table WHERE user_name=?)) AND group_type='Private')
   `;
-    // console.log(userName)
+  const inserts = [userName, userName];
+  query = mysql.format(query, inserts);
+  // console.log(userName)
   connection.query(query, [userName, userName], (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -471,15 +500,18 @@ const deletePrivateGroups = (_req, res) => {
 };
 
 const joinPublicGroup = (req, res) => {
-  const groupnName = req.params.groupname;
+  const groupName = req.params.groupname;
   const { userName } = req.params;
 
-  const query = `
-  insert into join_public_table (user_id, group_id, notified) values
-  ((select user_id from user_table where user_name='${userName}'), 
-  (select group_id from group_table where group_name='${groupnName}'),
+  let query = `
+  insert into ?? (??, ??, ??) values
+  ((select ?? from ?? where ??=?), 
+  (select ?? from ?? where ??=?),
   0)
   `;
+  const inserts = ['join_public_table', 'user_id', 'group_id', 'notified', 'user_id',
+    'user_table', 'user_name', userName, 'group_id', 'group_table', 'group_name', groupName];
+  query = mysql.format(query, inserts);
   // console.log(userName)
   connection.query(query, (err, rows, _fields) => {
     if (err) {
@@ -498,13 +530,15 @@ const filterByTopics = (req, res) => {
   // result is two list, first one is group_name. second one is topics
   const results = [[], []];
   if (topics.length !== 0) {
-    const query = `SELECT group_name FROM group_table WHERE group_id IN 
+    let query = `SELECT group_name FROM group_table WHERE group_id IN 
   (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Public';
+    (SELECT user_id FROM user_table WHERE user_name=?)) AND group_type='Public';
     SELECT topics FROM group_topic_table WHERE group_id in 
     (SELECT group_id FROM group_table WHERE group_id IN 
   (SELECT group_id FROM group_user_table WHERE user_id IN 
-    (SELECT user_id FROM user_table WHERE user_name='${userName}')) AND group_type='Public')`;
+    (SELECT user_id FROM user_table WHERE user_name=?)) AND group_type='Public')`;
+    const inserts = [userName, userName];
+    query = mysql.format(query, inserts);
     connection.query(query, (err, rows, _fields) => {
       if (err) {
         // console.log(err);
@@ -535,15 +569,16 @@ const filterByTopics = (req, res) => {
 
 const suggestgroup = (req, res) => {
   const { userName } = req.params;
-  const query = ` SELECT group_table.group_name, group_topic_table.topics
+  let query = ` SELECT group_table.group_name, group_topic_table.topics
   FROM group_table inner join group_topic_table on group_table.group_id=group_topic_table.group_id
   WHERE group_table.group_type='Public' and group_table.group_id not in 
   (SELECT group_id FROM group_user_table WHERE user_id IN
-    (SELECT user_id FROM user_table WHERE user_name='${userName}'))
+    (SELECT user_id FROM user_table WHERE user_name=?))
   ORDER BY group_topic_table.topics desc
   LIMIT 1
   `;
-
+  const inserts = [userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -616,8 +651,11 @@ const createGroup = (req, res) => {
 const getGroupDetailsTopics = (req, res) => {
   const { groupName } = req.params;
   // find id in group table and
-  const query = `select topics from group_topic_table where group_id in 
-  (select group_id from group_table where group_name='${groupName}') limit 1`;
+  let query = `select ?? from ?? where ?? in 
+  (select ?? from ?? where ??=?) limit 1`;
+  const inserts = ['topics', 'group_topic_table', 'group_id', 'group_id', 'group_table',
+    'group_name', groupName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -633,9 +671,12 @@ const getGroupDetailsTopics = (req, res) => {
 const getGroupDetailsAllPostsIds = (req, res) => {
   const { groupName } = req.params;
   // find id in group table and
-  const query = `select post_id, flag, create_time from post_table where group_id in 
-  (select group_id from group_table where group_name='${groupName}')
-  order by create_time desc`;
+  let query = `select ??, ??, ?? from ?? where ?? in 
+  (select ?? from ?? where ??=?)
+  order by ?? desc`;
+  const inserts = ['post_id', 'flag', 'create_time', 'post_table', 'group_id', 'group_id',
+    'group_table', 'group_name', groupName, 'create_time'];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -651,9 +692,11 @@ const getGroupDetailsAllPostsIds = (req, res) => {
 const getPostInfo = (req, res) => {
   const { postId } = req.params;
   // find id in group table and
-  const query = `select post_table.*, user_table.user_name from post_table
+  let query = `select post_table.*, user_table.user_name from post_table
   inner join user_table on post_table.creator_id=user_table.user_id
-  where post_table.post_id='${postId}'`;
+  where post_table.post_id=?`;
+  const inserts = [postId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -668,9 +711,11 @@ const getPostInfo = (req, res) => {
 
 const deletePost = (req, res) => {
   const { postId } = req.params;
-  const query = `
-  delete from comment_table where post_id='${postId}';
-  delete from post_table where post_id='${postId}'`;
+  let query = `
+  delete from ?? where ??=?;
+  delete from ?? where ??=?`;
+  const inserts = ['comment_table', 'post_id', postId, 'post_table', 'post_id', postId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -685,8 +730,10 @@ const deletePost = (req, res) => {
 
 const getPostUserId = (req, res) => {
   const { userName } = req.params;
-  const query = `
-  select user_id from user_table where user_name='${userName}'`;
+  let query = `
+  select ?? from ?? where ??=?`;
+  const inserts = ['user_id', 'user_table', 'user_name', userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -703,8 +750,10 @@ const hidePost = (req, res) => {
   const { userId } = req.body;
   const { postId } = req.body;
   // find id in group table and
-  const query = `
-  insert into hide_post_table (post_id, user_id) values ('${postId}', '${userId}')`;
+  let query = `
+  insert into ?? (??, ??) values (?, ?)`;
+  const inserts = ['hide_post_table', 'post_id', 'user_id', postId, userId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -717,7 +766,10 @@ const hidePost = (req, res) => {
 const getGroupId = (req, res) => {
   const { postId } = req.params;
   // find id in group table and
-  const query = `select group_id from post_table where post_id='${postId}'`;
+  let query = `
+  select ?? from ?? where (??=?)`;
+  const inserts = ['group_id', 'post_table', 'post_id', postId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -731,7 +783,10 @@ const getGroupId = (req, res) => {
 const getAdminsList = (req, res) => {
   const { groupId } = req.params;
   // find id in group table and
-  const query = `select user_id from group_user_table where group_id='${groupId}' and is_admin=1`;
+  let query = `
+  select ?? from ?? where ??=? and ??=1`;
+  const inserts = ['user_id', 'group_user_table', 'group_id', groupId, 'is_admin'];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -745,7 +800,10 @@ const getAdminsList = (req, res) => {
 const getFlagValue = (req, res) => {
   const { postId } = req.params;
   // find id in group table and
-  const query = `select flag from post_table where post_id='${postId}'`;
+  let query = `
+  select ?? from ?? where ??=?`;
+  const inserts = ['flag', 'post_table', 'post_id', postId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -762,10 +820,14 @@ const updateFlagStatus = (req, res) => {
   // find id in group table and
   let query;
   if (flag === 'true') {
-    query = `update post_table set flag=0 where post_id='${postId}'`;
+    query = `
+    update ?? set ??=0 where ??=?`;
   } else {
-    query = `update post_table set flag=1 where post_id='${postId}'`;
+    query = `
+    update ?? set ??=1 where ??=?`;
   }
+  const inserts = ['post_table', 'flag', 'post_id', postId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -779,9 +841,11 @@ const updateFlagStatus = (req, res) => {
 const getPostDetails = (req, res) => {
   const { postId } = req.params;
   // find id in group table and
-  const query = `select post_table.post_content, post_table.create_time, post_table.message_type, post_table.mimetype, user_table.user_name from post_table
+  let query = `select post_table.post_content, post_table.create_time, post_table.message_type, post_table.mimetype, user_table.user_name from post_table
   inner join user_table on post_table.creator_id=user_table.user_id
-  where post_table.post_id='${postId}'`;
+  where post_table.post_id=?`;
+  const inserts = [postId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -797,10 +861,12 @@ const getPostDetails = (req, res) => {
 const getPostAttachmentDetails = (req, res) => {
   const { postId } = req.params;
   // find id in group table and
-  const query = `select *
-  from post_attachment
-  where post_id='${postId}'
-  order by attachement_id asc`;
+  let query = `select *
+  from ??
+  where ??=?
+  order by ?? asc`;
+  const inserts = ['post_attachment', 'post_id', postId, 'attachement_id'];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -813,9 +879,11 @@ const getPostAttachmentDetails = (req, res) => {
 const getCommentsIdsByHashTags = (req, res) => {
   const { hashTags } = req.body;
   const { postId } = req.body;
-  const query = `
-  select comment_id, hash_tags from comment_table where post_id='${postId}'
+  let query = `
+  select ??, ?? from ?? where ??=?
   `;
+  const inserts = ['comment_id', 'hash_tags', 'comment_table', 'post_id', postId];
+  query = mysql.format(query, inserts);
   const result = [];
   connection.query(query, (err, rows, _fields) => {
     if (err) {
@@ -840,10 +908,12 @@ const getCommentsIdsByHashTags = (req, res) => {
 const getPostDetailsAllCommentsIds = (req, res) => {
   const { postId } = req.params;
   // find id in group table and
-  const query = `select comment_table.* from comment_table 
+  let query = `select comment_table.* from comment_table 
   join post_table on comment_table.post_id=post_table.post_id 
-  where post_table.post_id='${postId}'
+  where post_table.post_id=?
   order by create_time desc`;
+  const inserts = [postId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -858,7 +928,10 @@ const getPostDetailsAllCommentsIds = (req, res) => {
 
 const getPostDetailsGetUserId = (req, res) => {
   const { userName } = req.params;
-  const query = `select user_id from user_table where user_name='${userName}'`;
+  let query = `
+  select ?? from ?? where ??=?`;
+  const inserts = ['user_id', 'user_table', 'user_name', userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -878,10 +951,12 @@ const getPostDetailsMakeComment = (req, res) => {
   const { creatorId } = req.body;
   const { postId } = req.body;
   const { hashTags } = req.body;
-  const query = `insert into comment_table (comment_id, comment_content, create_time, creator_id, post_id, hash_tags)
+  let query = `insert into comment_table (comment_id, comment_content, create_time, creator_id, post_id, hash_tags)
   values
-  ('${commentId}', '${commentContent}', '${creatTime}', '${creatorId}', '${postId}', '${hashTags}')
+  (?, ?, ?, ?, ?, ?)
   `;
+  const inserts = [commentId, commentContent, creatTime, creatorId, postId, hashTags];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -896,7 +971,10 @@ const getPostDetailsMakeComment = (req, res) => {
 
 const getCommentInfo = (req, res) => {
   const { commentId } = req.params;
-  const query = `select * from comment_table where comment_id='${commentId}'`;
+  let query = `
+  select * from ?? where ??=?`;
+  const inserts = ['comment_table', 'comment_id', commentId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -911,7 +989,10 @@ const getCommentInfo = (req, res) => {
 
 const getCommentCreatorName = (req, res) => {
   const { creatorId } = req.params;
-  const query = `select user_name from user_table where user_id='${creatorId}'`;
+  let query = `
+  select ?? from ?? where ??=?`;
+  const inserts = ['user_name', 'user_table', 'user_id', creatorId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -923,7 +1004,10 @@ const getCommentCreatorName = (req, res) => {
 
 const deleteComment = (req, res) => {
   const { commentId } = req.params;
-  const query = `delete from comment_table where comment_id='${commentId}'`;
+  let query = `
+  delete from ?? where ??=?`;
+  const inserts = ['comment_table', 'comment_id', commentId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -939,8 +1023,10 @@ const deleteComment = (req, res) => {
 const editComment = (req, res) => {
   const { commentId } = req.body;
   const { commentContent } = req.body;
-  const query = `update comment_table set comment_content='${commentContent}' 
-  where comment_id='${commentId}'`;
+  let query = `update ?? set ??=?
+  where ??=?`;
+  const inserts = ['comment_table', 'comment_content', commentContent, 'comment_id', commentId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -972,7 +1058,10 @@ const uploadAvatar = (req, res) => {
 };
 
 const getAvatar = (req, res) => {
-  const query = `SELECT * FROM user_table WHERE user_name = '${req.params.userName}'`;
+  let query = `
+  SELECT * FROM ?? WHERE ?? = ?`;
+  const inserts = ['user_table', 'user_name', req.params.userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -999,7 +1088,10 @@ const deleteAvatar = (req, res) => {
 
 const deleteAccount = (req, res) => {
   const { userName } = req.params;
-  const query = `delete from user_table where user_name='${userName}'`;
+  let query = `
+  delete from ?? where ??=?`;
+  const inserts = ['user_table', 'user_name', userName];
+  query = mysql.format(query, inserts);
   connection.query(query, [req.params.userName], (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1050,7 +1142,10 @@ const sendMessage = (req, res) => {
 };
 
 const receiveMessage = (req, res) => {
-  const query = `SELECT * FROM user_chat_table WHERE group_id = '${req.params.group_id}' ORDER BY timestamp`;
+  let query = `
+  SELECT * FROM user_chat_table WHERE group_id = ? ORDER BY timestamp`;
+  const inserts = [req.params.group_id];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1106,8 +1201,11 @@ const postFile = (req, res) => {
 const getCreatorName = (req, res) => {
   const { groupName } = req.params;
   // from group_table to find creator
-  const query = `select user_name from user_table where user_id in (
-  select creator_id from group_table where group_name='${groupName}')`;
+  let query = `select ?? from ?? where ?? in (
+  select ?? from ?? where ??=?)`;
+  const inserts = ['user_name', 'user_table', 'user_id', 'creator_id', 'group_table',
+    'group_name', groupName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1125,13 +1223,15 @@ const getCreatorName = (req, res) => {
 const getAdminsNames = (req, res) => {
   const { groupName } = req.params;
   // from group_table to get group_id, from group_user_table to get admins id,
-  const query = `
+  let query = `
   select user_name from user_table where user_id in (
   select user_id from group_user_table where (group_id in
-  (select group_id from group_table where group_name='${groupName}')) 
+  (select group_id from group_table where group_name=?)) 
   and (is_admin='1') 
   and user_id not in (
-  select creator_id from group_table where group_name='${groupName}'))`;
+  select creator_id from group_table where group_name=?))`;
+  const inserts = [groupName, groupName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1148,11 +1248,13 @@ const getAdminsNames = (req, res) => {
 
 const getNormalUsersNames = (req, res) => {
   const { groupName } = req.params;
-  const query = `
+  let query = `
   select user_name from user_table where user_id in 
   (select user_id from group_user_table where group_id in 
-  (select group_id from group_table where group_name='${groupName}') and is_admin='0')
+  (select group_id from group_table where group_name=?) and is_admin='0')
   `;
+  const inserts = [groupName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1168,9 +1270,11 @@ const getNormalUsersNames = (req, res) => {
 
 const getGroupDetailsUserId = (req, res) => {
   const { userName } = req.params;
-  const query = `
-  select user_id from user_table where user_name='${userName}'
+  let query = `
+  select ?? from ?? where ??=?
   `;
+  const inserts = ['user_id', 'user_table', 'user_name', userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1186,9 +1290,11 @@ const getGroupDetailsUserId = (req, res) => {
 
 const getGroupDetailsGroupId = (req, res) => {
   const { groupName } = req.params;
-  const query = `
-  select group_id from group_table where group_name='${groupName}'
+  let query = `
+  select ?? from ?? where ??=?
   `;
+  const inserts = ['group_id', 'group_table', 'group_name', groupName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1204,10 +1310,13 @@ const getGroupDetailsGroupId = (req, res) => {
 
 const getHidePostIds = (req, res) => {
   const { userName } = req.params;
-  const query = `
-  select post_id from hide_post_table where user_id in 
-  (select user_id from user_table where user_name='${userName}')
+  let query = `
+  select ?? from ?? where ?? in 
+  (select ?? from ?? where ??=?)
   `;
+  const inserts = ['post_id', 'hide_post_table', 'user_id', 'user_id', 'user_table',
+    'user_name', userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1222,9 +1331,11 @@ const getHidePostIds = (req, res) => {
 const getPostsIdsByHashTags = (req, res) => {
   const { hashTags } = req.body;
   const { groupId } = req.body;
-  const query = `
-  select post_id, hash_tags from post_table where group_id='${groupId}'
+  let query = `
+  select ??, ?? from ?? where ??=?
   `;
+  const inserts = ['post_id', 'hash_tags', 'post_table', 'group_id', groupId];
+  query = mysql.format(query, inserts);
   const result = [];
   connection.query(query, (err, rows, _fields) => {
     if (err) {
@@ -1250,11 +1361,13 @@ const addAdmin = (req, res) => {
   const { groupName } = req.body;
   const { userName } = req.body;
   //
-  const query = `
+  let query = `
     update group_user_table set is_admin = '1' where group_id in 
-    (select group_id from group_table where group_name='${groupName}') and user_id 
-    in (select user_id from user_table where user_name='${userName}')
+    (select group_id from group_table where group_name=?) and user_id 
+    in (select user_id from user_table where user_name=?)
   `;
+  const inserts = [groupName, userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1272,11 +1385,13 @@ const removeAdmin = (req, res) => {
   const { groupName } = req.body;
   const { userName } = req.body;
   //
-  const query = `
+  let query = `
     update group_user_table set is_admin = '0' where group_id in 
-    (select group_id from group_table where group_name='${groupName}') 
-    and user_id in (select user_id from user_table where user_name='${userName}')
+    (select group_id from group_table where group_name=?) 
+    and user_id in (select user_id from user_table where user_name=?')
   `;
+  const inserts = [groupName, userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1295,14 +1410,16 @@ const inviteUser = (req, res) => {
   const { inviter } = req.body;
   const { userToBeInvited } = req.body;
   // find group_id,
-  const query = `
+  let query = `
   insert into invite(inviter, user_to_be_invited, group_id, accept_or_decline, inviter_get_notified) values 
-  ((select user_id from user_table where user_name='${inviter}'),
-  (select user_id from user_table where user_name='${userToBeInvited}'),
-  (select group_id from group_table where group_name='${groupName}'),
+  ((select user_id from user_table where user_name=?),
+  (select user_id from user_table where user_name=?),
+  (select group_id from group_table where group_name=?),
   0,
   0
    )`;
+  const inserts = [inviter, userToBeInvited, groupName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1323,18 +1440,20 @@ const leaveGroup = (req, res) => {
   // if the userName is the creator of this group, we need to remove it
   // from group_user_table and group_table
   // console.log(groupName, userName)
-  const query = `
+  let query = `
     delete from group_user_table where (
-      group_id in (select group_id from group_table where group_name='${groupName}')
+      group_id in (select group_id from group_table where group_name=?)
       and
-      user_id in (select user_id from user_table where user_name='${userName}'));
+      user_id in (select user_id from user_table where user_name=?));
       delete from group_table where (
-        group_name ='${groupName}'
+        group_name =?
       and
-      creator_id in (select user_id from user_table where user_name='${userName}')
+      creator_id in (select user_id from user_table where user_name=?)
       )
       
       `;
+  const inserts = [groupName, userName, groupName, userName];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);
@@ -1351,10 +1470,12 @@ const leaveGroup = (req, res) => {
 const getNewPostCreatorNameAndGroupName = (req, res) => {
   const { creatorId } = req.params;
   const { groupId } = req.params;
-  const query = `
-    select user_name from user_table where user_id = '${creatorId}';
-    select group_name from group_table where group_id = '${groupId}'
+  let query = `
+    select user_name from user_table where user_id = ?;
+    select group_name from group_table where group_id = ?
       `;
+  const inserts = [creatorId, groupId];
+  query = mysql.format(query, inserts);
   connection.query(query, (err, rows, _fields) => {
     if (err) {
       // console.log(err);

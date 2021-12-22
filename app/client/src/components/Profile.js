@@ -173,15 +173,16 @@ function Profile() {
           
           {adminGroupsIds.length === 0 ? "":"Here are some requests for you to approve"}
           {adminGroupsIds.map((id, i) => (
+            
                     <div key={id}>
-                        User {id[3]} wants to join private group {id[1]}
+                        User {id[3]} wants to join group {id[1]}
                         <button onClick={e => handleApproveRequest(id[0], id[2])}>Approve</button>
                         <button onClick={e => handleDeclineRequest(id[0], id[2])}>Decline</button>
                     </div>
                 ))}
           {publicGroupsRequestsIds.map((id, i) => (
                     <div key={id}>
-                        User {id[3]} wants to join public group {id[1]}
+                        User {id[3]} wants to join group {id[1]}
                         <button onClick={e => handleApprovePublicRequest(id[0], id[2])}>Approve</button>
                         <button onClick={e => handleDeclinePublicRequest(id[0], id[2])}>Decline</button>
                     </div>
