@@ -2,6 +2,10 @@
 
 This is group-centric social network (similar to Reddit).
 
+To create database, run `DDL.sql`
+
+To start the app, run `npm start`
+
 After log in, should transfer to groupsPage. We get info from database
 
 ● Users can create a public or a private group. Users can only post content into a group
