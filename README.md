@@ -1,4 +1,4 @@
-# group-centric-social-network
+# Mini Reddit
 
 This is group-centric social network (similar to Reddit).
 
